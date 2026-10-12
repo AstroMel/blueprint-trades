@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Menu, ShoppingBag, Check, ArrowRight, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
+import { Menu, ShoppingBag, Check, ArrowRight, ArrowLeft, ArrowUp, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, VIDEOS } from "./data";
-import { photoBox, photoHand, coverFront, coverBack } from "./images";
+import { photoBox, photoHand, coverFront, coverBack, vecHand, vecBox, vecFront, vecBack } from "./images";
 import { coverFor } from "./covers";
 import { LegalLinks } from "./legal";
 import { money, useCart, totals } from "./cart";
@@ -74,16 +74,17 @@ function Logo({ className }: { className: string }) {
 
 export function Nav() {
   const { state, dispatch } = useCart();
+  const active = useActiveSection(NAV.map(([, h]) => h.slice(1)));
   const { count } = totals(state.lines);
   return (
-    <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-db-line bg-db-mid/90 backdrop-blur-md">
+    <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-db-line bg-db-mid/60 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <a href="#top" className="flex items-center" aria-label="Blueprint Trades home">
           <Logo className="text-2xl sm:text-[28px]" />
         </a>
         <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
           {NAV.map(([l, h]) => (
-            <a key={h} href={h} className="label text-db-muted transition hover:text-db-ink">
+            <a key={h} href={h} aria-current={active === h.slice(1) ? "true" : undefined} className={`label border-b-2 py-1 transition hover:text-db-ink ${active === h.slice(1) ? "border-db-sun text-db-ink" : "border-transparent text-db-muted"}`}>
               {l}
             </a>
           ))}
@@ -106,7 +107,7 @@ export function Nav() {
             <SheetTrigger className="flex h-11 w-11 items-center justify-center rounded-sm border border-db-line md:hidden" aria-label="Open menu">
               <Menu className="h-5 w-5" />
             </SheetTrigger>
-            <SheetContent side="right" className="w-[82vw] max-w-xs border-db-line bg-db-raised">
+            <SheetContent side="right" className="w-[82vw] max-w-xs border-db-line bg-db-raised/60 backdrop-blur-md">
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <nav className="mt-10 flex flex-col gap-1" aria-label="Mobile">
                 {NAV.map(([l, h]) => (
@@ -124,35 +125,139 @@ export function Nav() {
 }
 
 const PHOTOS = [
-  { src: photoHand, alt: "The printed Bull and Bear trading journal held in a hand, with more copies stacked behind it" },
-  { src: photoBox, alt: "A printed copy of the journal resting on its shipping box" },
-  { src: coverFront, alt: "Front cover: TRADING JOURNAL in gold above a bull and a bear, with Master yourself, to master the market" },
-  { src: coverBack, alt: "Back cover with the Blueprint letter" },
+  { photo: photoHand, vec: vecHand, alt: "The printed Bull and Bear trading journal held in a hand, with more copies stacked behind it" },
+  { photo: photoBox, vec: vecBox, alt: "A printed copy of the journal resting on its shipping box" },
+  { photo: coverFront, vec: vecFront, alt: "Front cover: TRADING JOURNAL in gold above a bull and a bear, with Master yourself, to master the market" },
+  { photo: coverBack, vec: vecBack, alt: "Back cover with the Blueprint letter" },
 ];
 
 function Gallery() {
   const [i, setI] = useState(0);
+  const [vector, setVector] = useState(true);
+  const n = PHOTOS.length;
+  const go = (d: number) => setI((k) => (k + d + n) % n);
+  const cur = PHOTOS[i];
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-hidden rounded-sm border border-db-line bg-db-deep">
-        <img src={PHOTOS[i].src} alt={PHOTOS[i].alt} className="aspect-[4/5] w-full object-cover" />
+      <div
+        className="group relative overflow-hidden rounded-sm border border-db-line bg-db-deep/60 backdrop-blur-md focus-within:ring-2 focus-within:ring-db-sun"
+        tabIndex={0}
+        role="region"
+        aria-roledescription="carousel"
+        aria-label={`Journal pictures, ${i + 1} of ${n}. Use the arrow keys to browse.`}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight") go(1);
+          if (e.key === "ArrowLeft") go(-1);
+        }}
+      >
+        <img src={vector ? cur.vec : cur.photo} alt={cur.alt + (vector ? " (vector art traced from the photo)" : "")} className="aspect-[4/5] w-full object-cover" />
+        <div className="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
+          <div className="flex rounded-sm border border-db-line bg-db-mid/60 p-1 backdrop-blur-md" role="group" aria-label="Picture style">
+            {([["Vector", true], ["Photo", false]] as const).map(([l, v]) => (
+              <button key={l} onClick={() => setVector(v)} aria-pressed={vector === v} className={`label min-h-[32px] rounded-sm px-3 text-[11px] transition ${vector === v ? "bg-db-sun text-db-onsun" : "text-db-ink hover:text-db-sun"}`}>
+                {l}
+              </button>
+            ))}
+          </div>
+          <span className="label rounded-sm border border-db-line bg-db-mid/60 px-2 py-1.5 text-[11px] text-db-ink backdrop-blur-md tabular-nums">{i + 1} / {n}</span>
+        </div>
+        {([["Previous picture", -1, "left-3", ArrowLeft], ["Next picture", 1, "right-3", ArrowRight]] as const).map(([l, d, pos, Icon]) => (
+          <button key={l} onClick={() => go(d)} aria-label={l} className={`absolute ${pos} top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-sm border border-db-line bg-db-mid/50 text-db-ink backdrop-blur-md transition hover:border-db-sun sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100`}>
+            <Icon className="h-5 w-5" />
+          </button>
+        ))}
       </div>
-      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Journal photos">
+      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Choose a picture">
         {PHOTOS.map((p, k) => (
           <button
             key={k}
             onClick={() => setI(k)}
             aria-pressed={i === k}
-            aria-label={`Show photo ${k + 1}: ${p.alt}`}
-            className={`overflow-hidden rounded-sm border-2 transition ${i === k ? "border-db-sun" : "border-db-line hover:border-db-muted"}`}
+            aria-label={`Show picture ${k + 1}: ${p.alt}`}
+            className={`overflow-hidden rounded-sm border-2 transition ${i === k ? "border-db-sun" : "border-db-line opacity-70 hover:opacity-100"}`}
           >
-            <img src={p.src} alt="" className="aspect-square w-full object-cover" />
+            <img src={vector ? p.vec : p.photo} alt="" className="aspect-square w-full object-cover" />
           </button>
         ))}
       </div>
-      <p className="text-center text-xs text-db-muted">Photos of the printed journal.</p>
+      <p className="text-center text-xs text-db-muted">{vector ? "Vector art traced from your journal photos. Switch to Photo for the originals." : "Photos of the printed journal."}</p>
     </div>
   );
+}
+
+const TRUST = [
+  ["Free US shipping", `on orders over $${CONFIG.freeShippingOver}`],
+  ["Secure checkout", "payments handled by Stripe"],
+  ["Undated pages", "start any Monday"],
+  ["Real paper", "A5, gold wire-o, opens flat"],
+] as const;
+
+export function TrustStrip() {
+  return (
+    <section aria-label="Why buy here" className="border-y border-db-line bg-db-raised/50 backdrop-blur-md">
+      <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 sm:px-6 md:grid-cols-4">
+        {TRUST.map(([t, d]) => (
+          <li key={t} className="flex flex-col gap-1 py-5 pr-4">
+            <span className="flex items-center gap-2 font-semibold"><Check className="h-4 w-4 flex-none text-db-ember" aria-hidden />{t}</span>
+            <span className="pl-6 text-sm text-db-muted">{d}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export function ScrollAids() {
+  const [p, setP] = useState(0);
+  useEffect(() => {
+    const on = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      setP(max > 0 ? h.scrollTop / max : 0);
+    };
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    window.addEventListener("resize", on);
+    return () => {
+      window.removeEventListener("scroll", on);
+      window.removeEventListener("resize", on);
+    };
+  }, []);
+  return (
+    <>
+      <div className="fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-db-sun" style={{ transform: `scaleX(${p})` }} aria-hidden />
+      <a
+        href="#top"
+        aria-label="Back to top"
+        className={`fixed bottom-24 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-sm border border-db-line bg-db-raised/70 text-db-ink shadow-db backdrop-blur-md transition hover:border-db-sun md:bottom-6 ${p > 0.12 ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      >
+        <ArrowUp className="h-5 w-5" />
+      </a>
+    </>
+  );
+}
+
+export function Backdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <img src={vecFront} alt="" className="h-full w-full scale-110 object-cover opacity-[0.16] blur-[2px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[rgb(var(--db-mid)/0.55)] to-[rgb(var(--db-mid)/0.85)]" />
+    </div>
+  );
+}
+
+function useActiveSection(ids: string[]) {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const io = new IntersectionObserver(
+      (es) => es.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [ids.join()]);
+  return active;
 }
 
 const SPREAD = [
@@ -190,7 +295,7 @@ export function Hero() {
             <Play className="h-3 w-3 fill-db-ember text-db-ember" aria-hidden /> from the Blueprint Trades channel
           </p>
           <h1 className="display text-[64px] sm:text-[88px] lg:text-[104px]">
-            Master yourself. <span className="accent">Master the market.</span>
+            <span className="outline-text">Master yourself.</span> <span className="accent">Master the market.</span>
           </h1>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-db-muted">
             The paper trading journal for traders who are done following influencers. Write the plan before the open, take the trade, then write down what really happened.
@@ -236,7 +341,7 @@ const LETTER = [
 
 export function Letter() {
   return (
-    <section id="letter" className="border-t border-db-line bg-db-ink py-20 text-db-mid">
+    <section id="letter" className="border-t border-db-line bg-db-ink/85 py-20 text-db-mid backdrop-blur-md">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 md:grid-cols-[1.3fr_1fr] md:items-start">
         <div className="min-w-0">
           <p className="label text-db-ember">printed on the back cover</p>
@@ -248,7 +353,7 @@ export function Letter() {
             <p className="hand text-3xl text-db-ember">- Blueprint</p>
           </div>
         </div>
-        <img src={coverBack} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
+        <img src={vecBack} alt="The back cover of the printed journal with this letter, as vector art traced from the photo" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
       </div>
     </section>
   );
@@ -267,7 +372,7 @@ export function Inside() {
         </p>
         <div className="mt-10 grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line md:grid-cols-2">
           {SPREAD.map((pg) => (
-            <div key={pg.title} className="bg-db-raised p-6 sm:p-8">
+            <div key={pg.title} className="bg-db-raised/60 backdrop-blur-md p-6 sm:p-8">
               <div className="flex items-baseline justify-between gap-4">
                 <h3 className="display text-4xl">{pg.title}</h3>
                 <span className="label text-db-ember">{pg.when}</span>
@@ -288,7 +393,7 @@ export function Inside() {
         </div>
         <div className="mt-10 grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
-            <div key={f.k} className="bg-db-raised p-6">
+            <div key={f.k} className="bg-db-raised/60 backdrop-blur-md p-6">
               <div className="label text-db-ember">{f.k}</div>
               <h3 className="mt-2 text-xl font-semibold">{f.title}</h3>
               <p className="mt-2 leading-relaxed text-db-muted">{f.body}</p>
@@ -335,7 +440,7 @@ export function Channel() {
         </p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {VIDEOS.map((v) => (
-            <a key={v.title} href={CONFIG.channelUrl} target="_blank" rel="noreferrer" className="group flex flex-col rounded-sm border-2 border-db-ink bg-db-raised p-6 transition hover:-translate-y-0.5 hover:shadow-db">
+            <a key={v.title} href={CONFIG.channelUrl} target="_blank" rel="noreferrer" className="group flex flex-col rounded-sm border-2 border-db-ink bg-db-raised/60 backdrop-blur-md p-6 transition hover:-translate-y-0.5 hover:shadow-db">
               <span className="label inline-flex items-center gap-2 text-db-ember">
                 <Play className="h-3 w-3 fill-current" aria-hidden /> {v.tag}
               </span>
@@ -415,7 +520,7 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
   const featured = !!p.badge;
   const cw = COLORWAYS.find((c) => c.id === color);
   return (
-    <article className={`relative flex flex-col rounded-sm border-2 p-6 ${featured ? "border-db-ember bg-db-raised" : "border-db-line bg-db-raised"}`}>
+    <article className={`relative flex flex-col rounded-sm border-2 p-6 ${featured ? "border-db-ember bg-db-raised/70 backdrop-blur-md" : "border-db-line bg-db-raised/60 backdrop-blur-md"}`}>
       {p.badge && <span className="label absolute -top-3 left-6 bg-db-ember px-3 py-1 text-db-onsun">{p.badge}</span>}
       <div className="flex items-start justify-between gap-4">
         <div>
