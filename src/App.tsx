@@ -3,6 +3,7 @@ import { CartProvider, useCart } from "./cart";
 import { Nav, Hero, Letter, Inside, Channel, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
 import { CartSheet, Checkout } from "./checkout";
 import { LiveTicker } from "./ticker";
+import { LegalDialog } from "./legal";
 
 function Store() {
   const { dispatch } = useCart();
@@ -30,6 +31,7 @@ function Store() {
         }}
       />
       <Checkout open={checkout} onOpenChange={setCheckout} />
+      <LegalDialog />
     </>
   );
 }

@@ -87,6 +87,7 @@ export function Checkout({ open, onOpenChange }: { open: boolean; onOpenChange: 
   const [paying, setPaying] = useState(false);
   const [order, setOrder] = useState<null | { id: string; total: number }>(null);
   const [touched, setTouched] = useState(false);
+  const [agree, setAgree] = useState(false);
   const t = totals(state.lines, method);
 
   const shipValid = /^\S+@\S+\.\S+$/.test(ship.email) && ship.name && ship.address && ship.city && ship.zip;
@@ -202,6 +203,15 @@ export function Checkout({ open, onOpenChange }: { open: boolean; onOpenChange: 
                         <p className="font-semibold">Stripe Payment Element mounts here</p>
                         <p className="text-sm text-db-muted">Card, Apple Pay, Google Pay, Link and Klarna appear in this secure frame once live keys are added.</p>
                       </div>
+                      <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-db-muted">
+                        <input type="checkbox" className="mt-1 h-5 w-5 flex-none accent-[rgb(var(--db-sun))]" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
+                        <span>
+                          I agree to the <a href="#terms" className="text-db-ember underline underline-offset-2">Terms of Sale</a> and{" "}
+                          <a href="#shipping" className="text-db-ember underline underline-offset-2">Shipping and Returns</a>, have read the{" "}
+                          <a href="#privacy" className="text-db-ember underline underline-offset-2">Privacy Policy</a>, and understand the journal is not financial advice (
+                          <a href="#disclaimer" className="text-db-ember underline underline-offset-2">Trading Disclaimer</a>).
+                        </span>
+                      </label>
                     </div>
                   )}
                 </div>
@@ -246,7 +256,7 @@ export function Checkout({ open, onOpenChange }: { open: boolean; onOpenChange: 
                     Continue
                   </button>
                 ) : (
-                  <button className="btn-primary" onClick={pay} disabled={paying || t.count === 0}>
+                  <button className="btn-primary" onClick={pay} disabled={paying || t.count === 0 || !agree}>
                     <Lock className="h-4 w-4" /> {paying ? "Processing…" : `Pay ${money(t.total)} (test)`}
                   </button>
                 )}

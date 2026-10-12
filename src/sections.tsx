@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, VIDEOS } from "./data";
 import { photoBox, photoHand, coverFront, coverBack } from "./images";
 import { coverFor } from "./covers";
+import { LegalLinks } from "./legal";
 import { money, useCart, totals } from "./cart";
 
 const NAV = [
@@ -558,8 +559,9 @@ export function Footer() {
           )}
         </form>
       </div>
-      <div className="mx-auto mt-12 flex max-w-6xl flex-col gap-2 border-t border-db-line px-4 pt-6 text-sm text-db-muted sm:px-6 md:flex-row md:justify-between">
+      <div className="mx-auto mt-12 flex max-w-6xl flex-col gap-2 border-t border-db-line px-4 pt-6 text-sm text-db-muted sm:px-6 md:flex-row md:flex-wrap md:justify-between">
         <span>© 2026 Blueprint Trades · {CONFIG.domain}</span>
+        <LegalLinks />
         <span>Educational only. Not financial advice. Trading involves risk of loss.</span>
       </div>
     </footer>

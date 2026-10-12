@@ -13,7 +13,19 @@ export const CONFIG = {
   freeShippingOver: 75,
   testMode: true,
   // Optional free Finnhub key (finnhub.io) for live SPY / QQQ / DIA quotes in the top bar. Empty = session status only.
-  finnhubKey: "",
+  // Finnhub keys used from a browser are visible to anyone; this is a free, quote-only key. Rotate it at finnhub.io if abused.
+  finnhubKey: "db66ht1r01qmd5li5480db66ht1r01qmd5li548g",
+  // PLACEHOLDERS for the legal pages (src/legal.tsx). Fill these in before launch.
+  legal: {
+    name: "[BUSINESS LEGAL NAME]",
+    address: "[BUSINESS MAILING ADDRESS]",
+    email: "[CONTACT EMAIL]",
+    state: "[GOVERNING STATE]",
+    effective: "[EFFECTIVE DATE]",
+    handlingDays: "[2]",
+    returnDays: "[30]",
+    refundDays: "[5 to 10]",
+  },
 };
 
 export type Colorway = { id: string; name: string; note: string; swatch: string };
