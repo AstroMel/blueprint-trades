@@ -13,7 +13,7 @@ pnpm exec vite dev
 
 ## Design
 - Tokens and component rules: [docs/design-system](docs/design-system/README.md).
-- Art generators: `art/bt.py` (covers, Plan / Reality pages, hero, spread) and `art/bulk.py` (bulk-create CSV and social posts). They read the channel kit and fonts from the project's shared folder.
+- Art generators: `art/bt2.py` (Night Session covers, Plan / Reality pages, hero, spread, lockups and the bulk-create posts) builds on `art/bt.py`; `art/bulk.py` is the retired Field Notes post set. They read the channel kit and fonts from the project's shared folder.
 
 ## Publish
 See [DEPLOY.md](DEPLOY.md). A temporary GitHub Pages site runs from the `gh-pages` branch; the custom domain is not set yet.
