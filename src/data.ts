@@ -21,9 +21,10 @@ export const CONFIG = {
     address: "[BUSINESS MAILING ADDRESS]",
     email: "[CONTACT EMAIL]",
     state: "[GOVERNING STATE]",
+    county: "[COUNTY]",
     effective: "[EFFECTIVE DATE]",
     handlingDays: "[2]",
-    returnDays: "[30]",
+    claimDays: "[14]",
     refundDays: "[5 to 10]",
   },
 };
@@ -143,7 +144,7 @@ export const FAQ = [
     a: "Orders ship within 2 business days. Standard delivery is 3 to 6 business days in the US; express is 1 to 2.",
   },
   {
-    q: "What if it's not for me?",
-    a: "Return it unused within 30 days for a full refund.",
+    q: "Can I return it?",
+    a: "All sales are final. If your journal arrives damaged or misprinted, or never arrives, email us and we'll replace it or refund you.",
   },
 ];
