@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, ShoppingBag, Check, ArrowRight, ArrowUp, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, VIDEOS } from "./data";
+import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, SUPPORT, VIDEOS } from "./data";
 import { productFront, productBack, productFlat, productPair } from "./images";
 import { AppCard } from "./consult";
 import { Book3D } from "./book3d";
@@ -15,7 +15,7 @@ const NAV = [
   ["Views", "#photos"],
   ["Inside", "#inside"],
   ["App", "#app"],
-  ["Consult", "#consult"],
+  ["Inner Room", "#consult"],
   ["FAQ", "#faq"],
 ] as const;
 
@@ -81,7 +81,7 @@ export function Nav() {
   const active = useActiveSection(NAV.map(([, h]) => h.slice(1)));
   const { count } = totals(state.lines);
   return (
-    <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-db-line bg-db-mid/60 backdrop-blur-xl">
+    <header className="border-b border-db-line bg-db-mid/60 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <a href="#top" className="flex items-center" aria-label="Blueprint Trades home">
           <Logo className="text-2xl sm:text-[28px]" />
@@ -440,61 +440,6 @@ export function Channel() {
   );
 }
 
-export function RiskCalc() {
-  const [account, setAccount] = useState(10000);
-  const [riskPct, setRiskPct] = useState(1);
-  const [stop, setStop] = useState(25);
-  const [valuePer, setValuePer] = useState(1);
-  const riskUsd = (account * riskPct) / 100;
-  const size = useMemo(() => (stop > 0 && valuePer > 0 ? riskUsd / (stop * valuePer) : 0), [riskUsd, stop, valuePer]);
-  const num = (v: string) => Math.max(0, Number(v.replace(/[^0-9.]/g, "")) || 0);
-  return (
-    <section id="risk" className="border-t border-db-line bg-db-deep py-20">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-2 md:items-center">
-        <div>
-          <p className="label text-db-ember">printed inside the cover</p>
-          <h2 className="display mt-3 text-5xl sm:text-6xl">
-            Size it <span className="accent">before</span> you click.
-          </h2>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">
-            The inside cover carries a risk table, so "The trade I want" always has a size that fits your account. Try the math here.
-          </p>
-          <p className="mt-6 text-sm text-db-muted">Not financial advice. Trading involves risk of loss.</p>
-        </div>
-        <div className="panel p-5 sm:p-7">
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              ["Account size ($)", account, setAccount],
-              ["Risk per trade (%)", riskPct, setRiskPct],
-              ["Stop distance (pts / pips)", stop, setStop],
-              ["$ value per point, 1 unit", valuePer, setValuePer],
-            ].map(([label, v, set]) => (
-              <label key={label as string} className="flex flex-col gap-2 text-sm text-db-muted">
-                {label as string}
-                <input inputMode="decimal" className="field font-mono" value={String(v)} onChange={(e) => (set as (n: number) => void)(num(e.target.value))} />
-              </label>
-            ))}
-          </div>
-          <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-db-line bg-db-line">
-            <div className="bg-db-mid p-4">
-              <div className="label text-[10px] text-db-muted">max loss</div>
-              <div className="font-mono text-2xl text-db-bear">−{money(riskUsd)}</div>
-            </div>
-            <div className="bg-db-mid p-4">
-              <div className="label text-[10px] text-db-muted">position size</div>
-              <div className="font-mono text-2xl text-db-ink">{size.toFixed(2)} units</div>
-            </div>
-            <div className="col-span-2 bg-db-mid p-4">
-              <div className="label text-[10px] text-db-muted">at 2R, a winner pays</div>
-              <div className="font-mono text-2xl text-db-bull">+{money(riskUsd * 2)}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
   const { dispatch } = useCart();
   const [color, setColor] = useState(DEFAULT_COVER);
@@ -596,20 +541,56 @@ export function Voice() {
 }
 
 export function Faq() {
+  const groups = [...new Set(FAQ.map((f) => f.group))];
+  const email = CONFIG.legal.email;
+  const real = !/^\[.*\]$/.test(email.trim());
   return (
     <section id="faq" className="border-t border-db-line py-20">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-[1fr_1.4fr]">
-        <h2 className="display text-5xl sm:text-6xl">
-          Straight <span className="accent">answers</span>.
-        </h2>
-        <Accordion type="single" collapsible className="w-full">
-          {FAQ.map((f, i) => (
-            <AccordionItem key={i} value={`q${i}`} className="border-db-line">
-              <AccordionTrigger className="min-h-[48px] text-left text-lg hover:no-underline">{f.q}</AccordionTrigger>
-              <AccordionContent className="text-base leading-relaxed text-db-muted">{f.a}</AccordionContent>
-            </AccordionItem>
+        <div className="min-w-0">
+          <p className="label text-db-ember">questions and support</p>
+          <h2 className="display mt-3 text-5xl sm:text-6xl">
+            Straight <span className="accent">answers</span>.
+          </h2>
+          <div id="support" className="panel mt-8 p-5 sm:p-6">
+            <h3 className="text-lg font-semibold">Contact support</h3>
+            <p className="mt-1 text-sm text-db-muted">
+              Email{" "}
+              {real ? (
+                <a href={`mailto:${email}`} className="font-mono text-db-ember underline underline-offset-2">{email}</a>
+              ) : (
+                <span className="font-mono text-db-ink">{email}</span>
+              )}{" "}
+              and start the subject with the topic below. We reply within {SUPPORT.replyDays} business days.
+            </p>
+            <ul className="mt-5 flex flex-col gap-4">
+              {SUPPORT.topics.map((t) => (
+                <li key={t.subject} className="flex gap-3">
+                  <span className="label mt-0.5 h-fit flex-none border border-db-line px-2 py-1 text-[10px] text-db-ink">{t.subject}</span>
+                  <span className="min-w-0 text-sm">
+                    <b className="font-semibold">{t.title}.</b> <span className="text-db-muted">{t.body}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 text-xs text-db-muted">Never email card numbers or passwords. We will never ask for them.</p>
+          </div>
+        </div>
+        <div className="flex min-w-0 flex-col gap-8">
+          {groups.map((g) => (
+            <div key={g}>
+              <h3 className="label text-db-muted">{g}</h3>
+              <Accordion type="single" collapsible className="mt-2 w-full">
+                {FAQ.filter((f) => f.group === g).map((f) => (
+                  <AccordionItem key={f.q} value={f.q} className="border-db-line">
+                    <AccordionTrigger className="min-h-[48px] text-left text-lg hover:no-underline">{f.q}</AccordionTrigger>
+                    <AccordionContent className="text-base leading-relaxed text-db-muted">{f.a}</AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           ))}
-        </Accordion>
+        </div>
       </div>
     </section>
   );

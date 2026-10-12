@@ -18,6 +18,8 @@ export const CONFIG = {
   appUrl: "app.html",
   // The Journal App is a subscription. PLACEHOLDER: set the same Stripe Payment Link and portal link in public/app.html (PLAN).
   appPrice: 7.99,
+  // PLACEHOLDER: the owner's separate member app (built with Grok Build). Empty = hidden. Set once the address is confirmed.
+  memberAppUrl: "",
   // Optional free Finnhub key (finnhub.io) for live SPY / QQQ / DIA quotes in the top bar. Empty = session status only.
   // Finnhub keys used from a browser are visible to anyone; this is a free, quote-only key. Rotate it at finnhub.io if abused.
   finnhubKey: "db66ht1r01qmd5li5480db66ht1r01qmd5li548g",
@@ -120,33 +122,31 @@ export const SPECS = [
   ["Dated?", "Undated. Start any Monday."],
 ] as const;
 
-export const FAQ = [
-  {
-    q: "Will this make me profitable?",
-    a: "No one can promise that, and we won't. It will show you what you actually do, which is where getting better starts.",
-  },
-  {
-    q: "Is this financial advice?",
-    a: "No. It's a notebook for following your own plan. No signals, no calls. Trading involves risk of loss.",
-  },
-  {
-    q: "Is that the real cover?",
-    a: "Yes. The product views and the 3D journal use the actual Bull & Bear cover art, front and back, exactly as it's printed.",
-  },
-  {
-    q: "Why paper when there are apps?",
-    a: "Writing a trade by hand slows you down at exactly the moment you'd chase or revenge-trade. That's the feature.",
-  },
-  {
-    q: "How does the app subscription work?",
-    a: "The Journal App is $7.99 a month, billed monthly. Cancel anytime and you keep access until the end of the month you paid for. Your entries stay on your device either way.",
-  },
-  {
-    q: "When does it ship?",
-    a: "Orders ship within 2 business days. Standard delivery is 3 to 6 business days in the US; express is 1 to 2.",
-  },
-  {
-    q: "Can I return it?",
-    a: "All sales are final. If your journal arrives damaged or misprinted, or never arrives, email us and we'll replace it or refund you.",
-  },
+// Support routes. Everything goes to one inbox (CONFIG.legal.email); the subject line routes it.
+// PLACEHOLDER: replyDays until the owner confirms a response time.
+export const SUPPORT = {
+  replyDays: "1 to 2",
+  topics: [
+    { subject: "Billing", title: "Payments and subscriptions", body: "Double charges, failed payments, refunds, cancelling the app." },
+    { subject: "Order", title: "Orders and shipping", body: "Tracking, damaged or misprinted journals, address changes." },
+    { subject: "Consultation", title: "Consultations", body: "Questions about a request you sent or a session that's booked." },
+    { subject: "Privacy", title: "Privacy and your data", body: "Access, correct or delete the details we hold about you." },
+  ],
+} as const;
+
+export type FaqItem = { group: string; q: string; a: string };
+
+export const FAQ: FaqItem[] = [
+  { group: "The journal", q: "Will this make me profitable?", a: "No one can promise that, and we won't. The journal shows you what you actually do, trade after trade. That record is where improving starts." },
+  { group: "The journal", q: "Is this financial advice?", a: "No. The journal, the app and the calculator are tools for following your own plan. We don't give signals, calls or personal recommendations. Trading involves risk of loss." },
+  { group: "The journal", q: "Is that the real cover?", a: "Yes. The product views and the 3D journal use the actual Bull & Bear cover art, front and back, exactly as it's printed." },
+  { group: "The journal", q: "Paper or app?", a: "Both work. Writing by hand slows you down at exactly the moment you'd chase or revenge-trade. The app does the math, keeps the record and builds the monthly review. Many traders plan on paper and review in the app." },
+  { group: "Privacy and data", q: "Where are my app entries stored, and who can see them?", a: "On your device only, in your browser's storage. They are not sent to us, and we never sell or share them. Because we never receive them, we can't recover them if your browser data is cleared, so export a backup from the app's Settings from time to time." },
+  { group: "Privacy and data", q: "What do you collect when I buy or subscribe?", a: "Your name, email and shipping address to fulfil the order, and your subscription status to give you access to the app. Card details go straight to Stripe, our payment processor. We never see or store your full card number. The Privacy Policy has the full detail." },
+  { group: "Privacy and data", q: "Is what I share in a consultation request kept private?", a: "Yes. Requests are read only by the Blueprint Trades team, used only to screen and reply, and never published, sold or shared. Nothing from a request or a session appears in our content unless you give written permission. You can ask us to delete your request at any time." },
+  { group: "Payments and support", q: "How does the app subscription work?", a: "The Journal App is $7.99 a month, billed monthly by Stripe. Cancel anytime from the app's Settings and you keep access until the end of the month you've paid for. Partial months aren't refunded." },
+  { group: "Payments and support", q: "I was charged twice, or my payment failed. What should I do?", a: "Email support with the subject \"Billing\", the email you used at checkout and the date of the charge. Never send your card number. We reply within 1 to 2 business days, and any charge made in error is refunded to the original payment method." },
+  { group: "Payments and support", q: "How do I reach you about a consultation?", a: "Email support with the subject \"Consultation\" and the email you used on your request. We'll confirm where your request stands. Every request is reviewed, but not every request is accepted." },
+  { group: "Orders", q: "When does it ship?", a: "Orders ship within 2 business days by USPS Ground Advantage, with tracking. Standard delivery is 2 to 5 business days in the US for $8, free on orders over $75. Express arrives in 1 to 3 business days." },
+  { group: "Orders", q: "Can I return it?", a: "All sales are final. If your journal arrives damaged or misprinted, or never arrives, email us with the subject \"Order\" and we'll replace it or refund you." },
 ];

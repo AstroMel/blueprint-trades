@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpRight, Check, Smartphone } from "lucide-react";
+import { ArrowUpRight, Check, Lock, Smartphone } from "lucide-react";
 import { CONFIG } from "./data";
 import { money } from "./cart";
 
@@ -59,18 +59,18 @@ export function Consult() {
     <section id="consult" className="border-t border-db-line py-20">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-[1fr_1.15fr] md:items-start">
         <div className="min-w-0">
-          <p className="label text-db-ember">1:1 consultations</p>
+          <p className="label flex items-center gap-2 text-db-ember"><Lock className="h-3.5 w-3.5" aria-hidden /> the inner room · by request</p>
           <h2 className="display mt-3 text-5xl sm:text-6xl">
-            Free, <span className="accent">on request.</span>
+            A private room. <span className="accent">No charge.</span>
           </h2>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">
-            Want a second set of eyes on your process? Ask for a consultation. There's no charge. Every request is screened first, and we only book calls where we think we can genuinely help.
+            One-to-one sessions for traders who are serious about their process. There's no fee and no upsell. Every request is reviewed privately, and a seat is offered only where we can genuinely help.
           </p>
           <ol className="mt-8 flex max-w-md flex-col gap-4">
             {[
-              ["Request", "Tell us where you are and what you want help with."],
-              ["Screening", "We read every request. Not every one is accepted."],
-              ["Call", "If it's a fit, we email you to set a time. Still free."],
+              ["Request", "Tell us where your trading is and what you want to work on."],
+              ["Private review", "Read only by the Blueprint Trades team. Not every request is accepted."],
+              ["Your seat", "If it's a fit, you get a private invitation by email to set a time. Still free."],
             ].map(([t, d], i) => (
               <li key={t} className="flex gap-4">
                 <span className="flex h-8 w-8 flex-none items-center justify-center bg-db-sun font-mono text-sm font-bold text-db-onsun">{i + 1}</span>
@@ -81,10 +81,16 @@ export function Consult() {
               </li>
             ))}
           </ol>
-          <p className="mt-8 max-w-md text-sm text-db-muted">
-            Consultations are educational conversations about your journaling and process. They are not financial advice and not a recommendation to buy or sell anything. See the{" "}
-            <a href="#disclaimer" className="text-db-ember underline underline-offset-2">Trading Disclaimer</a>.
-          </p>
+          <div className="mt-8 max-w-md border-l-2 border-db-sun pl-5">
+            <p className="label text-db-ink">what stays in the room</p>
+            <ul className="mt-3 flex flex-col gap-2 text-sm text-db-muted">
+              <li><b className="text-db-ink">Confidential.</b> What you share is never published, sold or shared, and never used in our content without your written permission.</li>
+              <li><b className="text-db-ink">Closed door.</b> One-to-one and by invitation only. Sessions aren't recorded unless you ask.</li>
+              <li><b className="text-db-ink">Yours to delete.</b> Ask and we erase your request and notes.</li>
+              <li><b className="text-db-ink">Process, not picks.</b> We talk journaling, risk and discipline. No signals, no calls, no financial advice. See the{" "}
+                <a href="#disclaimer" className="text-db-ember underline underline-offset-2">Trading Disclaimer</a>.</li>
+            </ul>
+          </div>
         </div>
 
         <div className="panel p-5 sm:p-7">
@@ -94,7 +100,7 @@ export function Consult() {
               <h3 className="display text-3xl">{state === "sent" ? "Request received." : "Almost there."}</h3>
               <p className="text-db-muted">
                 {state === "sent"
-                  ? "Thanks. Every request is screened, and if it's a fit we'll email you to set a time."
+                  ? "Thanks. Your request is with our team for private review. If it's a fit, you'll get an invitation by email to set a time."
                   : "Your email app should have opened with your request filled in. Press send there to submit it. If nothing opened, email us directly at " + CONFIG.legal.email + "."}
               </p>
               <button className="btn-ghost self-start" onClick={() => setState("idle")}>Send another request</button>
@@ -147,17 +153,17 @@ export function Consult() {
               </label>
               <label className="flex items-start gap-3 text-sm text-db-ink">
                 <input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)} required className="mt-0.5 h-5 w-5 flex-none accent-[rgb(var(--db-sun))]" />
-                <span>I understand requests are screened, a call isn't guaranteed, and a consultation is education, not financial advice.</span>
+                <span>I understand every request is reviewed, a seat isn't guaranteed, and a consultation is education, not financial advice.</span>
               </label>
               <button type="submit" className="btn-primary" disabled={state === "sending" || !ack}>
-                {state === "sending" ? "Sending…" : "Request a free consultation"}
+                {state === "sending" ? "Sending…" : "Request a seat"}
               </button>
               <p id="consult-note" className="text-xs text-db-muted">
-                We use these details only to screen and reply to your request. See the <a href="#privacy" className="underline underline-offset-2">Privacy Policy</a>.
+                Read only by our team, used only to review and reply to your request, and deleted on request. See the <a href="#privacy" className="underline underline-offset-2">Privacy Policy</a>.
               </p>
               {state === "unavailable" && (
                 <p role="alert" className="rounded-sm border border-db-sun bg-db-sun/10 p-3 text-sm text-db-ink">
-                  Consultation requests open as soon as our contact email is set up. Please check back soon.
+                  Requests open as soon as our private inbox is set up. Please check back soon.
                 </p>
               )}
               {state === "error" && (
@@ -198,7 +204,13 @@ export function DigitalApp() {
             <a href={CONFIG.appUrl} className="btn-primary" target="_blank" rel="noopener">
               Subscribe for {money(CONFIG.appPrice)}/month <ArrowUpRight className="h-4 w-4" aria-hidden />
             </a>
-            <a href="#shop" className="btn-ghost">Or get it on paper</a>
+{CONFIG.memberAppUrl ? (
+              <a href={CONFIG.memberAppUrl} className="btn-ghost" target="_blank" rel="noopener">
+                Open the member app <ArrowUpRight className="h-4 w-4" aria-hidden />
+              </a>
+            ) : (
+              <a href="#shop" className="btn-ghost">Or get it on paper</a>
+            )}
           </div>
           <p className="mt-4 text-sm text-db-muted">{money(CONFIG.appPrice)} a month, billed monthly. Cancel anytime. On your phone, tap Share then Add to Home Screen (iPhone) or Install (Android) to keep it.</p>
         </div>

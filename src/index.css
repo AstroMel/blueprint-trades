@@ -38,7 +38,7 @@
     --border: 232 41% 25%; --input: 232 41% 25%; --ring: 41 63% 54%;
   }
   * { @apply border-border; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html { scroll-behavior: smooth; scroll-padding-top: 112px; -webkit-text-size-adjust: 100%; }
   body {
     @apply bg-db-mid text-db-ink font-sans antialiased;
     background-color: rgb(var(--db-mid));

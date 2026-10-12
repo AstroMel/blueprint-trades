@@ -184,10 +184,20 @@ const isClosed = (t) => t.exit !== '' && t.exit != null || num(t.rOverride) != n
 let deferred = null;
 addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('#install').hidden = false; });
 $('#install').onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; $('#install').hidden = true; };
+// Ask the browser not to clear the journal under storage pressure. Silently ignored where unsupported.
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('app-sw.js').catch(() => {});
 
 // ---------- views ----------
 const app = $('#app'), savebar = $('#savebar');
+
+// Entries live only on this device, so nudge for a backup once there's something to lose.
+function backupNudge(n) {
+  const last = db.settings.lastBackup;
+  const days = last ? Math.floor((Date.now() - new Date(last + 'T00:00:00').getTime()) / 864e5) : null;
+  if (n < 5 || (days != null && days < 14)) return '';
+  return `<div class="panel" role="note" style="border-color:rgb(var(--sun))"><b>Back up your journal.</b> <span class="muted">${n} trades are saved only on this device${last ? `, last backed up ${days} days ago` : ''}. A backup file lets you restore them on a new phone or after clearing your browser.</span><div class="row" style="margin-top:12px"><a class="btn" href="#/settings">Back up now</a></div></div>`;
+}
 
 function viewList() {
   const trades = [...db.trades].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id));
@@ -202,6 +212,7 @@ function viewList() {
         <div><span class="label">closed</span><b>${closed.length}</b></div>
         <div><span class="label">total R</span><b class="${total >= 0 ? 'up' : 'down'}">${rs.length ? sign(total) : '—'}</b></div>
       </div>
+      ${backupNudge(trades.length)}
       <div class="row"><a class="btn primary" href="#/new">+ Plan a trade</a></div>
       ${trades.length ? `<ul class="list">${trades.map((t) => {
         const r = resultR(t), c = isClosed(t);
@@ -287,7 +298,8 @@ function viewTrade(id) {
     $('#rk').textContent = '−$' + fmt(riskUsd);
     const dist = e != null && st != null ? Math.abs(e - st) : null;
     $('#sd').textContent = dist ? fmt(dist, dist < 1 ? 4 : 2) : '—';
-    $('#sz').textContent = dist ? fmt(riskUsd / (dist * (s.valuePer || 1)), 2) : '—';
+    const exact = dist ? riskUsd / (dist * (s.valuePer || 1)) : null;
+    $('#sz').textContent = exact == null ? '—' : Math.floor(exact) >= 1 ? `${Math.floor(exact)} whole · ${fmt(exact, 2)} exact` : `${fmt(exact, 2)} · under 1 whole unit`;
     $('#adh').textContent = `Rules followed: ${t.rules.filter(Boolean).length} of 4`;
   };
   form.addEventListener('input', update);
@@ -401,7 +413,7 @@ function viewSettings() {
     if (persist()) toast('Settings saved');
   };
   const dl = (name, type, text) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
-  $('#exj').onclick = () => dl(`blueprint-journal-${today()}.json`, 'application/json', JSON.stringify(db, null, 2));
+  $('#exj').onclick = () => { db.settings = { ...db.settings, lastBackup: today() }; persist(); dl(`blueprint-journal-${today()}.json`, 'application/json', JSON.stringify(db, null, 2)); };
   $('#exc').onclick = () => {
     const cols = ['date', 'symbol', 'side', 'entry', 'stop', 'target', 'exit', 'size', 'pnl', 'held', 'emoBefore', 'emoAfter', 'lesson', 'pastSelf', 'levels'];
     const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -440,8 +452,9 @@ function viewPaywall() {
         ${live
           ? `<a class="btn primary" href="${esc(PLAN.subscribeUrl)}">Subscribe for ${priceText()}/${PLAN.period}</a>`
           : `<button class="btn primary" id="sub">Start test subscription</button>
-             <p class="muted" style="margin:0;font-size:14px">Test mode: subscriptions aren't open yet, so this unlocks the app on this device and no card is charged.</p>`}
-        <p class="muted" style="margin:0;font-size:14px">Billed monthly. Cancel anytime; you keep access until the end of the month you paid for. See the <a href="./#terms">Terms</a>.</p>
+             <p class="muted" style="margin:0;font-size:14px">Test mode: subscriptions aren't open yet. This unlocks the app on this device only, and no card is charged.</p>`}
+        <p class="muted" style="margin:0;font-size:14px">${priceText()} billed today, then every month. Renews automatically until you cancel. Cancel anytime in Settings; you keep access until the end of the month you've paid for. See the <a href="./#terms">Terms</a> and <a href="./#privacy">Privacy Policy</a>.</p>
+        <p class="muted" style="margin:0;font-size:14px">Already a member on another device? Email support with the subject "Billing" and the email you subscribed with, and we'll restore your access.</p>
       </div>
       <p class="foot">Your entries are stored only on your device. Not financial advice.</p>
     </div>`;

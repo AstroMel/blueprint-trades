@@ -42,6 +42,9 @@ export const LEGAL: Page[] = [
       ["4. Do we use cookies and other tracking technologies?", [
         "This site does not use analytics or advertising cookies today. Stripe sets its own cookies on the payment form to process payments and prevent fraud. Details and your choices are in our Cookie Notice.",
       ]],
+      ["Consultation requests", [
+        "Consultation requests and anything you share in a session are confidential. Only the Blueprint Trades team reads them, we use them only to review and reply to your request and to prepare for your session, and we never publish, sell or share them. We do not use them in videos or other content without your written permission. Sessions are not recorded unless you ask us to. You can ask us to delete your request and session notes at any time by emailing us with the subject \"Privacy\". We may still disclose information if the law requires it.",
+      ]],
       ["The Journal App", [
         "Trades and settings you enter in the Journal App are stored only in your browser on your device. We do not receive or store them. Exporting a backup saves a file to your device; clearing your browser data deletes your entries.",
         "If you subscribe, Stripe processes your payment and we receive your email address and your subscription status (active, cancelled or past due) so we can give you access. We keep these for as long as you subscribe and as the law requires afterward.",
@@ -164,7 +167,7 @@ export const LEGAL: Page[] = [
     intro: "How orders ship, our final-sale policy, and what to do if something goes wrong.",
     sections: [
       ["Shipping", [
-        `Orders ship within ${L.handlingDays} business days. Standard delivery in the US takes about 3 to 6 business days; express about 1 to 2. Standard shipping is free on orders over $${CONFIG.freeShippingOver}.`,
+        `Orders ship within ${L.handlingDays} business days. Standard delivery in the US goes by USPS Ground Advantage and takes about 2 to 5 business days; Express goes by USPS Priority Mail and takes about 1 to 3. Standard shipping is free on orders over $${CONFIG.freeShippingOver}.`,
         "You get a tracking link by email when your order ships. [STATE WHETHER YOU SHIP INTERNATIONALLY, AND WHO PAYS DUTIES.]",
       ]],
       ["Refunds", [
