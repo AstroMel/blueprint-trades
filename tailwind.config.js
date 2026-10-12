@@ -14,7 +14,7 @@ module.exports = {
       },
       colors: {
         db: Object.fromEntries(
-          ["deep", "mid", "raised", "petal", "line", "ink", "muted", "sun", "onsun", "ember", "grid", "bull", "bear", "chrome"].map(
+          ["deep", "mid", "raised", "petal", "line", "ink", "muted", "sun", "onsun", "ember", "grid", "major", "bull", "bear", "chrome"].map(
             (k) => [k, `rgb(var(--db-${k}) / <alpha-value>)`],
           ),
         ),

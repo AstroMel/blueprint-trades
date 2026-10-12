@@ -16,14 +16,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
 :root{
-  --deep:220 225 240;--mid:233 236 245;--raised:246 247 251;--line:196 202 222;--ink:15 19 48;--muted:82 90 125;
-  --sun:212 166 64;--onsun:15 19 48;--ember:154 116 32;--bull:47 102 224;--bear:201 54 60;color-scheme:light;
+  --deep:232 238 250;--mid:246 248 253;--raised:255 255 255;--line:176 194 232;--ink:10 22 56;--muted:72 88 128;
+  --sun:255 94 26;--onsun:10 22 56;--ember:196 60 0;--bull:28 86 226;--bear:214 40 48;color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--deep:10 13 34;--mid:15 19 48;--raised:22 27 62;--line:37 44 88;--ink:233 236 245;--muted:138 147 184;--ember:212 166 64;--bull:61 123 255;--bear:229 72 77;color-scheme:dark}}
-:root[data-theme="dark"]{--deep:10 13 34;--mid:15 19 48;--raised:22 27 62;--line:37 44 88;--ink:233 236 245;--muted:138 147 184;--ember:212 166 64;--bull:61 123 255;--bear:229 72 77;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--deep:3 9 26;--mid:6 15 38;--raised:10 24 58;--line:30 62 140;--ink:232 240 255;--muted:138 158 204;--sun:255 106 26;--onsun:6 15 38;--ember:255 122 48;--bull:64 128 255;--bear:242 64 72;color-scheme:dark}}
+:root[data-theme="dark"]{--deep:3 9 26;--mid:6 15 38;--raised:10 24 58;--line:30 62 140;--ink:232 240 255;--muted:138 158 204;--sun:255 106 26;--onsun:6 15 38;--ember:255 122 48;--bull:64 128 255;--bear:242 64 72;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:rgb(var(--mid));color:rgb(var(--ink));font:16px/1.5 "Instrument Sans",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh}
+body{background:linear-gradient(rgb(var(--line)/.22) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,rgb(var(--line)/.22) 1px,transparent 1px) 0 0/28px 28px,rgb(var(--mid));color:rgb(var(--ink));font:16px/1.5 "Instrument Sans",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh}
 button,input,select,textarea{font:inherit;color:inherit}
 .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgb(var(--muted))}
@@ -443,7 +443,7 @@ function viewPaywall() {
       <div class="panel stack">
         <div class="price"><b>${priceText()}</b><span class="muted">per ${PLAN.period}</span></div>
         <ul class="feat">
-          <li>The Plan + Reality spread for every trade</li>
+          <li>The Trade Analysis page for every trade</li>
           <li>Position size from your account and risk %</li>
           <li>Market-maker risk check and rules-followed score</li>
           <li>Monthly review: win rate, R curve, lessons</li>

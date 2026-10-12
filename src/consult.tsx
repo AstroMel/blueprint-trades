@@ -180,7 +180,7 @@ export function Consult() {
 }
 
 const APP_FEATURES = [
-  "The Plan + Reality spread for every trade",
+  "The Trade Analysis page for every trade",
   "Position size from your account and risk %",
   "Market-maker risk check and plan adherence",
   "Monthly review: win rate, R curve, lessons",

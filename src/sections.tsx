@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Menu, ShoppingBag, Check, ArrowRight, ArrowUp, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
+import { Menu, ShoppingBag, Check, BookOpen, ArrowRight, ArrowUp, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, SUPPORT, VIDEOS } from "./data";
-import { productFront, productBack, productFlat, productPair } from "./images";
+import { CONFIG, COLORWAYS, FAQ, PRODUCTS, SPECS, SUPPORT, VIDEOS } from "./data";
+import { productFront, productBack, productFlat, productPair, insidePageWebp } from "./images";
 import { AppCard } from "./consult";
 import { Book3D } from "./book3d";
 import { coverFor } from "./covers";
@@ -194,9 +195,7 @@ export function Photos() {
           <div className="min-w-0">
             <p className="label text-db-ember">the journal</p>
             <h2 className="display mt-3 text-5xl sm:text-6xl">Every angle.</h2>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">
-              The printed Bull &amp; Bear edition, front and back. A5, gold wire-o, opens flat.
-            </p>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">A5. Gold wire-o. Opens flat.</p>
           </div>
           <img src={productPair} alt="The journal's back cover and front cover standing side by side" className="w-full drop-shadow-[0_30px_40px_rgb(0_0_0/0.25)]" loading="lazy" />
         </div>
@@ -241,30 +240,6 @@ function useActiveSection(ids: string[]) {
   return active;
 }
 
-const SPREAD = [
-  {
-    title: "The Plan",
-    when: "before the open",
-    rows: [
-      ["1", "Key levels used", "Higher-timeframe level, zone, prior day low"],
-      ["2", "The trade I want", "Entry, stop, target, size, R"],
-      ["3", "Market-maker risk check", "Four questions before you click"],
-      ["4", "Emotion before", "Calm 1 to wired 5"],
-    ],
-  },
-  {
-    title: "The Reality",
-    when: "after the close",
-    rows: [
-      ["5", "Redraw the move and the result", "R, P/L, time held"],
-      ["6", "Plan adherence", "Rules followed, out of four"],
-      ["7", "Emotion after", "Calm 1 to wired 5"],
-      ["8", "Lesson learned", "One line, every trade"],
-      ["9", "What would I tell my past self?", "The note you read next week"],
-    ],
-  },
-] as const;
-
 export function Hero() {
   const { dispatch } = useCart();
   return (
@@ -279,7 +254,7 @@ export function Hero() {
             <span className="outline-text">Master yourself.</span> <span className="accent">Master the market.</span>
           </h1>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-db-muted">
-            The paper trading journal for traders who are done following influencers. Write the plan before the open, take the trade, then write down what really happened.
+            The paper trading journal for traders done following influencers. One page per trade. Scored out of 30.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button className="btn-primary" onClick={() => dispatch({ type: "add", productId: "journal", colorway: DEFAULT_COVER })}>
@@ -291,9 +266,9 @@ export function Hero() {
           </div>
           <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t-2 border-db-ink pt-5">
             {[
-              ["Plan", "before the open"],
-              ["Trade", "at your level"],
-              ["Reality", "after the close"],
+              ["Record", "every trade"],
+              ["Score", "six categories"],
+              ["Reflect", "four questions"],
             ].map(([n, l]) => (
               <div key={n}>
                 <dt className="display text-3xl text-db-ink">{n}</dt>
@@ -303,7 +278,7 @@ export function Hero() {
           </dl>
         </div>
         <div className="relative order-first mx-auto w-full max-w-[300px] sm:max-w-[420px] md:order-none md:max-w-[600px]">
-          <Book3D pages={SPREAD} />
+          <Book3D />
         </div>
       </div>
     </section>
@@ -340,69 +315,91 @@ export function Letter() {
   );
 }
 
+const PAGE_PARTS = [
+  ["Trade details", "Ticker, catalyst, call or put, timeframe, times, entry, exit, P/L."],
+  ["Scoring system", "Six categories, 1 to 5 each. Total out of 30."],
+  ["Psychology check", "Four questions. Plan, emotions, risk, next time."],
+  ["Chart", "Sketch the candles at entry and exit."],
+] as const;
+
+const SCORE_ROWS = ["Setup quality", "Entry timing", "Exit timing", "Risk management", "Discipline", "Emotional control"] as const;
+
+// The page's own grading key: 26–30 A, 20–25 B, 14–19 C, below 14 needs improvement.
+function grade(t: number) {
+  return t >= 26 ? ["A", "Excellent"] : t >= 20 ? ["B", "Good"] : t >= 14 ? ["C", "Average"] : ["–", "Needs improvement"];
+}
+
+function Scorer() {
+  const [s, setS] = useState<number[]>([4, 3, 3, 4, 5, 3]);
+  const total = s.reduce((a, b) => a + b, 0);
+  const [g, word] = grade(total);
+  return (
+    <div className="panel p-5 sm:p-6">
+      <div className="flex items-baseline justify-between gap-4">
+        <p className="label text-db-muted">try the scoring</p>
+        <p className="font-mono text-sm text-db-muted">tap 1–5</p>
+      </div>
+      <ul className="mt-4 flex flex-col gap-2">
+        {SCORE_ROWS.map((r, i) => (
+          <li key={r} className="flex items-center justify-between gap-3">
+            <span className="min-w-0 text-sm">{r}</span>
+            <span className="flex flex-none gap-1" role="radiogroup" aria-label={r}>
+              {[1, 2, 3, 4, 5].map((v) => (
+                <button
+                  key={v}
+                  role="radio"
+                  aria-checked={s[i] === v}
+                  aria-label={`${r} ${v}`}
+                  onClick={() => setS((xs) => xs.map((x, j) => (j === i ? v : x)))}
+                  className={`h-9 w-9 rounded-sm border font-mono text-sm transition ${s[i] === v ? "border-db-sun bg-db-sun text-db-onsun" : v < s[i] ? "border-db-line bg-db-petal text-db-ink" : "border-db-line text-db-muted hover:border-db-sun"}`}
+                >
+                  {v}
+                </button>
+              ))}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-5 flex items-end justify-between border-t border-db-line pt-4" aria-live="polite">
+        <div>
+          <p className="label text-[10px] text-db-muted">total score</p>
+          <p className="font-mono text-3xl">{total}<span className="text-lg text-db-muted"> / 30</span></p>
+        </div>
+        <div className="text-right">
+          <p className="display text-5xl text-db-ember">{g}</p>
+          <p className="text-sm text-db-muted">{word}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Inside() {
   return (
     <section id="inside" className="border-t border-db-line py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="label text-db-ember">inside the journal</p>
         <h2 className="display mt-3 max-w-3xl text-5xl sm:text-6xl">
-          One spread per trade. <span className="accent">The plan, then the reality.</span>
+          One page per trade. <span className="accent">Scored out of 30.</span>
         </h2>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-db-muted">
-          The left page is written while you're calm. The right page is written after the close, whatever happened. Most P&L trackers stop at the number; this one asks how you got there.
-        </p>
-        <div className="mt-10 grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line md:grid-cols-2">
-          {SPREAD.map((pg) => (
-            <div key={pg.title} className="bg-db-raised/60 backdrop-blur-md p-6 sm:p-8">
-              <div className="flex items-baseline justify-between gap-4">
-                <h3 className="display text-4xl">{pg.title}</h3>
-                <span className="label text-db-ember">{pg.when}</span>
-              </div>
-              <ol className="mt-6 flex flex-col">
-                {pg.rows.map(([n, t, d]) => (
-                  <li key={n} className="grid grid-cols-[2rem_1fr] gap-3 border-t border-db-line py-3">
-                    <span className="font-mono text-sm text-db-muted">{n}</span>
-                    <span>
-                      <span className="font-semibold">{t}</span>
-                      <span className="block text-sm text-db-muted">{d}</span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))}
-        </div>
-        <div className="mt-10 grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f) => (
-            <div key={f.k} className="bg-db-raised/60 backdrop-blur-md p-6">
-              <div className="label text-db-ember">{f.k}</div>
-              <h3 className="mt-2 text-xl font-semibold">{f.title}</h3>
-              <p className="mt-2 leading-relaxed text-db-muted">{f.body}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 grid gap-8 md:grid-cols-[1fr_1.3fr] md:items-center">
-          <div>
-            <p className="label text-db-ember">every month</p>
-            <h3 className="display mt-2 text-4xl">Score the process, not just the P&L.</h3>
-            <p className="mt-4 max-w-md text-db-muted">The monthly review sets your rule adherence and emotion scores beside your results, so you can see which version of you makes money.</p>
-          </div>
-          <div className="overflow-x-auto rounded-sm border border-db-line">
-            <table className="w-full min-w-[420px] text-left text-sm sm:text-base">
-              <caption className="sr-only">Sample monthly review</caption>
-              <tbody>
-                {REVIEW.map(([k, sub, v]) => (
-                  <tr key={k} className="border-b border-db-line last:border-0">
-                    <th scope="row" className="bg-db-raised px-4 py-3 font-medium sm:px-5">
-                      {k}
-                      <span className="block text-xs font-normal text-db-muted">{sub}</span>
-                    </th>
-                    <td className={`px-4 py-3 text-right font-mono text-lg tabular-nums sm:px-5 ${v.startsWith("−") ? "text-db-bear" : v.startsWith("+") ? "text-db-bull" : "text-db-ink"}`}>{v}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="border-t border-db-line px-4 py-2 text-xs text-db-muted sm:px-5">Sample page, not results.</p>
+        <div className="mt-10 grid gap-10 md:grid-cols-[1fr_1fr] md:items-start">
+          <figure className="relative mx-auto w-full max-w-md">
+            <img src={insidePageWebp} alt="A real Trade Analysis page from the journal: trade details, a six-category scoring table, a psychology and discipline check, and a chart box" className="w-full rounded-sm border border-db-line shadow-db" loading="lazy" />
+            <figcaption className="label mt-3 text-[10px] text-db-muted">the trade analysis page, as printed</figcaption>
+          </figure>
+          <div className="flex min-w-0 flex-col gap-8">
+            <ol className="flex flex-col">
+              {PAGE_PARTS.map(([t, d], i) => (
+                <li key={t} className="grid grid-cols-[2.5rem_1fr] gap-3 border-t border-db-line py-4">
+                  <span className="font-mono text-sm text-db-ember">{String(i + 1).padStart(2, "0")}</span>
+                  <span>
+                    <span className="font-semibold">{t}</span>
+                    <span className="block text-sm text-db-muted">{d}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <Scorer />
           </div>
         </div>
       </div>
@@ -416,9 +413,7 @@ export function Channel() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="label text-db-ember">watch, then write</p>
         <h2 className="display mt-3 max-w-3xl text-5xl sm:text-6xl">Every page comes from a video.</h2>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-db-muted">
-          Blueprint Trades is an environment to speak about the reality of trading. The journal is the same lessons, on paper, at your desk.
-        </p>
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-db-muted">The same lessons, on paper, at your desk.</p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {VIDEOS.map((v) => (
             <a key={v.title} href={CONFIG.channelUrl} target="_blank" rel="noreferrer" className="group flex flex-col rounded-sm border-2 border-db-ink bg-db-raised/60 backdrop-blur-md p-6 transition hover:-translate-y-0.5 hover:shadow-db">
@@ -453,7 +448,22 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
           <h3 className="text-xl font-semibold">{p.name}</h3>
           <p className="mt-1 text-db-muted">{p.tagline}</p>
         </div>
-        <img src={coverFor(color)} alt={`${cw?.name} cover`} className="h-28 w-auto" />
+        <Dialog>
+          <DialogTrigger asChild>
+            <button className="group relative flex-none" aria-label={`Open the ${p.name} journal in 3D`}>
+              <img src={coverFor(color)} alt="" className="h-28 w-auto transition group-hover:-translate-y-1 group-hover:drop-shadow-[0_8px_16px_rgb(var(--db-sun)/0.35)]" />
+              <span className="label absolute -bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap bg-db-sun px-2 py-0.5 text-[9px] text-db-onsun">
+                <BookOpen className="h-3 w-3" aria-hidden /> open
+              </span>
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-h-[94dvh] w-[calc(100vw-24px)] max-w-xl overflow-y-auto rounded-sm border-db-line bg-db-mid gridpaper p-5 sm:p-7">
+            <p className="label text-[10px] text-db-ember">model · {p.name}</p>
+            <DialogTitle className="display text-3xl text-db-ink">Look <span className="accent">inside</span>.</DialogTitle>
+            <DialogDescription className="text-sm text-db-muted">Tap the journal to open or close it. Drag to turn.</DialogDescription>
+            <Book3D initial="open" compact />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="mt-5 flex items-baseline gap-2">
         <span className="font-mono text-3xl">{money(p.price)}</span>

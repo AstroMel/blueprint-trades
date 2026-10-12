@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { coverBack, coverFront } from "./images";
+import { coverBack, coverFront, insidePage } from "./images";
 
-// The printed journal as a lit 3D object, textured only with the owner's own front and back cover pictures.
-// The open spread is drawn as plain ruled paper with the journal's real field names; no artwork is generated.
+// The printed journal as a lit 3D object, textured only with the owner's own pictures: the front and back covers,
+// and her photo of a real inside page (Trade Analysis). Tap to open or close it; drag to turn it.
 
-type Page = { title: string; when: string; rows: readonly (readonly [string, string, string])[] };
 type View = "front" | "back" | "open";
 
 const W = 1.48, H = 2.1, CT = 0.022, BT = 0.17;
@@ -25,35 +24,10 @@ function webglOK() {
   }
 }
 
-function pageCanvas(p: Page, side: "left" | "right") {
-  const c = document.createElement("canvas");
-  c.width = 740; c.height = 1050;
-  const draw = () => {
-    const g = c.getContext("2d")!;
-    g.fillStyle = "#f6f5f0"; g.fillRect(0, 0, c.width, c.height);
-    g.strokeStyle = "rgba(82,90,125,.16)"; g.lineWidth = 1;
-    for (let y = 150; y < c.height - 50; y += 30) { g.beginPath(); g.moveTo(50, y); g.lineTo(c.width - 50, y); g.stroke(); }
-    g.fillStyle = "#0f1330"; g.font = '400 58px Anton, Impact, sans-serif'; g.fillText(p.title.toUpperCase(), 50, 92);
-    g.fillStyle = "#9a7420"; g.font = '500 18px "JetBrains Mono", monospace'; g.fillText(p.when.toUpperCase(), 50, 124);
-    const step = (c.height - 200) / p.rows.length;
-    p.rows.forEach(([n, label], i) => {
-      const y = 190 + i * step;
-      g.fillStyle = "#d4a640"; g.fillRect(50, y - 22, 30, 30);
-      g.fillStyle = "#0f1330"; g.font = '700 18px "JetBrains Mono", monospace'; g.fillText(n, 58, y);
-      g.font = '600 24px "Instrument Sans", system-ui, sans-serif'; g.fillText(label, 96, y);
-      g.strokeStyle = "rgba(15,19,48,.22)"; g.strokeRect(50, y + 18, c.width - 100, step - 56);
-    });
-    g.fillStyle = "rgba(82,90,125,.6)"; g.font = '500 16px "JetBrains Mono", monospace';
-    g.fillText(side === "left" ? "TRADE # ____   DATE ____" : "R ____   P/L ____", 50, c.height - 30);
-  };
-  draw();
-  return { c, draw };
-}
-
-export function Book3D({ pages }: { pages: readonly Page[] }) {
+export function Book3D({ initial = "front", compact = false }: { initial?: View; compact?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<View>("front");
-  const viewRef = useRef<View>("front");
+  const [view, setView] = useState<View>(initial);
+  const viewRef = useRef<View>(initial);
   const [ok] = useState(webglOK);
   const [ready, setReady] = useState(false);
 
@@ -90,7 +64,7 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
     const fill = new THREE.DirectionalLight(0x9fb4ff, 0.35);
     fill.position.set(-4, 1, 3);
     scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xe2c078, 0.7);
+    const rim = new THREE.DirectionalLight(0xff8a3d, 0.55);
     rim.position.set(-3, 3, -4);
     scene.add(rim);
 
@@ -119,16 +93,13 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
       return canvasTex(c);
     };
 
-    const left = pageCanvas(pages[0], "left"), right = pageCanvas(pages[1] ?? pages[0], "right");
-    const leftTex = canvasTex(left.c), rightTex = canvasTex(right.c);
-    document.fonts?.ready.then(() => { left.draw(); right.draw(); leftTex.needsUpdate = rightTex.needsUpdate = true; });
 
     const M = (o: THREE.MeshStandardMaterialParameters) => { const m = new THREE.MeshStandardMaterial(o); disposables.push(m); return m; };
     const board = M({ color: 0x141836, roughness: 0.7 });
     const frontMat = M({ map: tex(coverFront), roughness: 0.38, metalness: 0.02 });
     const backMat = M({ map: tex(coverBack), roughness: 0.38, metalness: 0.02 });
-    const leftMat = M({ map: leftTex, roughness: 0.95 });
-    const rightMat = M({ map: rightTex, roughness: 0.95 });
+    const leftMat = M({ color: 0xf4f3ee, roughness: 0.95 }); // inside of the front cover: plain board paper
+    const rightMat = M({ map: tex(insidePage), roughness: 0.9 });
     const edgeV = M({ map: edge(true), roughness: 1 }), edgeH = M({ map: edge(false), roughness: 1 });
     const paper = M({ color: 0xf2f1ec, roughness: 0.95 });
     const gold = M({ color: 0xd4a640, metalness: 0.9, roughness: 0.25 });
@@ -171,20 +142,27 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
     scene.add(floor);
 
     // interaction: drag to turn, gentle drift when idle
-    let [rotY, rotX, hingeA] = VIEW.front;
-    let drag = false, lastX = 0, lastY = 0, vY = 0, idle = 0, userY = 0, userX = 0;
+    let [rotY, rotX, hingeA] = VIEW[viewRef.current];
+    let drag = false, lastX = 0, lastY = 0, vY = 0, idle = 0, userY = 0, userX = 0, startX = 0, startY = 0, startT = 0;
     const canvas = renderer.domElement;
-    const down = (e: PointerEvent) => { drag = true; lastX = e.clientX; lastY = e.clientY; idle = 0; canvas.setPointerCapture(e.pointerId); };
+    const down = (e: PointerEvent) => { drag = true; lastX = startX = e.clientX; lastY = startY = e.clientY; startT = performance.now(); idle = 0; canvas.setPointerCapture(e.pointerId); };
     const move = (e: PointerEvent) => {
       if (!drag) return;
       const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY;
       vY = dx * 0.008; userY += vY; userX = Math.max(-0.5, Math.min(0.6, userX + dy * 0.005)); idle = 0;
     };
-    const up = () => { drag = false; };
+    // A tap (no real drag) opens or closes the journal.
+    const up = (e: PointerEvent) => {
+      if (drag && Math.hypot(e.clientX - startX, e.clientY - startY) < 6 && performance.now() - startT < 450) {
+        vY = 0; userY = 0; userX = 0;
+        setView((v) => (v === "open" ? "front" : "open"));
+      }
+      drag = false;
+    };
     canvas.addEventListener("pointerdown", down);
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerup", up);
-    canvas.addEventListener("pointercancel", up);
+    canvas.addEventListener("pointercancel", () => { drag = false; });
 
     let lastW = 0, lastH = 0;
     const resize = () => {
@@ -228,7 +206,7 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
       disposables.forEach((d) => d.dispose());
       renderer.dispose(); canvas.remove();
     };
-  }, [ok, pages]);
+  }, [ok]);
 
   if (!ok) {
     return <img src={coverFront} alt="Front cover of the printed Bull and Bear trading journal" className="mx-auto aspect-[4/5] w-full max-w-md object-contain" />;
@@ -241,13 +219,16 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
         role="img"
         aria-label={
           view === "open"
-            ? "3D view of the journal open to a Plan and Reality spread"
+            ? "3D view of the journal open to its Trade Analysis page"
             : view === "back"
               ? "3D view of the journal's back cover with the Blueprint letter"
               : "3D view of the printed Bull and Bear trading journal with its gold wire-o binding"
         }
       >
         <div className="pointer-events-none absolute inset-x-[12%] bottom-[6%] h-[10%] rounded-[50%] bg-db-sun/10 blur-2xl" aria-hidden />
+        {view !== "open" && (
+          <span className="label pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 border border-db-line bg-db-mid/70 px-3 py-1.5 text-[10px] text-db-ink backdrop-blur">tap to open</span>
+        )}
       </div>
       <div className="flex items-center justify-center gap-3">
         <div className="flex rounded-sm border border-db-line bg-db-raised/60 p-1 backdrop-blur-md" role="group" aria-label="Turn the journal">
@@ -258,11 +239,11 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
               aria-pressed={view === v}
               className={`label min-h-[40px] rounded-sm px-4 text-[11px] transition ${view === v ? "bg-db-sun text-db-onsun" : "text-db-ink hover:text-db-sun"}`}
             >
-              {v === "open" ? "Open it" : v}
+              {v === "open" ? "Inside" : v}
             </button>
           ))}
         </div>
-        <span className="label hidden text-[11px] text-db-muted sm:inline">drag to turn</span>
+        {!compact && <span className="label hidden text-[11px] text-db-muted sm:inline">drag to turn</span>}
       </div>
     </div>
   );

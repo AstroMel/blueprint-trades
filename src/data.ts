@@ -62,7 +62,7 @@ export const PRODUCTS: Product[] = [
     name: "The Trading Journal",
     tagline: "Plan it. Take it. Write down what really happened.",
     price: 49,
-    includes: ["A5, gold wire-o, opens flat", "Plan + Reality spread for every trade", "Monthly process review pages"],
+    includes: ["A5, gold wire-o, opens flat", "One Trade Analysis page per trade", "Scored out of 30, with a psychology check"],
     hasColorway: true,
   },
   {
@@ -117,7 +117,7 @@ export const VIDEOS = [
 export const SPECS = [
   ["Format", "A5, 148 × 210 mm"],
   ["Binding", "Gold wire-o, opens flat and folds back"],
-  ["Inside", "Plan + Reality spread per trade, monthly reviews, risk table inside the cover"],
+  ["Inside", "One Trade Analysis page per trade: details, score out of 30, psychology check, chart box"],
   ["Paper", "Graph-ruled, takes pencil and gel pen"],
   ["Dated?", "Undated. Start any Monday."],
 ] as const;
