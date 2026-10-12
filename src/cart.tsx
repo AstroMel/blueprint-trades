@@ -47,7 +47,7 @@ export const money = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: CONFIG.currency }).format(n);
 
 export const SHIPPING = [
-  { id: "standard", name: "Standard", eta: "3–6 business days", price: 6 },
+  { id: "standard", name: "Standard", eta: "3–6 business days", price: 8 },
   { id: "express", name: "Express", eta: "1–2 business days", price: 14 },
 ] as const;
 
