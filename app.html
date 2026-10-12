@@ -76,6 +76,11 @@ input.i:focus,select.i:focus,textarea.i:focus{border-color:rgb(var(--sun))}
 .stats div{background:rgb(var(--raised));padding:14px}
 .stats b{display:block;font:500 24px "JetBrains Mono",monospace;margin-top:4px}
 @media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.calc{grid-template-columns:1fr}}
+.plan{display:flex;flex-direction:column;gap:20px;max-width:560px;margin:0 auto}
+.price{display:flex;align-items:baseline;gap:8px}.price b{font-family:"JetBrains Mono",monospace;font-size:44px;font-weight:500;letter-spacing:-.06em}.plan a:not(.btn){color:rgb(var(--ember))}
+.feat{display:flex;flex-direction:column;gap:10px;padding:0;margin:0;list-style:none}.feat li{display:flex;gap:10px}.feat li::before{content:"";flex:none;width:8px;height:8px;margin-top:.55em;background:rgb(var(--sun))}
+.testbar{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:6px 16px;background:rgb(var(--sun));color:rgb(var(--onsun))}
+body.locked nav.tabs{display:none}
 .empty{text-align:center;padding:48px 16px;border:1px dashed rgb(var(--line));border-radius:2px}
 .save{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgb(var(--mid)/.95);backdrop-filter:blur(10px);border-top:1px solid rgb(var(--line));padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
 .save .in{max-width:880px;margin:0 auto;display:flex;gap:12px;justify-content:flex-end}
@@ -97,6 +102,7 @@ svg text{font:16px "JetBrains Mono",monospace;fill:rgb(var(--muted))}
     <a href="#/">Trades</a><a href="#/new">New trade</a><a href="#/review">Review</a><a href="#/settings">Settings</a>
   </nav>
 </header>
+<div class="testbar" id="testbar" hidden>test mode · no card is charged</div>
 <main id="app" tabindex="-1"></main>
 <div id="savebar"></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
@@ -111,6 +117,21 @@ const DEFAULT_CHECKS = [
   'Is my stop beyond where the obvious stops sit?',
 ];
 const RULES = ['Entry', 'Stop', 'Size', 'Exit'];
+
+// ---------- subscription ----------
+// PLACEHOLDER: subscribeUrl = a Stripe Payment Link for a $7.99/month recurring price, with its success URL set to
+// app.html?subscribed=1. manageUrl = the Stripe customer portal link. While testMode is true, nothing is charged and
+// the paywall offers a test subscription instead. Before launch, access must be verified by a server (see DEPLOY.md):
+// this static page can only remember access on the device.
+const PLAN = { price: 7.99, period: 'month', subscribeUrl: '', manageUrl: '', testMode: true };
+const ACCESS = 'bt-app-access';
+function getAccess() { try { return JSON.parse(localStorage.getItem(ACCESS)) || null; } catch (e) { return null; } }
+function setAccess(a) { try { a ? localStorage.setItem(ACCESS, JSON.stringify(a)) : localStorage.removeItem(ACCESS); } catch (e) {} }
+if (/[?&]subscribed=1/.test(location.search) && PLAN.subscribeUrl) {
+  setAccess({ status: 'active', since: today() });
+  history.replaceState(null, '', location.pathname + '#/');
+}
+const priceText = () => '$' + PLAN.price.toFixed(2);
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const num = (v) => { const n = parseFloat(String(v).replace(/[^0-9.\-]/g, '')); return Number.isFinite(n) ? n : null; };
@@ -351,6 +372,7 @@ function viewSettings() {
   app.innerHTML = `
   <form class="stack" id="sf">
     <div><p class="label gold">settings</p><h1 class="display">Your rules</h1></div>
+    ${subscriptionHTML()}
     <section class="panel stack"><div class="sec-h"><h2 class="display">Risk</h2><span class="label">used for position size</span></div>
       <div class="grid2">
         <label class="f">Account size ($)<input class="i mono" name="account" inputmode="decimal" value="${s.account}"></label>
@@ -394,12 +416,54 @@ function viewSettings() {
     } catch (err) { toast('That file is not a journal backup'); }
     e.target.value = '';
   };
+  const es = $('#endsub'); if (es) es.onclick = () => { setAccess(null); toast('Test subscription ended'); route(); };
   let armed = false; const clr = $('#clr');
   clr.onclick = () => { if (!armed) { armed = true; clr.textContent = 'Tap again to erase everything'; setTimeout(() => { armed = false; clr.textContent = 'Erase all trades'; }, 3000); return; }
     db.trades = []; persist(); toast('All trades erased'); armed = false; clr.textContent = 'Erase all trades'; };
 }
 
+function viewPaywall() {
+  const live = !!PLAN.subscribeUrl && !PLAN.testMode;
+  app.innerHTML = `
+    <div class="plan">
+      <div><p class="label gold">the digital edition</p><h1 class="display">Your journal,<br>every trade.</h1>
+      <p class="muted" style="margin:.75rem 0 0">The Blueprint Trades journal as an app. Plan before the open, log what really happened, and let the monthly review do the math.</p></div>
+      <div class="panel stack">
+        <div class="price"><b>${priceText()}</b><span class="muted">per ${PLAN.period}</span></div>
+        <ul class="feat">
+          <li>The Plan + Reality spread for every trade</li>
+          <li>Position size from your account and risk %</li>
+          <li>Market-maker risk check and rules-followed score</li>
+          <li>Monthly review: win rate, R curve, lessons</li>
+          <li>Works offline and installs to your home screen</li>
+        </ul>
+        ${live
+          ? `<a class="btn primary" href="${esc(PLAN.subscribeUrl)}">Subscribe for ${priceText()}/${PLAN.period}</a>`
+          : `<button class="btn primary" id="sub">Start test subscription</button>
+             <p class="muted" style="margin:0;font-size:14px">Test mode: subscriptions aren't open yet, so this unlocks the app on this device and no card is charged.</p>`}
+        <p class="muted" style="margin:0;font-size:14px">Billed monthly. Cancel anytime; you keep access until the end of the month you paid for. See the <a href="./#terms">Terms</a>.</p>
+      </div>
+      <p class="foot">Your entries are stored only on your device. Not financial advice.</p>
+    </div>`;
+  savebar.innerHTML = '';
+  const s = $('#sub'); if (s) s.onclick = () => { setAccess({ status: 'test', since: today() }); toast('Test subscription started'); location.hash = '#/'; route(); };
+}
+
+function subscriptionHTML() {
+  const a = getAccess() || {};
+  return `<section class="panel stack" aria-labelledby="subh">
+    <h2 id="subh" class="label">subscription</h2>
+    <p style="margin:0"><b>${a.status === 'test' ? 'Test subscription' : 'Active'}</b> <span class="muted">· ${priceText()}/${PLAN.period} · since ${esc(a.since || '')}</span></p>
+    <div class="row">${PLAN.manageUrl ? `<a class="btn" href="${esc(PLAN.manageUrl)}">Manage or cancel</a>` : ''}
+    ${a.status === 'test' ? '<button type="button" class="btn" id="endsub">End test subscription</button>' : ''}</div>
+  </section>`;
+}
+
 function route() {
+  const access = getAccess();
+  document.body.classList.toggle('locked', !access);
+  $('#testbar').hidden = !(PLAN.testMode && access && access.status === 'test');
+  if (!access) { viewPaywall(); window.scrollTo(0, 0); return; }
   const h = location.hash.replace(/^#/, '') || '/';
   document.querySelectorAll('nav.tabs a').forEach((a) => a.removeAttribute('aria-current'));
   const mark = (p) => { const a = document.querySelector(`nav.tabs a[href="#${p}"]`); if (a) a.setAttribute('aria-current', 'page'); };
