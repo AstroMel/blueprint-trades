@@ -132,8 +132,8 @@ export const FAQ = [
     a: "No. It's a notebook for following your own plan. No signals, no calls. Trading involves risk of loss.",
   },
   {
-    q: "Are the photos the real journal?",
-    a: "Yes. Every picture on this page is the printed Bull & Bear journal itself: the front, the back with the letter, and copies fresh out of the box.",
+    q: "Is that the real cover?",
+    a: "Yes. The product views and the 3D journal use the actual Bull & Bear cover art, front and back, exactly as it's printed.",
   },
   {
     q: "Why paper when there are apps?",

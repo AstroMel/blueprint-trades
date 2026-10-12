@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Menu, ShoppingBag, Check, ArrowRight, ArrowLeft, ArrowUp, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
+import { Menu, ShoppingBag, Check, ArrowRight, ArrowUp, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, VIDEOS } from "./data";
-import { photoBox, photoHand, coverFront, coverBack } from "./images";
+import { productFront, productBack, productFlat, productPair } from "./images";
 import { Book3D } from "./book3d";
 import { coverFor } from "./covers";
 import { LegalLinks } from "./legal";
@@ -11,7 +11,7 @@ import { money, useCart, totals } from "./cart";
 
 const NAV = [
   ["Journal", "#shop"],
-  ["Photos", "#photos"],
+  ["Views", "#photos"],
   ["Inside", "#inside"],
   ["Channel", "#channel"],
   ["FAQ", "#faq"],
@@ -126,59 +126,6 @@ export function Nav() {
   );
 }
 
-const PHOTOS = [
-  { photo: photoHand, alt: "The printed Bull and Bear trading journal held in a hand, with more copies stacked behind it", cap: "In hand, with the first print run behind it" },
-  { photo: photoBox, alt: "A printed copy of the journal resting on its shipping box", cap: "Fresh out of the shipping box" },
-  { photo: coverFront, alt: "Front cover: TRADING JOURNAL in gold above a bull and a bear, with Master yourself, to master the market", cap: "The front cover" },
-  { photo: coverBack, alt: "Back cover with the Blueprint letter", cap: "The back cover and the Blueprint letter" },
-];
-
-function Gallery() {
-  const [i, setI] = useState(0);
-  const n = PHOTOS.length;
-  const go = (d: number) => setI((k) => (k + d + n) % n);
-  const cur = PHOTOS[i];
-  return (
-    <div className="flex flex-col gap-3">
-      <div
-        className="group relative overflow-hidden rounded-sm border border-db-line bg-db-deep/60 backdrop-blur-md focus-within:ring-2 focus-within:ring-db-sun"
-        tabIndex={0}
-        role="region"
-        aria-roledescription="carousel"
-        aria-label={`Journal pictures, ${i + 1} of ${n}. Use the arrow keys to browse.`}
-        onKeyDown={(e) => {
-          if (e.key === "ArrowRight") go(1);
-          if (e.key === "ArrowLeft") go(-1);
-        }}
-      >
-        <img src={cur.photo} alt={cur.alt} className="aspect-[4/5] w-full object-cover" />
-        <div className="absolute inset-x-3 top-3 flex items-center justify-end gap-2">
-          <span className="label rounded-sm border border-db-line bg-db-mid/60 px-2 py-1.5 text-[11px] text-db-ink backdrop-blur-md tabular-nums">{i + 1} / {n}</span>
-        </div>
-        {([["Previous picture", -1, "left-3", ArrowLeft], ["Next picture", 1, "right-3", ArrowRight]] as const).map(([l, d, pos, Icon]) => (
-          <button key={l} onClick={() => go(d)} aria-label={l} className={`absolute ${pos} top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-sm border border-db-line bg-db-mid/50 text-db-ink backdrop-blur-md transition hover:border-db-sun sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100`}>
-            <Icon className="h-5 w-5" />
-          </button>
-        ))}
-      </div>
-      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Choose a picture">
-        {PHOTOS.map((p, k) => (
-          <button
-            key={k}
-            onClick={() => setI(k)}
-            aria-pressed={i === k}
-            aria-label={`Show picture ${k + 1}: ${p.alt}`}
-            className={`overflow-hidden rounded-sm border-2 transition ${i === k ? "border-db-sun" : "border-db-line opacity-70 hover:opacity-100"}`}
-          >
-            <img src={p.photo} alt="" className="aspect-square w-full object-cover" loading="lazy" />
-          </button>
-        ))}
-      </div>
-      <p className="text-center text-sm text-db-muted" aria-live="polite">{cur.cap}</p>
-    </div>
-  );
-}
-
 const TRUST = [
   ["Free US shipping", `on orders over $${CONFIG.freeShippingOver}`],
   ["Secure checkout", "payments handled by Stripe"],
@@ -231,20 +178,39 @@ export function ScrollAids() {
   );
 }
 
+const VIEWS = [
+  { src: productFront, label: "Front", note: "Gold title, bull vs bear", alt: "The journal's front cover at an angle: TRADING JOURNAL in gold above a bull and a bear, gold wire-o binding" },
+  { src: productBack, label: "Back", note: "The Blueprint letter", alt: "The journal's back cover at an angle, printed with the Blueprint letter" },
+  { src: productFlat, label: "Flat", note: "A5 · 148 × 210 mm", alt: "The journal's front cover seen straight on with its gold wire-o binding" },
+] as const;
+
 export function Photos() {
   return (
     <section id="photos" className="border-t border-db-line py-20">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-[1fr_1.2fr] md:items-center">
-        <div className="min-w-0">
-          <p className="label text-db-ember">real photos</p>
-          <h2 className="display mt-3 text-5xl sm:text-6xl">The real thing, unfiltered.</h2>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">
-            No renders here. These are photos of the printed Bull &amp; Bear journal from the first run: A5, gold wire-o, opens flat.
-          </p>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="grid gap-8 md:grid-cols-[1fr_1.6fr] md:items-end">
+          <div className="min-w-0">
+            <p className="label text-db-ember">the journal</p>
+            <h2 className="display mt-3 text-5xl sm:text-6xl">Every angle.</h2>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">
+              The printed Bull &amp; Bear edition, front and back. A5, gold wire-o, opens flat.
+            </p>
+          </div>
+          <img src={productPair} alt="The journal's back cover and front cover standing side by side" className="w-full drop-shadow-[0_30px_40px_rgb(0_0_0/0.25)]" loading="lazy" />
         </div>
-        <div className="mx-auto w-full max-w-[520px]">
-          <Gallery />
-        </div>
+        <ul className="mt-14 grid grid-cols-3 gap-3 sm:gap-6">
+          {VIEWS.map((v) => (
+            <li key={v.label} className="flex min-w-0 flex-col items-center gap-3 sm:gap-4">
+              <div className="flex aspect-[4/5] w-full max-w-[320px] items-end justify-center">
+                <img src={v.src} alt={v.alt} className={`w-auto object-contain transition duration-500 hover:-translate-y-1 ${v.label === "Flat" ? "max-h-[86%]" : "max-h-full"}`} loading="lazy" />
+              </div>
+              <div className="w-full max-w-[320px] border-t border-db-line pt-3 text-center">
+                <p className="label text-[10px] text-db-ink sm:text-xs">{v.label}</p>
+                <p className="mt-1 hidden text-sm text-db-muted sm:block">{v.note}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
@@ -366,7 +332,7 @@ export function Letter() {
             <p className="hand text-3xl text-db-ember">- Blueprint</p>
           </div>
         </div>
-        <img src={coverBack} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
+        <img src={productBack} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm drop-shadow-[0_30px_40px_rgb(0_0_0/0.3)]" loading="lazy" />
       </div>
     </section>
   );
@@ -540,7 +506,7 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
           <h3 className="text-xl font-semibold">{p.name}</h3>
           <p className="mt-1 text-db-muted">{p.tagline}</p>
         </div>
-        {p.id !== "refill" && <img src={coverFor(color)} alt={`${cw?.name} cover`} className="h-24 w-auto rounded-sm shadow-db" />}
+        {p.id !== "refill" && <img src={coverFor(color)} alt={`${cw?.name} cover`} className="h-28 w-auto" />}
       </div>
       <div className="mt-5 flex items-baseline gap-2">
         <span className="font-mono text-3xl">{money(p.price)}</span>

@@ -34,7 +34,7 @@ export function CartSheet({ onCheckout }: { onCheckout: () => void }) {
               const c = COLORWAYS.find((x) => x.id === l.colorway);
               return (
                 <li key={l.key} className="flex gap-4 rounded-sm border border-db-line bg-db-mid p-3">
-                  <img src={coverFor(l.colorway)} alt="" className="h-20 w-auto rounded-sm" />
+                  <img src={coverFor(l.colorway)} alt="" className="h-20 w-auto" />
                   <div className="flex flex-1 flex-col">
                     <div className="flex justify-between gap-2">
                       <span className="font-semibold">{p.name}</span>
