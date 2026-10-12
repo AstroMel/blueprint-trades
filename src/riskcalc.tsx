@@ -93,7 +93,7 @@ export function RiskCalc() {
             Size it <span className="accent">before</span> you click.
           </h2>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">
-            Decide what you're willing to lose first. Then let the stop decide the size, not the other way around. The same table is printed inside the journal's cover.
+            Decide what you're willing to lose first. Then let the stop decide the size, not the other way around.
           </p>
           <ol className="mt-8 flex max-w-md flex-col gap-3 text-sm text-db-muted">
             <li><b className="text-db-ink">1. Risk budget.</b> Account × risk % = the most this trade can cost.</li>

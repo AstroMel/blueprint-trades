@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CONFIG, COLORWAYS, FAQ, PRODUCTS, SPECS, SUPPORT, VIDEOS } from "./data";
-import { productFront, productBack, productFlat, productPair, insidePageWebp } from "./images";
+import { productFront, productBack, productFlat, productOpen, insidePageWebp } from "./images";
 import { AppCard } from "./consult";
 import { Book3D } from "./book3d";
 import { coverFor } from "./covers";
@@ -183,6 +183,7 @@ export function ScrollAids() {
 
 const VIEWS = [
   { src: productFront, label: "Front", note: "Gold title, bull vs bear", alt: "The journal's front cover at an angle: TRADING JOURNAL in gold above a bull and a bear, gold wire-o binding" },
+  { src: productOpen, label: "Inside", note: "The Trade Analysis page", alt: "The journal open on its wire-o binding, showing a Trade Analysis page" },
   { src: productBack, label: "Back", note: "The Blueprint letter", alt: "The journal's back cover at an angle, printed with the Blueprint letter" },
   { src: productFlat, label: "Flat", note: "A5 · 148 × 210 mm", alt: "The journal's front cover seen straight on with its gold wire-o binding" },
 ] as const;
@@ -197,13 +198,16 @@ export function Photos() {
             <h2 className="display mt-3 text-5xl sm:text-6xl">Every angle.</h2>
             <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">A5. Gold wire-o. Opens flat.</p>
           </div>
-          <img src={productPair} alt="The journal's back cover and front cover standing side by side" className="w-full drop-shadow-[0_30px_40px_rgb(0_0_0/0.25)]" loading="lazy" />
+          <div className="min-w-0">
+            <p className="label mb-2 text-center text-[10px] text-db-muted">360 · drag to turn · tap to open</p>
+            <Book3D initial="spin" compact />
+          </div>
         </div>
-        <ul className="mt-14 grid grid-cols-3 gap-3 sm:gap-6">
+        <ul className="mt-14 grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-4 sm:gap-6">
           {VIEWS.map((v) => (
             <li key={v.label} className="flex min-w-0 flex-col items-center gap-3 sm:gap-4">
               <div className="flex aspect-[4/5] w-full max-w-[320px] items-end justify-center">
-                <img src={v.src} alt={v.alt} className={`w-auto object-contain transition duration-500 hover:-translate-y-1 ${v.label === "Flat" ? "max-h-[86%]" : "max-h-full"}`} loading="lazy" />
+                <img src={v.src} alt={v.alt} className={`w-auto object-contain transition duration-500 hover:-translate-y-1 ${v.label === "Flat" ? "max-h-[86%]" : v.label === "Inside" ? "max-h-[70%]" : "max-h-full"}`} loading="lazy" />
               </div>
               <div className="w-full max-w-[320px] border-t border-db-line pt-3 text-center">
                 <p className="label text-[10px] text-db-ink sm:text-xs">{v.label}</p>
@@ -254,7 +258,7 @@ export function Hero() {
             <span className="outline-text">Master yourself.</span> <span className="accent">Master the market.</span>
           </h1>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-db-muted">
-            The paper trading journal for traders done following influencers. One page per trade. Scored out of 30.
+            The paper trading journal for traders who are done following influencers. One page per trade. Scored out of 30.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button className="btn-primary" onClick={() => dispatch({ type: "add", productId: "journal", colorway: DEFAULT_COVER })}>
@@ -443,28 +447,27 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
   return (
     <article className={`relative flex flex-col rounded-sm border-2 p-6 ${featured ? "border-db-ember bg-db-raised/70 backdrop-blur-md" : "border-db-line bg-db-raised/60 backdrop-blur-md"}`}>
       {p.badge && <span className="label absolute -top-3 left-6 bg-db-ember px-3 py-1 text-db-onsun">{p.badge}</span>}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-xl font-semibold">{p.name}</h3>
-          <p className="mt-1 text-db-muted">{p.tagline}</p>
-        </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="group relative flex-none" aria-label={`Open the ${p.name} journal in 3D`}>
-              <img src={coverFor(color)} alt="" className="h-28 w-auto transition group-hover:-translate-y-1 group-hover:drop-shadow-[0_8px_16px_rgb(var(--db-sun)/0.35)]" />
-              <span className="label absolute -bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap bg-db-sun px-2 py-0.5 text-[9px] text-db-onsun">
-                <BookOpen className="h-3 w-3" aria-hidden /> open
-              </span>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[94dvh] w-[calc(100vw-24px)] max-w-xl overflow-y-auto rounded-sm border-db-line bg-db-mid gridpaper p-5 sm:p-7">
-            <p className="label text-[10px] text-db-ember">model · {p.name}</p>
-            <DialogTitle className="display text-3xl text-db-ink">Look <span className="accent">inside</span>.</DialogTitle>
-            <DialogDescription className="text-sm text-db-muted">Tap the journal to open or close it. Drag to turn.</DialogDescription>
-            <Book3D initial="open" compact />
-          </DialogContent>
-        </Dialog>
+      <div>
+        <h3 className="text-xl font-semibold">{p.name}</h3>
+        <p className="mt-1 text-db-muted">{p.tagline}</p>
       </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className="group relative mt-5 flex items-end justify-center gap-4 border border-dashed border-db-major/60 bg-db-mid/40 px-4 pb-6 pt-4 transition hover:border-db-sun" aria-label={`Open the ${p.name} in 3D and look inside`}>
+            <img src={coverFor(color)} alt="" className="h-28 w-auto transition group-hover:-translate-y-1" />
+            <img src={productOpen} alt="" className="h-24 w-auto min-w-0 object-contain transition group-hover:-translate-y-1" />
+            <span className="label absolute -bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap bg-db-sun px-2 py-1 text-[10px] text-db-onsun">
+              <BookOpen className="h-3 w-3" aria-hidden /> open in 3D · 360
+            </span>
+          </button>
+        </DialogTrigger>
+        <DialogContent className="max-h-[94dvh] w-[calc(100vw-24px)] max-w-xl overflow-y-auto rounded-sm border-db-line bg-db-mid gridpaper p-5 sm:p-7">
+          <p className="label text-[10px] text-db-ember">model · {p.name}</p>
+          <DialogTitle className="display text-3xl text-db-ink">Look <span className="accent">inside</span>.</DialogTitle>
+          <DialogDescription className="text-sm text-db-muted">Tap the journal to open or close it. Drag to turn, or press 360.</DialogDescription>
+          <Book3D initial="open" compact />
+        </DialogContent>
+      </Dialog>
       <div className="mt-5 flex items-baseline gap-2">
         <span className="font-mono text-3xl">{money(p.price)}</span>
         {p.compareAt && <span className="font-mono text-db-muted line-through">{money(p.compareAt)}</span>}
@@ -511,7 +514,7 @@ export function Shop() {
           One journal. <span className="accent">Paper or app.</span>
         </h2>
         <p className="mt-4 text-db-muted">Free standard shipping over {money(CONFIG.freeShippingOver)}.</p>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
           {PRODUCTS.map((p) => (
             <ProductCard key={p.id} p={p} />
           ))}

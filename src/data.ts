@@ -62,17 +62,8 @@ export const PRODUCTS: Product[] = [
     name: "The Trading Journal",
     tagline: "Plan it. Take it. Write down what really happened.",
     price: 49,
+    badge: "In print",
     includes: ["A5, gold wire-o, opens flat", "One Trade Analysis page per trade", "Scored out of 30, with a psychology check"],
-    hasColorway: true,
-  },
-  {
-    id: "bundle",
-    name: "Journal + Desk Kit",
-    tagline: "The journal, the ruler and the pens for both colors.",
-    price: 79,
-    compareAt: 92,
-    badge: "Most picked",
-    includes: ["The Trading Journal", "Clear R-multiple ruler for marking levels", "Blue and red fineliners for up and down candles", "Key-level sticky flags"],
     hasColorway: true,
   },
 ];
@@ -89,28 +80,12 @@ export const TAPE = [
   "Process over outcome",
 ] as const;
 
-// Every journal field maps to something the channel teaches.
-export const FEATURES = [
-  { k: "01", title: "Key levels used", body: "Write the higher-timeframe level, the zone and why it matters before you look for an entry." },
-  { k: "02", title: "Market-maker risk check", body: "Is the level obvious to everyone? Did price just sweep a high? Four ticks before you become the liquidity." },
-  { k: "03", title: "Emotion score", body: "Rate yourself calm to wired, before and after. Your state is a market variable." },
-  { k: "04", title: "Plan adherence", body: "Entry, stop, size, exit: did you do what the plan said? Score the rules, not the P&L." },
-  { k: "05", title: "Lesson learned", body: "One line, every trade. Losing days get the most ink." },
-  { k: "06", title: "What would I tell my past self?", body: "The question that turns a bad week into tuition you only pay once." },
-];
 
-// Monthly review page: process metrics sit next to the money. Sample figures, not results.
-export const REVIEW = [
-  ["Rule adherence", "38 of 44 rules followed", "86%"],
-  ["Calm entries (1–2)", "average result", "+0.9R"],
-  ["Wired entries (4–5)", "average result", "−0.7R"],
-  ["Trades taken at a marked level", "share of all trades", "71%"],
-] as const;
 
 export const VIDEOS = [
-  { title: "I Followed Trading Influencers and It Nearly Destroyed Me", page: "What would I tell my past self?", tag: "Reality check" },
-  { title: "How to find Key levels in trading for Beginners", page: "Key levels used", tag: "The plan" },
-  { title: "Don't Fall for This Market Maker Setup", page: "Market-maker risk check", tag: "Avoid the trap" },
+  { title: "I Followed Trading Influencers and It Nearly Destroyed Me", page: "What can be improved next trade?", tag: "Reality check" },
+  { title: "How to find Key levels in trading for Beginners", page: "Setup quality, scored 1 to 5", tag: "The plan" },
+  { title: "Don't Fall for This Market Maker Setup", page: "Did I respect my stop-loss and risk rules?", tag: "Avoid the trap" },
 ] as const;
 
 // PLACEHOLDER: final print spec comes from the printer quote.
@@ -127,7 +102,7 @@ export const SPECS = [
 export const SUPPORT = {
   replyDays: "1 to 2",
   topics: [
-    { subject: "Billing", title: "Payments and subscriptions", body: "Double charges, failed payments, refunds, cancelling the app." },
+    { subject: "Billing", title: "Payments and subscriptions", body: "Double charges, failed payments, refunds, canceling the app." },
     { subject: "Order", title: "Orders and shipping", body: "Tracking, damaged or misprinted journals, address changes." },
     { subject: "Consultation", title: "Consultations", body: "Questions about a request you sent or a session that's booked." },
     { subject: "Privacy", title: "Privacy and your data", body: "Access, correct or delete the details we hold about you." },
@@ -142,7 +117,7 @@ export const FAQ: FaqItem[] = [
   { group: "The journal", q: "Is that the real cover?", a: "Yes. The product views and the 3D journal use the actual Bull & Bear cover art, front and back, exactly as it's printed." },
   { group: "The journal", q: "Paper or app?", a: "Both work. Writing by hand slows you down at exactly the moment you'd chase or revenge-trade. The app does the math, keeps the record and builds the monthly review. Many traders plan on paper and review in the app." },
   { group: "Privacy and data", q: "Where are my app entries stored, and who can see them?", a: "On your device only, in your browser's storage. They are not sent to us, and we never sell or share them. Because we never receive them, we can't recover them if your browser data is cleared, so export a backup from the app's Settings from time to time." },
-  { group: "Privacy and data", q: "What do you collect when I buy or subscribe?", a: "Your name, email and shipping address to fulfil the order, and your subscription status to give you access to the app. Card details go straight to Stripe, our payment processor. We never see or store your full card number. The Privacy Policy has the full detail." },
+  { group: "Privacy and data", q: "What do you collect when I buy or subscribe?", a: "Your name, email and shipping address to fulfill the order, and your subscription status to give you access to the app. Card details go straight to Stripe, our payment processor. We never see or store your full card number. The Privacy Policy has the full detail." },
   { group: "Privacy and data", q: "Is what I share in a consultation request kept private?", a: "Yes. Requests are read only by the Blueprint Trades team, used only to screen and reply, and never published, sold or shared. Nothing from a request or a session appears in our content unless you give written permission. You can ask us to delete your request at any time." },
   { group: "Payments and support", q: "How does the app subscription work?", a: "The Journal App is $7.99 a month, billed monthly by Stripe. Cancel anytime from the app's Settings and you keep access until the end of the month you've paid for. Partial months aren't refunded." },
   { group: "Payments and support", q: "I was charged twice, or my payment failed. What should I do?", a: "Email support with the subject \"Billing\", the email you used at checkout and the date of the charge. Never send your card number. We reply within 1 to 2 business days, and any charge made in error is refunded to the original payment method." },

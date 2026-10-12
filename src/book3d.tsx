@@ -3,9 +3,9 @@ import * as THREE from "three";
 import { coverBack, coverFront, insidePage } from "./images";
 
 // The printed journal as a lit 3D object, textured only with the owner's own pictures: the front and back covers,
-// and her photo of a real inside page (Trade Analysis). Tap to open or close it; drag to turn it.
+// and her photo of a real inside page (Trade Analysis). Tap to open or close it; drag to turn it; 360 spins it half open.
 
-type View = "front" | "back" | "open";
+type View = "front" | "back" | "open" | "spin";
 
 const W = 1.48, H = 2.1, CT = 0.022, BT = 0.17;
 const VIEW: Record<View, [number, number, number]> = {
@@ -13,6 +13,8 @@ const VIEW: Record<View, [number, number, number]> = {
   front: [-0.42, 0.12, 0],
   back: [Math.PI + 0.42, 0.12, 0],
   open: [-0.04, 0.4, -2.95],
+  // 360: half open so both covers and the Trade Analysis page come round as it turns
+  spin: [0, 0.22, -2.1],
 };
 
 function webglOK() {
@@ -98,8 +100,22 @@ export function Book3D({ initial = "front", compact = false }: { initial?: View;
     const board = M({ color: 0x141836, roughness: 0.7 });
     const frontMat = M({ map: tex(coverFront), roughness: 0.38, metalness: 0.02 });
     const backMat = M({ map: tex(coverBack), roughness: 0.38, metalness: 0.02 });
-    const leftMat = M({ color: 0xf4f3ee, roughness: 0.95 }); // inside of the front cover: plain board paper
-    const rightMat = M({ map: tex(insidePage), roughness: 0.9 });
+    // inside of the front cover: plain board paper, lifted a little so it doesn't fall into shadow when open
+    const leftMat = M({ color: 0xf4f3ee, emissive: 0x2c2d33, roughness: 0.95 });
+    // Her photo of the page, set in from the left edge so the wire-o loops don't cover the field labels.
+    const pageCanvas = document.createElement("canvas");
+    pageCanvas.width = 1120; pageCanvas.height = 1428;
+    const pageTex = canvasTex(pageCanvas);
+    const pageImg = new Image();
+    pageImg.onload = () => {
+      const g = pageCanvas.getContext("2d")!;
+      g.fillStyle = "#f6f5f1"; g.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      g.drawImage(pageImg, 96, 0, 1024, 1428);
+      pageTex.needsUpdate = true;
+      setReady(true);
+    };
+    pageImg.src = insidePage;
+    const rightMat = M({ map: pageTex, roughness: 0.85 });
     const edgeV = M({ map: edge(true), roughness: 1 }), edgeH = M({ map: edge(false), roughness: 1 });
     const paper = M({ color: 0xf2f1ec, roughness: 0.95 });
     const gold = M({ color: 0xd4a640, metalness: 0.9, roughness: 0.25 });
@@ -178,7 +194,8 @@ export function Book3D({ initial = "front", compact = false }: { initial?: View;
     ro.observe(el);
     resize();
 
-    let visible = true, raf = 0, prev = performance.now(), t = 0;
+    let visible = true, raf = 0, prev = performance.now(), t = 0, spun = false, shift = 0;
+    const TAU = Math.PI * 2;
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(frame); });
     io.observe(el);
     function frame(now: number) {
@@ -187,13 +204,24 @@ export function Book3D({ initial = "front", compact = false }: { initial?: View;
       const target = VIEW[viewRef.current];
       const k = 1 - Math.pow(0.004, dt);
       if (!drag) { vY *= 0.92; userY += vY; if (idle > 3) { userY *= 1 - k * 0.5; userX *= 1 - k * 0.5; } }
-      rotY += (target[0] - rotY) * k; rotX += (target[1] - rotX) * k; hingeA += (target[2] - hingeA) * k;
-      const sway = reduce || drag || viewRef.current === "open" ? 0 : Math.sin(t * 0.6) * 0.12;
+      if (viewRef.current === "spin") {
+        rotY += dt * (reduce ? 0.35 : 0.7);
+        spun = true;
+      } else {
+        // Coming out of a spin, take the short way back to the chosen side.
+        if (spun) { rotY = target[0] + ((((rotY - target[0]) % TAU) + TAU + Math.PI) % TAU) - Math.PI; spun = false; }
+        rotY += (target[0] - rotY) * k;
+      }
+      rotX += (target[1] - rotX) * k; hingeA += (target[2] - hingeA) * k;
+      const sway = reduce || drag || viewRef.current !== "front" && viewRef.current !== "back" ? 0 : Math.sin(t * 0.6) * 0.12;
       book.rotation.set(rotX + userX, rotY + userY + sway, 0);
       hinge.rotation.y = hingeA;
       const open = -hingeA / 2.95;
-      const d = (camera.aspect < 0.85 ? 6.6 : 5.6) + open * 2.6;
-      book.position.x = open * (W / 2);
+      const spin = viewRef.current === "spin";
+      const d = (camera.aspect < 0.85 ? 6.6 : 5.6) + open * (spin ? 1.8 : 2.6);
+      // Keep a spinning book centred on its spine; an open book shifts so both pages sit in frame.
+      shift += ((spin ? 0 : open * (W / 2)) - shift) * k;
+      book.position.x = shift;
       camera.position.set(0, 0.45 + open * 1.2, d);
       camera.lookAt(0, -0.08, 0);
       renderer.render(scene, camera);
@@ -220,26 +248,28 @@ export function Book3D({ initial = "front", compact = false }: { initial?: View;
         aria-label={
           view === "open"
             ? "3D view of the journal open to its Trade Analysis page"
-            : view === "back"
+            : view === "spin"
+              ? "3D view of the journal half open, turning a full 360 degrees to show both covers and the inside page"
+              : view === "back"
               ? "3D view of the journal's back cover with the Blueprint letter"
               : "3D view of the printed Bull and Bear trading journal with its gold wire-o binding"
         }
       >
         <div className="pointer-events-none absolute inset-x-[12%] bottom-[6%] h-[10%] rounded-[50%] bg-db-sun/10 blur-2xl" aria-hidden />
-        {view !== "open" && (
+        {(view === "front" || view === "back") && (
           <span className="label pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 border border-db-line bg-db-mid/70 px-3 py-1.5 text-[10px] text-db-ink backdrop-blur">tap to open</span>
         )}
       </div>
       <div className="flex items-center justify-center gap-3">
         <div className="flex rounded-sm border border-db-line bg-db-raised/60 p-1 backdrop-blur-md" role="group" aria-label="Turn the journal">
-          {(["front", "back", "open"] as const).map((v) => (
+          {(["front", "back", "open", "spin"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
               aria-pressed={view === v}
-              className={`label min-h-[40px] rounded-sm px-4 text-[11px] transition ${view === v ? "bg-db-sun text-db-onsun" : "text-db-ink hover:text-db-sun"}`}
+              className={`label min-h-[40px] rounded-sm px-3 text-[11px] sm:px-4 transition ${view === v ? "bg-db-sun text-db-onsun" : "text-db-ink hover:text-db-sun"}`}
             >
-              {v === "open" ? "Inside" : v}
+              {v === "open" ? "Inside" : v === "spin" ? "360" : v}
             </button>
           ))}
         </div>
