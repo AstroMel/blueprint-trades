@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowUpRight, Check, Smartphone } from "lucide-react";
 import { CONFIG } from "./data";
+import { money } from "./cart";
 
 // Free consultations on request. Every request is screened; nothing here promises a call.
 // Without a backend, requests go to CONFIG.consultEndpoint (JSON POST) or, failing that, open an email to the contact address.
@@ -195,11 +196,11 @@ export function DigitalApp() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a href={CONFIG.appUrl} className="btn-primary" target="_blank" rel="noopener">
-              Open the app <ArrowUpRight className="h-4 w-4" aria-hidden />
+              Subscribe for {money(CONFIG.appPrice)}/month <ArrowUpRight className="h-4 w-4" aria-hidden />
             </a>
             <a href="#shop" className="btn-ghost">Or get it on paper</a>
           </div>
-          <p className="mt-4 text-sm text-db-muted">Free. On your phone, tap Share then Add to Home Screen (iPhone) or Install (Android) to keep it.</p>
+          <p className="mt-4 text-sm text-db-muted">{money(CONFIG.appPrice)} a month, billed monthly. Cancel anytime. On your phone, tap Share then Add to Home Screen (iPhone) or Install (Android) to keep it.</p>
         </div>
         <ul className="grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line sm:grid-cols-2">
           {APP_FEATURES.map((f, i) => (
@@ -219,10 +220,11 @@ export function AppCard() {
     <article className="relative flex flex-col rounded-sm border-2 border-db-line bg-db-raised/60 p-6 backdrop-blur-md">
       <div>
         <h3 className="text-xl font-semibold">The Journal App</h3>
-        <p className="mt-1 text-db-muted">The digital edition, on any phone or laptop.</p>
+        <p className="mt-1 text-db-muted">The digital edition, on any phone or laptop. Cancel anytime.</p>
       </div>
       <div className="mt-5 flex items-baseline gap-2">
-        <span className="font-mono text-3xl">Free</span>
+        <span className="font-mono text-3xl">{money(CONFIG.appPrice)}</span>
+        <span className="text-db-muted">/month</span>
       </div>
       <ul className="mt-5 flex flex-1 flex-col gap-2">
         {APP_FEATURES.slice(0, 4).map((i) => (
@@ -232,7 +234,7 @@ export function AppCard() {
         ))}
       </ul>
       <a href={CONFIG.appUrl} target="_blank" rel="noopener" className="btn-ghost mt-6 w-full">
-        Open the app <ArrowUpRight className="h-4 w-4" aria-hidden />
+        Subscribe <ArrowUpRight className="h-4 w-4" aria-hidden />
       </a>
     </article>
   );

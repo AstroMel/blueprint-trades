@@ -44,6 +44,7 @@ export const LEGAL: Page[] = [
       ]],
       ["The Journal App", [
         "Trades and settings you enter in the Journal App are stored only in your browser on your device. We do not receive or store them. Exporting a backup saves a file to your device; clearing your browser data deletes your entries.",
+        "If you subscribe, Stripe processes your payment and we receive your email address and your subscription status (active, cancelled or past due) so we can give you access. We keep these for as long as you subscribe and as the law requires afterward.",
       ]],
       ["5. Is your information transferred internationally?", [
         "Our servers and providers are located in the United States. If you visit from outside the US, your information will be transferred to, stored and processed in the United States, which may not have data protection laws as comprehensive as those in your country. We will still protect it as this notice describes.",
@@ -102,9 +103,10 @@ export const LEGAL: Page[] = [
         "You agree to give current, complete and accurate purchase information, and to pay the prices in effect when you order plus any shipping fees. Your payment method is charged when you place the order. We may correct pricing errors, even after payment, and will refund you if we cancel.",
         "We may refuse or cancel any order, and may limit quantities per person, household or order, including orders that appear to be placed by dealers, resellers or distributors.",
       ]],
-      ["Free consultations and the Journal App", [
+      ["Free consultations and the Journal App subscription", [
         "Consultations are offered free of charge, on request and at our sole discretion. Every request is screened, and submitting one does not guarantee a call. Consultations are educational conversations about journaling and process, not financial, investment or legal advice.",
-        "The Journal App is provided free, as-is, for personal record-keeping. Your entries are stored on your device; you are responsible for exporting backups. We may change or discontinue the app at any time.",
+        `The Journal App is a subscription, currently $${CONFIG.appPrice.toFixed(2)} per month, billed in advance by Stripe. It renews automatically each month until you cancel. You can cancel at any time; you keep access until the end of the month you already paid for, and partial months are not refunded. We will tell you before any price change, and the new price applies from your next renewal.`,
+        "The app is provided as-is for personal record-keeping. Your entries are stored on your device, and you are responsible for exporting backups. Cancelling does not delete them. We may change or discontinue the app; if we discontinue it, we will stop billing and refund any unused part of the current month.",
       ]],
       ["6. Return and refunds policy", [
         "All sales are final. Please read our Shipping and Returns policy, which is part of these terms, before you buy. It explains what happens if an order arrives damaged, misprinted or not at all.",

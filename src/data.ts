@@ -16,6 +16,8 @@ export const CONFIG = {
   // or leave it empty to send requests by email to legal.email once that placeholder is filled in.
   consultEndpoint: "",
   appUrl: "app.html",
+  // The Journal App is a subscription. PLACEHOLDER: set the same Stripe Payment Link and portal link in public/app.html (PLAN).
+  appPrice: 7.99,
   // Optional free Finnhub key (finnhub.io) for live SPY / QQQ / DIA quotes in the top bar. Empty = session status only.
   // Finnhub keys used from a browser are visible to anyone; this is a free, quote-only key. Rotate it at finnhub.io if abused.
   finnhubKey: "db66ht1r01qmd5li5480db66ht1r01qmd5li548g",
@@ -134,6 +136,10 @@ export const FAQ = [
   {
     q: "Why paper when there are apps?",
     a: "Writing a trade by hand slows you down at exactly the moment you'd chase or revenge-trade. That's the feature.",
+  },
+  {
+    q: "How does the app subscription work?",
+    a: "The Journal App is $7.99 a month, billed monthly. Cancel anytime and you keep access until the end of the month you paid for. Your entries stay on your device either way.",
   },
   {
     q: "When does it ship?",
