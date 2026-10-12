@@ -24,14 +24,14 @@ export const LEGAL: Page[] = [
       ]],
       ["1. What information do we collect?", [
         "In short: we collect personal information that you provide to us.",
-        "When you order: your name, email, phone number (optional), shipping and billing address, and what you bought. When you join the restock list: your email. When you contact us: whatever you include in your message.",
+        "When you order: your name, email, phone number (optional), shipping and billing address, and what you bought. When you join the restock list: your email. When you request a consultation: your name, email, trading experience, the markets you trade, what you want help with and your availability. When you contact us: whatever you include in your message.",
         "Payment details are typed into Stripe's secure form and go straight to Stripe. We never see or store your full card number.",
         "All personal information you provide must be true, complete and accurate, and you should tell us of any changes.",
         "Information collected automatically: some information, such as your IP address, browser and device type, operating system, language, referring page and pages viewed, is collected when you visit. It does not reveal your name or contact details. It is used to keep the site secure and working.",
       ]],
       ["2. How do we process your information?", [
         "In short: to provide and improve the Services, communicate with you, prevent fraud, and comply with law. We may also process your information for other purposes with your consent.",
-        "To take payment and ship your order. To send order, shipping and support emails. To send restock and new-volume emails if you signed up (every email has an unsubscribe link). To answer your questions. To keep the site secure and prevent fraud. To keep tax and accounting records the law requires.",
+        "To take payment and ship your order. To send order, shipping and support emails. To send restock and new-volume emails if you signed up (every email has an unsubscribe link). To screen consultation requests and reply to them. To answer your questions. To keep the site secure and prevent fraud. To keep tax and accounting records the law requires.",
       ]],
       ["3. When and with whom do we share your personal information?", [
         "In short: only with the companies that help us run the shop, and in the situations below.",
@@ -41,6 +41,9 @@ export const LEGAL: Page[] = [
       ]],
       ["4. Do we use cookies and other tracking technologies?", [
         "This site does not use analytics or advertising cookies today. Stripe sets its own cookies on the payment form to process payments and prevent fraud. Details and your choices are in our Cookie Notice.",
+      ]],
+      ["The Journal App", [
+        "Trades and settings you enter in the Journal App are stored only in your browser on your device. We do not receive or store them. Exporting a backup saves a file to your device; clearing your browser data deletes your entries.",
       ]],
       ["5. Is your information transferred internationally?", [
         "Our servers and providers are located in the United States. If you visit from outside the US, your information will be transferred to, stored and processed in the United States, which may not have data protection laws as comprehensive as those in your country. We will still protect it as this notice describes.",
@@ -98,6 +101,10 @@ export const LEGAL: Page[] = [
         "Payments are processed by Stripe. We accept the cards and wallets shown at checkout, such as Visa, Mastercard, American Express and Discover. All payments are in US dollars. Sales tax is added where required.",
         "You agree to give current, complete and accurate purchase information, and to pay the prices in effect when you order plus any shipping fees. Your payment method is charged when you place the order. We may correct pricing errors, even after payment, and will refund you if we cancel.",
         "We may refuse or cancel any order, and may limit quantities per person, household or order, including orders that appear to be placed by dealers, resellers or distributors.",
+      ]],
+      ["Free consultations and the Journal App", [
+        "Consultations are offered free of charge, on request and at our sole discretion. Every request is screened, and submitting one does not guarantee a call. Consultations are educational conversations about journaling and process, not financial, investment or legal advice.",
+        "The Journal App is provided free, as-is, for personal record-keeping. Your entries are stored on your device; you are responsible for exporting backups. We may change or discontinue the app at any time.",
       ]],
       ["6. Return and refunds policy", [
         "All sales are final. Please read our Shipping and Returns policy, which is part of these terms, before you buy. It explains what happens if an order arrives damaged, misprinted or not at all.",
@@ -199,6 +206,9 @@ export const LEGAL: Page[] = [
       ]],
       ["Market data", [
         "Prices in the bar at the top of the page come from public third-party feeds, may be delayed, incomplete or wrong, and are shown for information only. Do not use them to trade.",
+      ]],
+      ["Consultations and the app", [
+        "Free consultations are educational conversations about journaling and trading process. They are not personalized investment advice, and nothing said in one is a recommendation to buy or sell anything. The Journal App's calculations, such as position size and R, are arithmetic on numbers you enter; check them yourself.",
       ]],
       ["Your decisions", ["You are solely responsible for your trading decisions and their results."]],
     ],

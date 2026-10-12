@@ -1,3 +1,4 @@
+import { Consult, DigitalApp } from "./consult";
 import { useState } from "react";
 import { CartProvider, useCart } from "./cart";
 import { Nav, TrustStrip, ScrollAids, Backdrop, Hero, Photos, Letter, Inside, Channel, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
@@ -23,6 +24,8 @@ function Store() {
         <Channel />
         <RiskCalc />
         <Shop />
+        <DigitalApp />
+        <Consult />
         <Voice />
         <Faq />
       </main>

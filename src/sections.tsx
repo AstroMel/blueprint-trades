@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, VIDEOS } from "./data";
 import { productFront, productBack, productFlat, productPair } from "./images";
+import { AppCard } from "./consult";
 import { Book3D } from "./book3d";
 import { coverFor } from "./covers";
 import { LegalLinks } from "./legal";
@@ -13,7 +14,8 @@ const NAV = [
   ["Journal", "#shop"],
   ["Views", "#photos"],
   ["Inside", "#inside"],
-  ["Channel", "#channel"],
+  ["App", "#app"],
+  ["Consult", "#consult"],
   ["FAQ", "#faq"],
 ] as const;
 
@@ -506,7 +508,7 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
           <h3 className="text-xl font-semibold">{p.name}</h3>
           <p className="mt-1 text-db-muted">{p.tagline}</p>
         </div>
-        {p.id !== "refill" && <img src={coverFor(color)} alt={`${cw?.name} cover`} className="h-28 w-auto" />}
+        <img src={coverFor(color)} alt={`${cw?.name} cover`} className="h-28 w-auto" />
       </div>
       <div className="mt-5 flex items-baseline gap-2">
         <span className="font-mono text-3xl">{money(p.price)}</span>
@@ -551,13 +553,14 @@ export function Shop() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="label text-db-ember">shop</p>
         <h2 className="display mt-3 text-5xl sm:text-6xl">
-          One journal. <span className="accent">Three ways in.</span>
+          One journal. <span className="accent">Paper or app.</span>
         </h2>
         <p className="mt-4 text-db-muted">Free standard shipping over {money(CONFIG.freeShippingOver)}.</p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {PRODUCTS.map((p) => (
             <ProductCard key={p.id} p={p} />
           ))}
+          <AppCard />
         </div>
         <div className="mt-12 overflow-hidden rounded-sm border border-db-line">
           <table className="w-full text-left text-sm sm:text-base">

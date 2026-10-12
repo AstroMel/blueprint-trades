@@ -12,6 +12,10 @@ export const CONFIG = {
   apiBase: "https://api.your-domain.com",
   freeShippingOver: 75,
   testMode: true,
+  // Free consultation requests. Set consultEndpoint to a form service URL (e.g. Formspree) that accepts a JSON POST,
+  // or leave it empty to send requests by email to legal.email once that placeholder is filled in.
+  consultEndpoint: "",
+  appUrl: "app.html",
   // Optional free Finnhub key (finnhub.io) for live SPY / QQQ / DIA quotes in the top bar. Empty = session status only.
   // Finnhub keys used from a browser are visible to anyone; this is a free, quote-only key. Rotate it at finnhub.io if abused.
   finnhubKey: "db66ht1r01qmd5li5480db66ht1r01qmd5li548g",
@@ -66,14 +70,6 @@ export const PRODUCTS: Product[] = [
     badge: "Most picked",
     includes: ["The Trading Journal", "Clear R-multiple ruler for marking levels", "Blue and red fineliners for up and down candles", "Key-level sticky flags"],
     hasColorway: true,
-  },
-  {
-    id: "refill",
-    name: "Refill Pages",
-    tagline: "More Plan + Reality spreads, same format.",
-    price: 24,
-    includes: ["90 Plan + Reality spreads", "3 monthly process reviews", "Hole-punched for the wire-o"],
-    hasColorway: false,
   },
 ];
 

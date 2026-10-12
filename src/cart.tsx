@@ -15,7 +15,8 @@ const STORAGE_KEY = "db-cart-v1";
 function load(): Line[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Line[]) : [];
+    // Drop lines for products that no longer exist (e.g. the retired refill pages).
+    return raw ? (JSON.parse(raw) as Line[]).filter((l) => PRODUCTS.some((p) => p.id === l.productId)) : [];
   } catch {
     return [];
   }
