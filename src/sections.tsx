@@ -69,7 +69,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="flex h-11 w-11 items-center justify-center rounded-md border border-db-line transition hover:border-db-ember"
+      className="flex h-11 w-11 items-center justify-center rounded-sm border border-db-line transition hover:border-db-ember"
       aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
     >
       {mode === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -106,7 +106,7 @@ export function Nav() {
           <ThemeToggle />
           <button
             onClick={() => dispatch({ type: "open", open: true })}
-            className="relative flex h-11 w-11 items-center justify-center rounded-md border border-db-line transition hover:border-db-sun"
+            className="relative flex h-11 w-11 items-center justify-center rounded-sm border border-db-line transition hover:border-db-sun"
             aria-label={`Open cart, ${count} items`}
           >
             <ShoppingBag className="h-5 w-5" />
@@ -117,14 +117,14 @@ export function Nav() {
             )}
           </button>
           <Sheet>
-            <SheetTrigger className="flex h-11 w-11 items-center justify-center rounded-md border border-db-line md:hidden" aria-label="Open menu">
+            <SheetTrigger className="flex h-11 w-11 items-center justify-center rounded-sm border border-db-line md:hidden" aria-label="Open menu">
               <Menu className="h-5 w-5" />
             </SheetTrigger>
             <SheetContent side="right" className="w-[82vw] max-w-xs border-db-line bg-db-raised">
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <nav className="mt-10 flex flex-col gap-1" aria-label="Mobile">
                 {NAV.map(([l, h]) => (
-                  <a key={h} href={h} className="display rounded-md px-3 py-3 text-4xl text-db-ink hover:bg-db-petal">
+                  <a key={h} href={h} className="display rounded-sm px-3 py-3 text-4xl text-db-ink hover:bg-db-petal">
                     {l}
                   </a>
                 ))}
@@ -139,7 +139,7 @@ export function Nav() {
 
 function Note({ label, value, tone, className }: { label: string; value: string; tone: string; className: string }) {
   return (
-    <div className={`floaty absolute rounded-md border border-db-line bg-db-raised/95 px-4 py-3 shadow-db ${className}`}>
+    <div className={`floaty absolute rounded-sm border border-db-line bg-db-raised/95 px-4 py-3 shadow-db ${className}`}>
       <div className="label text-[10px] text-db-muted">{label}</div>
       <div className={`hand text-xl sm:text-2xl ${tone}`}>{value}</div>
     </div>
@@ -184,8 +184,8 @@ export function Hero() {
           </dl>
         </div>
         <div className="relative mx-auto w-full max-w-[600px]">
-          <img src={heroDark} alt="The journal in both covers: the printed Bull and Bear cover and the Field Notes drafting-paper cover" className="only-dark w-full rounded-md border border-db-line" />
-          <img src={heroLight} alt="The journal in both covers: the printed Bull and Bear cover and the Field Notes drafting-paper cover" className="only-light w-full rounded-md border border-db-line" />
+          <img src={heroDark} alt="The journal in both covers: the printed Bull and Bear cover and the Night Session navy and gold cover" className="only-dark w-full rounded-sm border border-db-line" />
+          <img src={heroLight} alt="The journal in both covers: the printed Bull and Bear cover and the Night Session navy and gold cover" className="only-light w-full rounded-sm border border-db-line" />
           <Note label="rules followed" value="3 / 4" tone="text-db-ember" className="left-2 top-4 sm:-left-6" />
           <Note label="emotion before" value="2 · calm" tone="text-db-ink" className="bottom-8 right-2 sm:-right-4" />
           <p className="mt-3 text-center text-xs text-db-muted">Handwriting shows a sample page, not results.</p>
@@ -219,7 +219,7 @@ export function Letter() {
             <p className="hand text-3xl text-db-ember">- Blueprint</p>
           </div>
         </div>
-        <img src={backPrinted} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm rounded-md shadow-db" loading="lazy" />
+        <img src={backPrinted} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
       </div>
     </section>
   );
@@ -236,10 +236,10 @@ export function Inside() {
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-db-muted">
           The left page is written while you're calm. The right page is written after the close, whatever happened. Most P&L trackers stop at the number; this one asks how you got there.
         </p>
-        <div className="mt-10 overflow-hidden rounded-md border border-db-line">
+        <div className="mt-10 overflow-hidden rounded-sm border border-db-line">
           <img src={spread} alt="Open journal: The Plan page with key levels, the trade, a market-maker risk check and an emotion score; The Reality page with the redrawn chart, result, plan adherence, lesson learned and a note to your past self" className="w-full" loading="lazy" />
         </div>
-        <div className="mt-10 grid gap-px overflow-hidden rounded-md border border-db-line bg-db-line sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
             <div key={f.k} className="bg-db-raised p-6">
               <div className="label text-db-ember">{f.k}</div>
@@ -254,7 +254,7 @@ export function Inside() {
             <h3 className="display mt-2 text-4xl">Score the process, not just the P&L.</h3>
             <p className="mt-4 max-w-md text-db-muted">The monthly review sets your rule adherence and emotion scores beside your results, so you can see which version of you makes money.</p>
           </div>
-          <div className="overflow-x-auto rounded-md border border-db-line">
+          <div className="overflow-x-auto rounded-sm border border-db-line">
             <table className="w-full min-w-[420px] text-left text-sm sm:text-base">
               <caption className="sr-only">Sample monthly review</caption>
               <tbody>
@@ -288,7 +288,7 @@ export function Channel() {
         </p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {VIDEOS.map((v) => (
-            <a key={v.title} href={CONFIG.channelUrl} target="_blank" rel="noreferrer" className="group flex flex-col rounded-md border-2 border-db-ink bg-db-raised p-6 transition hover:-translate-y-0.5 hover:shadow-db">
+            <a key={v.title} href={CONFIG.channelUrl} target="_blank" rel="noreferrer" className="group flex flex-col rounded-sm border-2 border-db-ink bg-db-raised p-6 transition hover:-translate-y-0.5 hover:shadow-db">
               <span className="label inline-flex items-center gap-2 text-db-ember">
                 <Play className="h-3 w-3 fill-current" aria-hidden /> {v.tag}
               </span>
@@ -342,7 +342,7 @@ export function RiskCalc() {
               </label>
             ))}
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-db-line bg-db-line">
+          <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-db-line bg-db-line">
             <div className="bg-db-mid p-4">
               <div className="label text-[10px] text-db-muted">max loss</div>
               <div className="font-mono text-2xl text-db-bear">−{money(riskUsd)}</div>
@@ -368,7 +368,7 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
   const featured = !!p.badge;
   const cw = COLORWAYS.find((c) => c.id === color);
   return (
-    <article className={`relative flex flex-col rounded-md border-2 p-6 ${featured ? "border-db-ember bg-db-raised" : "border-db-line bg-db-raised"}`}>
+    <article className={`relative flex flex-col rounded-sm border-2 p-6 ${featured ? "border-db-ember bg-db-raised" : "border-db-line bg-db-raised"}`}>
       {p.badge && <span className="label absolute -top-3 left-6 bg-db-ember px-3 py-1 text-db-onsun">{p.badge}</span>}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -428,7 +428,7 @@ export function Shop() {
             <ProductCard key={p.id} p={p} />
           ))}
         </div>
-        <div className="mt-12 overflow-hidden rounded-md border border-db-line">
+        <div className="mt-12 overflow-hidden rounded-sm border border-db-line">
           <table className="w-full text-left text-sm sm:text-base">
             <caption className="sr-only">Journal specifications</caption>
             <tbody>

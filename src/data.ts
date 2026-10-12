@@ -16,10 +16,10 @@ export const CONFIG = {
 
 export type Colorway = { id: string; name: string; note: string; swatch: string };
 
-// Two editions of the same journal: the printed Bull & Bear cover, and the Field Notes cover in the channel's kit.
+// Two editions of the same journal: the Night Session cover (default), and the printed Bull & Bear cover kept as an alternate .
 export const COLORWAYS: Colorway[] = [
+  { id: "night", name: "Night Session", note: "the channel's cover", swatch: "linear-gradient(135deg,#0f1330 0 62%,#d4a640 62% 66%,#0f1330 66%)" },
   { id: "printed", name: "Bull & Bear", note: "the printed cover", swatch: "linear-gradient(135deg,#1c2a6b,#4a1f5c 55%,#8a2a3a)" },
-  { id: "fieldnotes", name: "Field Notes", note: "drafting-paper cover", swatch: "repeating-linear-gradient(0deg,#ece5d2 0 6px,#c9bea2 6px 7px)" },
 ];
 
 export type Product = {
@@ -46,11 +46,11 @@ export const PRODUCTS: Product[] = [
   {
     id: "bundle",
     name: "Journal + Desk Kit",
-    tagline: "The journal, the ruler and the red pencil.",
+    tagline: "The journal, the ruler and the pens for both colors.",
     price: 79,
     compareAt: 92,
     badge: "Most picked",
-    includes: ["The Trading Journal", "Clear R-multiple ruler for marking levels", "Red and graphite drafting pencils", "Key-level sticky flags"],
+    includes: ["The Trading Journal", "Clear R-multiple ruler for marking levels", "Blue and red fineliners for up and down candles", "Key-level sticky flags"],
     hasColorway: true,
   },
   {
@@ -119,7 +119,7 @@ export const FAQ = [
   },
   {
     q: "What's the difference between the two covers?",
-    a: "Only the cover. Bull & Bear is the original printed design; Field Notes matches the channel. The pages inside are the same.",
+    a: "Only the cover. Bull & Bear is the original printed design; Night Session matches the channel. The pages inside are the same.",
   },
   {
     q: "Why paper when there are apps?",

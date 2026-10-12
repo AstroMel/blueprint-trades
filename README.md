@@ -1,6 +1,6 @@
 # Blueprint Trades Journal
 
-Store for the Blueprint Trades trading journal, styled with the channel's Field Notes kit (drafting paper, graphite, red pencil). Two editions share one interior: the printed Bull & Bear cover and the Field Notes cover.
+Store for the Blueprint Trades trading journal, styled with the channel's Night Session kit (night navy, starlight, one gold accent, blue up and red down candles). Two editions share one interior: the Night Session cover (default) and the printed Bull & Bear cover.
 
 ## Develop
 ```

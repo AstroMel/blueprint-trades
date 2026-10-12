@@ -33,8 +33,8 @@ export function CartSheet({ onCheckout }: { onCheckout: () => void }) {
               const p = PRODUCTS.find((x) => x.id === l.productId)!;
               const c = COLORWAYS.find((x) => x.id === l.colorway);
               return (
-                <li key={l.key} className="flex gap-4 rounded-md border border-db-line bg-db-mid p-3">
-                  <img src={coverFor(l.colorway)} alt="" className="h-20 w-auto rounded-md" />
+                <li key={l.key} className="flex gap-4 rounded-sm border border-db-line bg-db-mid p-3">
+                  <img src={coverFor(l.colorway)} alt="" className="h-20 w-auto rounded-sm" />
                   <div className="flex flex-1 flex-col">
                     <div className="flex justify-between gap-2">
                       <span className="font-semibold">{p.name}</span>
@@ -42,7 +42,7 @@ export function CartSheet({ onCheckout }: { onCheckout: () => void }) {
                     </div>
                     {c && <span className="text-sm text-db-muted">{c.name}</span>}
                     <div className="mt-auto flex items-center justify-between pt-2">
-                      <div className="flex items-center rounded-md border border-db-line">
+                      <div className="flex items-center rounded-sm border border-db-line">
                         <button className="flex h-10 w-10 items-center justify-center" aria-label="Decrease quantity" onClick={() => dispatch({ type: "qty", key: l.key, qty: l.qty - 1 })}>
                           <Minus className="h-4 w-4" />
                         </button>
@@ -131,7 +131,7 @@ export function Checkout({ open, onOpenChange }: { open: boolean; onOpenChange: 
 
   return (
     <Dialog open={open} onOpenChange={close}>
-      <DialogContent className="max-h-[100dvh] w-full max-w-2xl overflow-y-auto border-db-line bg-db-raised p-0 sm:max-h-[92vh] sm:rounded-md">
+      <DialogContent className="max-h-[100dvh] w-full max-w-2xl overflow-y-auto border-db-line bg-db-raised p-0 sm:max-h-[92vh] sm:rounded-sm">
         {CONFIG.testMode && (
           <div className="label bg-db-sun px-6 py-2 text-center text-db-onsun">test mode · nothing will be charged</div>
         )}
@@ -177,7 +177,7 @@ export function Checkout({ open, onOpenChange }: { open: boolean; onOpenChange: 
                       {SHIPPING.map((m) => {
                         const free = m.id === "standard" && t.subtotal >= CONFIG.freeShippingOver;
                         return (
-                          <label key={m.id} className={`flex min-h-[64px] cursor-pointer items-center justify-between rounded-md border p-4 ${method === m.id ? "border-db-sun bg-db-petal" : "border-db-line bg-db-mid"}`}>
+                          <label key={m.id} className={`flex min-h-[64px] cursor-pointer items-center justify-between rounded-sm border p-4 ${method === m.id ? "border-db-sun bg-db-petal" : "border-db-line bg-db-mid"}`}>
                             <span className="flex items-center gap-3">
                               <input type="radio" name="ship" className="h-5 w-5 accent-[#96342c]" checked={method === m.id} onChange={() => setMethod(m.id)} />
                               <span>
@@ -197,7 +197,7 @@ export function Checkout({ open, onOpenChange }: { open: boolean; onOpenChange: 
                         <button type="button" className="btn-ghost bg-db-ink text-db-mid hover:text-db-mid" disabled aria-label="Apple Pay, available at launch">Apple Pay</button>
                         <button type="button" className="btn-ghost" disabled aria-label="Google Pay, available at launch">G Pay</button>
                       </div>
-                      <div className="flex min-h-[150px] flex-col items-center justify-center gap-2 rounded-md border border-dashed border-db-line bg-db-mid p-5 text-center">
+                      <div className="flex min-h-[150px] flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-db-line bg-db-mid p-5 text-center">
                         <CreditCard className="h-7 w-7 text-db-sun" />
                         <p className="font-semibold">Stripe Payment Element mounts here</p>
                         <p className="text-sm text-db-muted">Card, Apple Pay, Google Pay, Link and Klarna appear in this secure frame once live keys are added.</p>
@@ -206,7 +206,7 @@ export function Checkout({ open, onOpenChange }: { open: boolean; onOpenChange: 
                   )}
                 </div>
 
-                <aside className="rounded-md border border-db-line bg-db-mid p-4 text-sm" aria-label="Order summary">
+                <aside className="rounded-sm border border-db-line bg-db-mid p-4 text-sm" aria-label="Order summary">
                   <ul className="flex flex-col gap-2">
                     {state.lines.map((l) => {
                       const p = PRODUCTS.find((x) => x.id === l.productId)!;
