@@ -1,0 +1,36 @@
+/* Retired 2026-10-12: Night Session v2.0 tokens (navy + gold), kept as a fallback.
+   To restore, paste this block back into @layer base in index.css in place of the Drafting Table tokens. */
+  /* Blueprint Trades theme (Night Session v2.0, from the channel kit): night navy, starlight type, one gold accent.
+     Blue is up, red is down, and both are for price only. Light on bare :root; dark follows the device unless the viewer picks. */
+  :root {
+    --db-deep: 220 225 240; --db-mid: 233 236 245; --db-raised: 246 247 251; --db-petal: 226 230 242; --db-line: 196 202 222; --db-ink: 15 19 48; --db-muted: 82 90 125; --db-sun: 212 166 64; --db-onsun: 15 19 48; --db-ember: 154 116 32; --db-grid: 214 219 235; --db-bull: 47 102 224; --db-bear: 201 54 60; --db-chrome: 138 147 184;
+    --db-shadow: 0 10px 30px rgba(15, 19, 48, 0.14);
+    color-scheme: light;
+    --background: 225 38% 94%; --foreground: 233 52% 12%; --card: 228 38% 97%; --card-foreground: 233 52% 12%;
+    --popover: 228 38% 97%; --popover-foreground: 233 52% 12%; --primary: 41 63% 54%; --primary-foreground: 233 52% 12%;
+    --secondary: 225 38% 92%; --secondary-foreground: 233 52% 12%; --muted: 225 38% 92%; --muted-foreground: 229 21% 41%;
+    --accent: 225 38% 92%; --accent-foreground: 233 52% 12%; --destructive: 358 58% 50%; --destructive-foreground: 228 38% 97%;
+    --border: 226 28% 82%; --input: 226 28% 82%; --ring: 41 63% 54%; --radius: 0.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --db-deep: 10 13 34; --db-mid: 15 19 48; --db-raised: 22 27 62; --db-petal: 28 34 74; --db-line: 37 44 88; --db-ink: 233 236 245; --db-muted: 138 147 184; --db-sun: 212 166 64; --db-onsun: 15 19 48; --db-ember: 212 166 64; --db-grid: 26 32 70; --db-bull: 61 123 255; --db-bear: 229 72 77; --db-chrome: 138 147 184;
+    --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+    --background: 233 52% 12%; --foreground: 225 38% 94%; --card: 232 48% 16%; --card-foreground: 225 38% 94%;
+    --popover: 232 48% 16%; --popover-foreground: 225 38% 94%; --primary: 41 63% 54%; --primary-foreground: 233 52% 12%;
+    --secondary: 232 45% 20%; --secondary-foreground: 225 38% 94%; --muted: 232 45% 20%; --muted-foreground: 228 24% 63%;
+    --accent: 232 45% 20%; --accent-foreground: 225 38% 94%; --destructive: 358 75% 59%; --destructive-foreground: 232 48% 16%;
+    --border: 232 41% 25%; --input: 232 41% 25%; --ring: 41 63% 54%;
+    }
+  }
+  :root[data-theme="dark"] {
+    --db-deep: 10 13 34; --db-mid: 15 19 48; --db-raised: 22 27 62; --db-petal: 28 34 74; --db-line: 37 44 88; --db-ink: 233 236 245; --db-muted: 138 147 184; --db-sun: 212 166 64; --db-onsun: 15 19 48; --db-ember: 212 166 64; --db-grid: 26 32 70; --db-bull: 61 123 255; --db-bear: 229 72 77; --db-chrome: 138 147 184;
+    --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+    --background: 233 52% 12%; --foreground: 225 38% 94%; --card: 232 48% 16%; --card-foreground: 225 38% 94%;
+    --popover: 232 48% 16%; --popover-foreground: 225 38% 94%; --primary: 41 63% 54%; --primary-foreground: 233 52% 12%;
+    --secondary: 232 45% 20%; --secondary-foreground: 225 38% 94%; --muted: 232 45% 20%; --muted-foreground: 228 24% 63%;
+    --accent: 232 45% 20%; --accent-foreground: 225 38% 94%; --destructive: 358 75% 59%; --destructive-foreground: 232 48% 16%;
+    --border: 232 41% 25%; --input: 232 41% 25%; --ring: 41 63% 54%;
+  }

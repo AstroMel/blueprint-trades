@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Blueprint Trades theme: Drafting Table v3.0 (2026-10-12). An architect's drawing: cobalt grid lines on drafting
+     paper (light) or blueprint stock (dark), one neon-orange mark per frame, blue candles up and red candles down.
+     Blue and red are for price and R only. The retired Night Session tokens are in theme-night-session.css. */
+  :root {
+    --db-deep: 232 238 250; --db-mid: 246 248 253; --db-raised: 255 255 255; --db-petal: 234 240 252; --db-line: 176 194 232; --db-ink: 10 22 56; --db-muted: 72 88 128; --db-sun: 255 94 26; --db-onsun: 10 22 56; --db-ember: 196 60 0; --db-grid: 214 225 248; --db-major: 150 178 236; --db-bull: 28 86 226; --db-bear: 214 40 48; --db-chrome: 120 140 190;
+    --db-shadow: 0 10px 30px rgba(10, 22, 56, 0.14);
+    color-scheme: light;
+    --background: 223 69% 98%; --foreground: 225 70% 13%; --card: 0 0% 100%; --card-foreground: 225 70% 13%; --popover: 0 0% 100%; --popover-foreground: 225 70% 13%; --primary: 18 100% 55%; --primary-foreground: 225 70% 13%; --secondary: 221 74% 95%; --secondary-foreground: 225 70% 13%; --muted: 221 74% 95%; --muted-foreground: 223 28% 39%; --accent: 221 74% 95%; --accent-foreground: 225 70% 13%; --destructive: 357 69% 50%; --destructive-foreground: 0 0% 100%; --border: 221 58% 80%; --input: 221 58% 80%; --ring: 18 100% 55%; --radius: 0.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --db-deep: 3 9 26; --db-mid: 6 15 38; --db-raised: 10 24 58; --db-petal: 15 33 78; --db-line: 30 62 140; --db-ink: 232 240 255; --db-muted: 138 158 204; --db-sun: 255 106 26; --db-onsun: 6 15 38; --db-ember: 255 122 48; --db-grid: 14 36 88; --db-major: 26 68 158; --db-bull: 64 128 255; --db-bear: 242 64 72; --db-chrome: 138 158 204;
+    --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+    --background: 223 73% 9%; --foreground: 220 100% 95%; --card: 222 71% 13%; --card-foreground: 220 100% 95%; --popover: 222 71% 13%; --popover-foreground: 220 100% 95%; --primary: 21 100% 55%; --primary-foreground: 223 73% 9%; --secondary: 223 68% 18%; --secondary-foreground: 220 100% 95%; --muted: 223 68% 18%; --muted-foreground: 222 39% 67%; --accent: 223 68% 18%; --accent-foreground: 220 100% 95%; --destructive: 356 87% 60%; --destructive-foreground: 222 71% 13%; --border: 223 65% 33%; --input: 223 65% 33%; --ring: 21 100% 55%;
+    }
+  }
+  :root[data-theme="dark"] {
+    --db-deep: 3 9 26; --db-mid: 6 15 38; --db-raised: 10 24 58; --db-petal: 15 33 78; --db-line: 30 62 140; --db-ink: 232 240 255; --db-muted: 138 158 204; --db-sun: 255 106 26; --db-onsun: 6 15 38; --db-ember: 255 122 48; --db-grid: 14 36 88; --db-major: 26 68 158; --db-bull: 64 128 255; --db-bear: 242 64 72; --db-chrome: 138 158 204;
+    --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+    --background: 223 73% 9%; --foreground: 220 100% 95%; --card: 222 71% 13%; --card-foreground: 220 100% 95%; --popover: 222 71% 13%; --popover-foreground: 220 100% 95%; --primary: 21 100% 55%; --primary-foreground: 223 73% 9%; --secondary: 223 68% 18%; --secondary-foreground: 220 100% 95%; --muted: 223 68% 18%; --muted-foreground: 222 39% 67%; --accent: 223 68% 18%; --accent-foreground: 220 100% 95%; --destructive: 356 87% 60%; --destructive-foreground: 222 71% 13%; --border: 223 65% 33%; --input: 223 65% 33%; --ring: 21 100% 55%;
+  }
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; scroll-padding-top: 112px; -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p, li, dd, figcaption { text-wrap: pretty; }
+  .font-mono, .mono, .label, .hand { font-variant-numeric: tabular-nums; }
+  body {
+    @apply bg-db-mid text-db-ink font-sans antialiased;
+    background-color: rgb(var(--db-mid));
+    overflow-x: hidden;
+  }
+  ::selection { background: rgb(var(--db-sun)); color: rgb(var(--db-onsun)); }
+}
+
+@layer components {
+  .display { font-family: "Anton", Impact, "Arial Narrow", sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.005em; line-height: 0.95; text-wrap: balance; }
+  .accent { color: rgb(var(--db-ember)); }
+  .outline-text { color: transparent; -webkit-text-stroke: 2px rgb(var(--db-ink)); paint-order: stroke fill; }
+  @supports not (-webkit-text-stroke: 1px black) { .outline-text { color: rgb(var(--db-ink)); } }
+  .hand { font-family: "JetBrains Mono", ui-monospace, monospace; font-weight: 500; text-transform: none; letter-spacing: 0; }
+  .label { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+  /* Drafting grid: fine cobalt lines every 28px, a heavier major line every fifth. */
+  .gridpaper { background-image: linear-gradient(rgb(var(--db-major)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--db-major)) 1px, transparent 1px), linear-gradient(rgb(var(--db-grid)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--db-grid)) 1px, transparent 1px); background-size: 140px 140px, 140px 140px, 28px 28px, 28px 28px; }
+  .glow { text-shadow: 0 0 18px rgb(var(--db-sun) / 0.45); }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-sm bg-db-sun px-6 py-3 font-semibold text-db-onsun hover:brightness-110 active:scale-[0.96] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-db-sun disabled:opacity-50; min-height: 48px; }
+  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-sm border-2 border-db-ink px-6 py-3 font-semibold text-db-ink hover:border-db-sun hover:text-db-sun active:scale-[0.96] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-db-sun; min-height: 48px; }
+  .btn-primary, .btn-ghost { transition-property: color, background-color, border-color, filter, transform; transition-duration: 150ms; transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+  /* Rectangular photos only: a 1px inset edge. Transparent product renders are left alone, an outline would box them. */
+  .edge { outline: 1px solid rgb(var(--db-ink) / 0.12); outline-offset: -1px; }
+  .panel { @apply rounded-sm border border-db-line bg-db-raised; }
+  .field { @apply w-full rounded-sm border border-db-line bg-db-mid px-4 py-3 text-base text-db-ink placeholder:text-db-muted/60 outline-none focus:border-db-sun; min-height: 48px; }
+}
+
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee { animation: marquee 38s linear infinite; }
+.ticker-track { animation: marquee 32s linear infinite; }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.floaty { animation: floaty 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .marquee, .floaty { animation: none; } .ticker-track { animation-duration: 90s; } html { scroll-behavior: auto; } }
+/* Hero entrance: split into chunks and stagger by 100ms (opacity + rise + light blur), once. Skipped for reduced motion. */
+@keyframes enter { from { opacity: 0; transform: translateY(12px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .enter { animation: enter 400ms cubic-bezier(0.22, 1, 0.36, 1) backwards; animation-delay: calc(var(--i, 0) * 100ms); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+  [data-state] { animation-duration: 0.01ms !important; }
+}
+
+.only-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .only-dark { display: block; }
+  :root:not([data-theme="light"]) .only-light { display: none; }
+}
+:root[data-theme="dark"] .only-dark { display: block; }
+:root[data-theme="dark"] .only-light { display: none; }
+.shadow-db { box-shadow: var(--db-shadow); }

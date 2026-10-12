@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blueprint Trades Journal App</title>
+<meta name="description" content="The Blueprint Trades trading journal as an app: plan every trade, record what really happened, and review your month. Your entries stay on your device.">
+<meta name="theme-color" content="#0F1330">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="app-icon-192.png">
+<link rel="apple-touch-icon" href="app-icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --deep:232 238 250;--mid:246 248 253;--raised:255 255 255;--line:176 194 232;--ink:10 22 56;--muted:72 88 128;
+  --sun:255 94 26;--onsun:10 22 56;--ember:196 60 0;--bull:28 86 226;--bear:214 40 48;color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--deep:3 9 26;--mid:6 15 38;--raised:10 24 58;--line:30 62 140;--ink:232 240 255;--muted:138 158 204;--sun:255 106 26;--onsun:6 15 38;--ember:255 122 48;--bull:64 128 255;--bear:242 64 72;color-scheme:dark}}
+:root[data-theme="dark"]{--deep:3 9 26;--mid:6 15 38;--raised:10 24 58;--line:30 62 140;--ink:232 240 255;--muted:138 158 204;--sun:255 106 26;--onsun:6 15 38;--ember:255 122 48;--bull:64 128 255;--bear:242 64 72;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+h1,h2,h3{text-wrap:balance}
+p,li{text-wrap:pretty}
+body{background:linear-gradient(rgb(var(--line)/.22) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,rgb(var(--line)/.22) 1px,transparent 1px) 0 0/28px 28px,rgb(var(--mid));color:rgb(var(--ink));font:16px/1.5 "Instrument Sans",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh}
+button,input,select,textarea{font:inherit;color:inherit}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.label,.calc b,.pill,.scale button,.trade{font-variant-numeric:tabular-nums}
+.label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgb(var(--muted))}
+.display{font-family:Anton,Impact,"Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.005em;line-height:.95;margin:0;font-weight:400}
+.gold{color:rgb(var(--ember))}
+header{position:sticky;top:0;z-index:5;background:rgb(var(--mid)/.92);backdrop-filter:blur(10px);border-bottom:1px solid rgb(var(--line));padding-top:env(safe-area-inset-top,0px)}
+.bar{max-width:880px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px 16px}
+.brand{font-family:Anton,Impact,sans-serif;font-size:22px;text-transform:uppercase;text-decoration:none;color:inherit;white-space:nowrap}
+.brand span{color:rgb(var(--sun))}
+.spacer{flex:1}
+.icon-btn{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgb(var(--line));background:rgb(var(--raised));border-radius:2px;cursor:pointer}
+nav.tabs{max-width:880px;margin:0 auto;display:flex;gap:4px;padding:0 16px 10px;overflow-x:auto}
+nav.tabs a{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:rgb(var(--muted));padding:8px 12px;min-height:40px;display:inline-flex;align-items:center;border-radius:2px;white-space:nowrap;transition-property:color,background-color;transition-duration:150ms;transition-timing-function:cubic-bezier(.23,1,.32,1)}
+nav.tabs a[aria-current="page"]{background:rgb(var(--sun));color:rgb(var(--onsun))}
+main{max-width:880px;margin:0 auto;padding:24px 16px calc(96px + env(safe-area-inset-bottom,0px))}
+h1.display{font-size:44px}
+h2.display{font-size:28px}
+.muted{color:rgb(var(--muted))}
+.panel{background:rgb(var(--raised));border:1px solid rgb(var(--line));border-radius:2px;padding:20px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;color:rgb(var(--muted));min-width:0}
+input.i,select.i,textarea.i{width:100%;min-height:46px;padding:10px 12px;border:1px solid rgb(var(--line));background:rgb(var(--mid));border-radius:2px;outline:none;color:rgb(var(--ink))}
+textarea.i{min-height:84px;resize:vertical}
+input.i:focus,select.i:focus,textarea.i:focus{border-color:rgb(var(--sun))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:2px;border:2px solid rgb(var(--ink));background:transparent;font-weight:600;cursor:pointer;text-decoration:none;color:inherit}
+.btn.primary{background:rgb(var(--sun));border-color:rgb(var(--sun));color:rgb(var(--onsun))}
+.btn.danger{border-color:rgb(var(--bear));color:rgb(var(--bear))}
+.btn,.icon-btn,.scale button{transition-property:color,background-color,border-color,transform;transition-duration:150ms;transition-timing-function:cubic-bezier(.23,1,.32,1)}
+.btn:active,.icon-btn:active,.scale button:active{transform:scale(.96)}
+.trade{transition:border-color 150ms cubic-bezier(.23,1,.32,1)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
+.btn:focus-visible,.icon-btn:focus-visible,nav.tabs a:focus-visible{outline:2px solid rgb(var(--sun));outline-offset:2px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.sec-h{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid rgb(var(--ink));padding-bottom:8px;margin-bottom:4px}
+.num{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;background:rgb(var(--sun));color:rgb(var(--onsun));font:700 12px "JetBrains Mono",monospace;flex:none}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid rgb(var(--line));background:rgb(var(--mid));border-radius:2px;cursor:pointer;color:rgb(var(--ink));font-size:15px}
+.check input{width:20px;height:20px;accent-color:rgb(var(--sun));flex:none;margin-top:2px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale button{min-height:44px;border:1px solid rgb(var(--line));background:rgb(var(--mid));border-radius:2px;cursor:pointer;font-family:"JetBrains Mono",monospace}
+.scale button[aria-pressed="true"]{background:rgb(var(--sun));border-color:rgb(var(--sun));color:rgb(var(--onsun))}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;align-items:center;font-size:15px}
+@media (max-width:480px){.srow{grid-template-columns:1fr;gap:6px}}
+.calc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:rgb(var(--line));border:1px solid rgb(var(--line))}
+.calc div{background:rgb(var(--mid));padding:12px}
+.calc b{display:block;font:500 20px "JetBrains Mono",monospace;margin-top:4px}
+.up{color:rgb(var(--bull))}.down{color:rgb(var(--bear))}
+.list{display:flex;flex-direction:column;gap:8px;padding:0;margin:0;list-style:none}
+.trade{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 16px;border:1px solid rgb(var(--line));background:rgb(var(--raised));border-radius:2px;text-decoration:none;color:inherit}
+.trade:hover{border-color:rgb(var(--sun))}
+.pill{font:500 10px "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;padding:3px 6px;border:1px solid rgb(var(--line));border-radius:2px;color:rgb(var(--muted))}
+.pill.open{border-color:rgb(var(--sun));color:rgb(var(--ember))}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:rgb(var(--line));border:1px solid rgb(var(--line))}
+.stats div{background:rgb(var(--raised));padding:14px}
+.stats b{display:block;font:500 24px "JetBrains Mono",monospace;margin-top:4px}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.calc{grid-template-columns:1fr}}
+.plan{display:flex;flex-direction:column;gap:20px;max-width:560px;margin:0 auto}
+.price{display:flex;align-items:baseline;gap:8px}.price b{font-family:"JetBrains Mono",monospace;font-size:44px;font-weight:500;letter-spacing:-.06em}.plan a:not(.btn){color:rgb(var(--ember))}
+.feat{display:flex;flex-direction:column;gap:10px;padding:0;margin:0;list-style:none}.feat li{display:flex;gap:10px}.feat li::before{content:"";flex:none;width:8px;height:8px;margin-top:.55em;background:rgb(var(--sun))}
+.testbar{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:6px 16px;background:rgb(var(--sun));color:rgb(var(--onsun))}
+body.locked nav.tabs{display:none}
+.empty{text-align:center;padding:48px 16px;border:1px dashed rgb(var(--line));border-radius:2px}
+.save{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgb(var(--mid)/.95);backdrop-filter:blur(10px);border-top:1px solid rgb(var(--line));padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.save .in{max-width:880px;margin:0 auto;display:flex;gap:12px;justify-content:flex-end}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgb(var(--ink));color:rgb(var(--mid));padding:10px 16px;border-radius:2px;font-size:14px;z-index:9}
+svg text{font:16px "JetBrains Mono",monospace;fill:rgb(var(--muted))}
+.foot{margin-top:40px;font-size:13px;color:rgb(var(--muted))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <a class="brand" href="#/">Blueprint <span>Trades</span></a>
+    <div class="spacer"></div>
+    <button class="btn primary" id="install" hidden style="min-height:40px;padding:6px 14px">Install</button>
+    <button class="icon-btn" id="theme" aria-label="Switch theme"></button>
+  </div>
+  <nav class="tabs" aria-label="Journal">
+    <a href="#/">Trades</a><a href="#/new">New trade</a><a href="#/review">Review</a><a href="#/settings">Settings</a>
+  </nav>
+</header>
+<div class="testbar" id="testbar" hidden>test mode · no card is charged</div>
+<main id="app" tabindex="-1"></main>
+<div id="savebar"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(() => {
+const KEY = 'bt-journal-v1', THEME = 'bt-app-theme';
+const DEFAULT_CHECKS = [
+  'Is the level obvious to everyone?',
+  'Did price just sweep a high or low?',
+  'Am I entering at my level, not chasing?',
+  'Is my stop beyond where the obvious stops sit?',
+];
+const RULES = ['Entry', 'Stop', 'Size', 'Exit'];
+
+// ---------- subscription ----------
+// PLACEHOLDER: subscribeUrl = a Stripe Payment Link for a $7.99/month recurring price, with its success URL set to
+// app.html?subscribed=1. manageUrl = the Stripe customer portal link. While testMode is true, nothing is charged and
+// the paywall offers a test subscription instead. Before launch, access must be verified by a server (see DEPLOY.md):
+// this static page can only remember access on the device.
+const PLAN = { price: 7.99, period: 'month', subscribeUrl: '', manageUrl: '', testMode: true };
+const ACCESS = 'bt-app-access';
+function getAccess() { try { return JSON.parse(localStorage.getItem(ACCESS)) || null; } catch (e) { return null; } }
+function setAccess(a) { try { a ? localStorage.setItem(ACCESS, JSON.stringify(a)) : localStorage.removeItem(ACCESS); } catch (e) {} }
+const priceText = () => '$' + PLAN.price.toFixed(2);
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const num = (v) => { const n = parseFloat(String(v).replace(/[^0-9.\-]/g, '')); return Number.isFinite(n) ? n : null; };
+const fmt = (n, d = 2) => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const sign = (n, d = 2) => n == null ? '—' : (n > 0 ? '+' : n < 0 ? '−' : '') + fmt(Math.abs(n), d);
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+if (/[?&]subscribed=1/.test(location.search) && PLAN.subscribeUrl) {
+  setAccess({ status: 'active', since: today() });
+  history.replaceState(null, '', location.pathname + '#/');
+}
+
+// ---------- the Trade Analysis page ----------
+const SCORES = ['Setup quality', 'Entry timing', 'Exit timing', 'Risk management', 'Discipline', 'Emotional control'];
+const GRADES = [[26, 'A', 'Excellent'], [20, 'B', 'Good'], [14, 'C', 'Average'], [0, '–', 'Needs improvement']];
+const gradeOf = (n) => GRADES.find((g) => n >= g[0]);
+const PSY = ['Did I follow my trading plan?', 'Did emotions influence decisions?', 'Did I respect stop-loss / risk rules?'];
+const noScores = () => [null, null, null, null, null, null];
+const scored = (t) => Array.isArray(t.scores) && t.scores.length === 6 && t.scores.every((v) => Number.isFinite(v));
+const scoreTotal = (t) => (scored(t) ? t.scores.reduce((a, b) => a + b, 0) : null);
+const blank = () => ({ id: uid(), date: today(), symbol: '', side: 'long', kind: '', timeframe: '', catalyst: '', levels: '', entry: '', stop: '', target: '', size: '',
+  checks: [false, false, false, false], opened: '', closed: '', exit: '', rOverride: '', pnl: '', held: '', scores: noScores(), psy0: '', psy1: '', psy2: '', lesson: '' });
+// Older entries and imported files may be missing fields; fill them so nothing downstream throws.
+const norm = (t) => ({ ...blank(), ...t, id: (t && t.id) || uid(),
+  checks: [0, 1, 2, 3].map((i) => !!(t.checks && t.checks[i])),
+  scores: Array.isArray(t.scores) && t.scores.length === 6 ? t.scores.map((v) => (Number.isFinite(v) ? v : null)) : noScores() });
+const mins = (a, b) => { if (!a || !b) return null; const [h1, m1] = a.split(':').map(Number), [h2, m2] = b.split(':').map(Number); const d = h2 * 60 + m2 - (h1 * 60 + m1); return d < 0 ? d + 1440 : d; };
+const dur = (d) => (d == null ? '' : d < 60 ? d + 'm' : Math.floor(d / 60) + 'h ' + (d % 60) + 'm');
+
+// ---------- storage (stays on this device) ----------
+function load() {
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.trades)) return { settings: {}, ...d, trades: d.trades.filter(Boolean).map(norm) }; } catch (e) {}
+  return { trades: [], settings: {} };
+}
+let db = load();
+const settings = () => ({ checks: DEFAULT_CHECKS, account: 10000, riskPct: 1, valuePer: 1, ...db.settings });
+function persist() {
+  try { localStorage.setItem(KEY, JSON.stringify(db)); return true; }
+  catch (e) { toast('Could not save on this device. Export a backup from Settings.'); return false; }
+}
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 2600); }
+
+// ---------- trade math ----------
+function riskR(t) {
+  const e = num(t.entry), s = num(t.stop), x = num(t.exit);
+  if (e == null || s == null || x == null || e === s) return null;
+  const long = t.side !== 'short';
+  return long ? (x - e) / (e - s) : (e - x) / (s - e);
+}
+function plannedR(t) {
+  const e = num(t.entry), s = num(t.stop), g = num(t.target);
+  if (e == null || s == null || g == null || e === s) return null;
+  return Math.abs(g - e) / Math.abs(e - s);
+}
+const resultR = (t) => num(t.rOverride) ?? riskR(t);
+const isClosed = (t) => t.exit !== '' && t.exit != null || num(t.rOverride) != null || num(t.pnl) != null;
+
+// ---------- theme ----------
+(function () {
+  const root = document.documentElement, btn = $('#theme');
+  try { const s = localStorage.getItem(THEME); if (s) root.dataset.theme = s; } catch (e) {}
+  const dark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const paint = () => { btn.innerHTML = dark()
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'; };
+  btn.onclick = () => { const t = dark() ? 'light' : 'dark'; root.dataset.theme = t; try { localStorage.setItem(THEME, t); } catch (e) {} paint(); };
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paint); paint();
+})();
+
+// ---------- install ----------
+let deferred = null;
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; $('#install').hidden = false; });
+$('#install').onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; $('#install').hidden = true; };
+// Ask the browser not to clear the journal under storage pressure. Silently ignored where unsupported.
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('app-sw.js').catch(() => {});
+
+// ---------- views ----------
+const app = $('#app'), savebar = $('#savebar');
+
+// Entries live only on this device, so nudge for a backup once there's something to lose.
+function backupNudge(n) {
+  const last = db.settings.lastBackup;
+  const days = last ? Math.floor((Date.now() - new Date(last + 'T00:00:00').getTime()) / 864e5) : null;
+  if (n < 5 || (days != null && days < 14)) return '';
+  return `<div class="panel" role="note" style="border-color:rgb(var(--sun))"><b>Back up your journal.</b> <span class="muted">${n} trades are saved only on this device${last ? `, last backed up ${days} days ago` : ''}. A backup file lets you restore them on a new phone or after clearing your browser.</span><div class="row" style="margin-top:12px"><a class="btn" href="#/settings">Back up now</a></div></div>`;
+}
+
+function viewList() {
+  const trades = [...db.trades].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id));
+  const closed = trades.filter(isClosed), rs = closed.map(resultR).filter((r) => r != null);
+  const total = rs.reduce((a, b) => a + b, 0);
+  app.innerHTML = `
+    <div class="stack">
+      <div><p class="label gold">your journal</p><h1 class="display">Trades</h1>
+      <p class="muted" style="margin:.5rem 0 0">Plan before the open. Write down what really happened after the close.</p></div>
+      <div class="stats" style="grid-template-columns:repeat(3,minmax(0,1fr))" aria-label="All-time summary">
+        <div><span class="label">trades</span><b>${trades.length}</b></div>
+        <div><span class="label">closed</span><b>${closed.length}</b></div>
+        <div><span class="label">total R</span><b class="${total >= 0 ? 'up' : 'down'}">${rs.length ? sign(total) : '—'}</b></div>
+      </div>
+      ${backupNudge(trades.length)}
+      <div class="row"><a class="btn primary" href="#/new">+ Plan a trade</a></div>
+      ${trades.length ? `<ul class="list">${trades.map((t) => {
+        const r = resultR(t), c = isClosed(t);
+        return `<li><a class="trade" href="#/trade/${t.id}">
+          <span class="mono muted" style="font-size:13px">${esc(t.date)}</span>
+          <span style="min-width:0"><b>${esc(t.symbol || 'Untitled')}</b> <span class="muted">${t.side === 'short' ? 'short' : 'long'}</span>${scoreTotal(t) != null ? ` <span class="muted mono" style="font-size:12px">· ${scoreTotal(t)}/30</span>` : ''}
+          <span style="display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" class="muted">${esc(t.lesson || t.levels || '')}</span></span>
+          <span style="text-align:right">${c ? `<b class="mono ${r >= 0 ? 'up' : 'down'}">${r == null ? '—' : sign(r) + 'R'}</b>` : '<span class="pill open">open</span>'}</span>
+        </a></li>`; }).join('')}</ul>`
+      : `<div class="empty"><h2 class="display">No trades yet</h2><p class="muted">Start with the plan: your key levels, the trade you want and the four checks.</p><a class="btn primary" href="#/new">Plan your first trade</a></div>`}
+      <p class="foot">Your entries are stored only on this device. Export a backup in Settings. Not financial advice.</p>
+    </div>`;
+  savebar.innerHTML = '';
+}
+
+function scoreRows(t) {
+  return SCORES.map((label, i) => `<div class="srow"><span>${label}</span><div class="scale" data-score="${i}" role="group" aria-label="${label}">${[1, 2, 3, 4, 5].map((n) => `<button type="button" aria-pressed="${t.scores[i] === n}" data-v="${n}" aria-label="${label} ${n}">${n}</button>`).join('')}</div></div>`).join('');
+}
+
+function viewTrade(id) {
+  const s = settings();
+  const existing = id ? db.trades.find((t) => t.id === id) : null;
+  if (id && !existing) { location.hash = '#/'; return; }
+  const t = existing ? { ...existing, scores: [...existing.scores] } : blank();
+  const f = (k, label, attrs = '') => `<label class="f">${label}<input class="i mono" name="${k}" value="${esc(t[k])}" ${attrs}></label>`;
+  app.innerHTML = `
+  <form class="stack" id="tf" novalidate>
+    <div><p class="label gold">${existing ? 'edit trade' : 'new trade'}</p><h1 class="display">${existing ? esc(t.symbol || 'Trade') : 'Plan a trade'}</h1></div>
+    <section class="panel stack" aria-labelledby="p-h">
+      <div class="sec-h"><h2 class="display" id="p-h">The Plan</h2><span class="label">before the open</span></div>
+      <div class="grid4">
+        <label class="f">Date<input class="i mono" type="date" name="date" value="${esc(t.date)}"></label>
+        ${f('symbol', 'Ticker symbol', 'placeholder="ES, NQ, AAPL…" autocapitalize="characters"')}
+        <label class="f">Side<select class="i" name="side"><option value="long" ${t.side !== 'short' ? 'selected' : ''}>Long</option><option value="short" ${t.side === 'short' ? 'selected' : ''}>Short</option></select></label>
+        <label class="f">Call / put<select class="i" name="kind"><option value="" ${!t.kind ? 'selected' : ''}>Not options</option><option value="call" ${t.kind === 'call' ? 'selected' : ''}>Call</option><option value="put" ${t.kind === 'put' ? 'selected' : ''}>Put</option></select></label>
+      </div>
+      <div class="grid4">
+        ${f('size', 'Size (units)', 'inputmode="decimal"')}
+        ${f('timeframe', 'Timeframe', 'placeholder="5m, 1h…"')}
+        <label class="f">Time opened<input class="i mono" type="time" name="opened" value="${esc(t.opened)}"></label>
+      </div>
+      <label class="f"><span><span class="num">1</span> Trade catalyst</span><input class="i" name="catalyst" value="${esc(t.catalyst)}" placeholder="Why this trade? Write it before you click"></label>
+      <label class="f"><span><span class="num">2</span> Key levels used</span><textarea class="i" name="levels" placeholder="Higher-timeframe level, zone, prior day low…">${esc(t.levels)}</textarea></label>
+      <div class="stack"><span class="f"><span><span class="num">3</span> The trade I want</span></span>
+        <div class="grid4">${f('entry', 'Entry', 'inputmode="decimal"')}${f('stop', 'Stop', 'inputmode="decimal"')}${f('target', 'Target', 'inputmode="decimal"')}
+        <div class="f">Planned R<div class="i mono" id="pr" style="display:flex;align-items:center">—</div></div></div>
+        <div class="calc" aria-label="Position size from your risk settings">
+          <div><span class="label">risk $ (${fmt(s.riskPct, 1)}% of ${fmt(s.account, 0)})</span><b class="down" id="rk">—</b></div>
+          <div><span class="label">stop distance</span><b id="sd">—</b></div>
+          <div><span class="label">size that fits</span><b class="gold" id="sz">—</b></div>
+        </div>
+      </div>
+      <fieldset class="stack" style="border:0;padding:0;margin:0"><legend><span class="num">4</span> <span style="color:rgb(var(--muted));font-size:14px">Market-maker risk check</span></legend>
+        ${s.checks.map((q, i) => `<label class="check"><input type="checkbox" data-check="${i}" ${t.checks[i] ? 'checked' : ''}><span>${esc(q)}</span></label>`).join('')}
+      </fieldset>
+    </section>
+    <section class="panel stack" aria-labelledby="r-h">
+      <div class="sec-h"><h2 class="display" id="r-h">The Result</h2><span class="label">after the close</span></div>
+      <div class="grid4">${f('exit', 'Exit price', 'inputmode="decimal"')}
+        <div class="f">Result R<div class="i mono" id="rr" style="display:flex;align-items:center">—</div></div>
+        ${f('pnl', 'Profit / loss ($)', 'inputmode="decimal"')}
+        <label class="f">Time closed<input class="i mono" type="time" name="closed" value="${esc(t.closed)}"></label></div>
+      <div class="grid4">${f('held', 'Trade duration', 'placeholder="e.g. 35m"')}</div>
+      <details><summary class="label" style="cursor:pointer">Override R manually</summary><div style="margin-top:8px;max-width:220px">${f('rOverride', 'R', 'inputmode="decimal"')}</div></details>
+    </section>
+    <section class="panel stack" aria-labelledby="a-h">
+      <div class="sec-h"><h2 class="display" id="a-h">Trade analysis</h2><span class="label">score it honestly</span></div>
+      <div class="stack"><span class="f"><span><span class="num">5</span> Scoring system · 1 poor to 5 excellent</span></span>
+        ${scoreRows(t)}
+        <div class="calc" style="grid-template-columns:repeat(2,minmax(0,1fr))" aria-live="polite">
+          <div><span class="label">total score</span><b id="tot">—</b></div>
+          <div><span class="label">grade</span><b class="gold" id="grd">—</b></div>
+        </div>
+      </div>
+      <fieldset class="stack" style="border:0;padding:0;margin:0"><legend><span class="num">6</span> <span style="color:rgb(var(--muted));font-size:14px">Psychology and discipline check</span></legend>
+        ${PSY.map((q, i) => `<label class="f">${q}<input class="i" name="psy${i}" value="${esc(t['psy' + i])}"></label>`).join('')}
+        <label class="f">What can be improved next trade?<input class="i" name="lesson" value="${esc(t.lesson)}" placeholder="One line, every trade"></label>
+      </fieldset>
+    </section>
+    ${existing ? '<div class="row"><button type="button" class="btn danger" id="del">Delete trade</button></div>' : ''}
+  </form>`;
+  savebar.innerHTML = `<div class="save"><div class="in"><a class="btn" href="#/">Cancel</a><button class="btn primary" form="tf" type="submit">Save trade</button></div></div>`;
+  const form = $('#tf');
+  const read = () => {
+    const fd = new FormData(form);
+    for (const [k, v] of fd.entries()) t[k] = v;
+    t.checks = [0, 1, 2, 3].map((i) => !!form.querySelector(`[data-check="${i}"]`).checked);
+  };
+  const update = () => {
+    read();
+    const pr = plannedR(t); $('#pr').textContent = pr == null ? '—' : fmt(pr) + 'R';
+    const r = resultR(t); const rr = $('#rr'); rr.textContent = r == null ? '—' : sign(r) + 'R'; rr.className = 'i mono ' + (r == null ? '' : r >= 0 ? 'up' : 'down');
+    const riskUsd = s.account * s.riskPct / 100, e = num(t.entry), st = num(t.stop);
+    $('#rk').textContent = '−$' + fmt(riskUsd);
+    const dist = e != null && st != null ? Math.abs(e - st) : null;
+    $('#sd').textContent = dist ? fmt(dist, dist < 1 ? 4 : 2) : '—';
+    const exact = dist ? riskUsd / (dist * (s.valuePer || 1)) : null;
+    $('#sz').textContent = exact == null ? '—' : Math.floor(exact) >= 1 ? `${Math.floor(exact)} whole · ${fmt(exact, 2)} exact` : `${fmt(exact, 2)} · under 1 whole unit`;
+    const tt = scoreTotal(t), g = tt == null ? null : gradeOf(tt);
+    $('#tot').textContent = tt == null ? '—' : tt + ' / 30';
+    $('#grd').textContent = g ? g[1] + ' · ' + g[2] : 'score all six';
+    form.elements.held.placeholder = dur(mins(t.opened, t.closed)) || 'e.g. 35m';
+  };
+  form.addEventListener('input', update);
+  form.querySelectorAll('[data-score]').forEach((g) => g.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    const i = Number(g.dataset.score), v = Number(b.dataset.v); t.scores[i] = t.scores[i] === v ? null : v;
+    g.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(Number(x.dataset.v) === t.scores[i])));
+    update();
+  }));
+  form.addEventListener('submit', (e) => {
+    e.preventDefault(); read();
+    if (!String(t.held).trim()) t.held = dur(mins(t.opened, t.closed));
+    const i = db.trades.findIndex((x) => x.id === t.id);
+    if (i >= 0) db.trades[i] = t; else db.trades.push(t);
+    if (persist()) { toast('Trade saved'); location.hash = '#/'; }
+  });
+  const del = $('#del');
+  if (del) {
+    let armed = false;
+    del.onclick = () => {
+      if (!armed) { armed = true; del.textContent = 'Tap again to delete'; setTimeout(() => { armed = false; del.textContent = 'Delete trade'; }, 3000); return; }
+      db.trades = db.trades.filter((x) => x.id !== t.id); persist(); toast('Trade deleted'); location.hash = '#/';
+    };
+  }
+  update();
+}
+
+function viewReview() {
+  const months = [...new Set(db.trades.map((t) => (t.date || '').slice(0, 7)).filter(Boolean))].sort().reverse();
+  const cur = viewReview.m && months.includes(viewReview.m) ? viewReview.m : months[0] || today().slice(0, 7);
+  const ts = db.trades.filter((t) => (t.date || '').startsWith(cur)).sort((a, b) => (a.date + a.id).localeCompare(b.date + b.id));
+  const closed = ts.filter(isClosed), rs = closed.map(resultR).filter((r) => r != null);
+  const wins = rs.filter((r) => r > 0).length, total = rs.reduce((a, b) => a + b, 0);
+  const sc = ts.filter(scored), avgScore = sc.length ? sc.reduce((a, t) => a + scoreTotal(t), 0) / sc.length : null;
+  const checkRate = ts.length ? ts.reduce((a, t) => a + t.checks.filter(Boolean).length, 0) / (ts.length * 4) : null;
+  // cumulative R chart
+  let cum = 0; const pts = closed.map((t) => { const r = resultR(t); cum += r ?? 0; return cum; });
+  const W = 640, H = 260, P = 34;
+  const lo = Math.min(0, ...pts), hi = Math.max(0, ...pts), span = hi - lo || 1;
+  const x = (i) => P + (pts.length < 2 ? (W - 2 * P) / 2 : (i * (W - 2 * P)) / (pts.length - 1));
+  const y = (v) => H - P - ((v - lo) / span) * (H - 2 * P);
+  const path = pts.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const label = new Date(cur + '-01T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  app.innerHTML = `
+  <div class="stack">
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div><p class="label gold">monthly process review</p><h1 class="display">${esc(label)}</h1></div>
+      ${months.length > 1 ? `<label class="f" style="min-width:160px">Month<select class="i" id="mo">${months.map((m) => `<option ${m === cur ? 'selected' : ''} value="${m}">${m}</option>`).join('')}</select></label>` : ''}
+    </div>
+    <div class="stats">
+      <div><span class="label">trades</span><b>${ts.length}</b></div>
+      <div><span class="label">win rate</span><b>${rs.length ? Math.round((wins / rs.length) * 100) + '%' : '—'}</b></div>
+      <div><span class="label">total R</span><b class="${total >= 0 ? 'up' : 'down'}">${rs.length ? sign(total) : '—'}</b></div>
+      <div><span class="label">avg R</span><b>${rs.length ? sign(total / rs.length) : '—'}</b></div>
+      <div><span class="label">avg score</span><b>${avgScore == null ? '—' : fmt(avgScore, 1) + ' / 30'}</b></div>
+      <div><span class="label">risk checks done</span><b>${checkRate == null ? '—' : Math.round(checkRate * 100) + '%'}</b></div>
+    </div>
+    <section class="panel stack" aria-labelledby="c-h">
+      <div class="sec-h"><h2 class="display" id="c-h">Equity in R</h2><span class="label">closed trades, in order</span></div>
+      ${pts.length ? `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cumulative R over ${pts.length} closed trades, ending at ${sign(total)}R">
+        <line x1="${P}" x2="${W - P}" y1="${y(0)}" y2="${y(0)}" stroke="rgb(var(--line))" stroke-dasharray="4 4"/>
+        <text x="${P}" y="${y(0) - 8}">0R</text>
+        <path d="${path}" fill="none" stroke="rgb(var(--sun))" stroke-width="3.5" stroke-linejoin="round"/>
+        ${pts.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="6" fill="rgb(var(${(resultR(closed[i]) ?? 0) >= 0 ? '--bull' : '--bear'}))"/>`).join('')}
+        <text x="${W - P}" y="${y(pts[pts.length - 1]) - 14}" text-anchor="end">${sign(pts[pts.length - 1])}R</text>
+      </svg>` : '<p class="muted">Close a trade this month to see your curve.</p>'}
+    </section>
+    <section class="panel stack" aria-labelledby="k-h">
+      <div class="sec-h"><h2 class="display" id="k-h">Score by category</h2><span class="label">average, 1 to 5</span></div>
+      ${sc.length ? SCORES.map((label, i) => { const a = sc.reduce((x, t) => x + t.scores[i], 0) / sc.length;
+        return `<div class="srow"><span>${label}</span><div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:10px;background:rgb(var(--mid));border:1px solid rgb(var(--line))" aria-hidden="true"><div style="width:${(a / 5) * 100}%;height:100%;background:rgb(var(--sun))"></div></div><b class="mono" style="min-width:2.4em;text-align:right">${fmt(a, 1)}</b></div></div>`; }).join('') : '<p class="muted" style="margin:0">Score a trade to see where you are strongest and weakest.</p>'}
+    </section>
+    <section class="panel stack" aria-labelledby="l-h">
+      <div class="sec-h"><h2 class="display" id="l-h">Lessons this month</h2></div>
+      ${ts.filter((t) => t.lesson).length ? `<ul class="list">${ts.filter((t) => t.lesson).map((t) => `<li><span class="mono muted" style="font-size:13px">${esc(t.date)} · ${esc(t.symbol)}</span><br>${esc(t.lesson)}</li>`).join('')}</ul>` : '<p class="muted">No lessons written yet. One line, every trade.</p>'}
+    </section>
+  </div>`;
+  savebar.innerHTML = '';
+  const mo = $('#mo'); if (mo) mo.onchange = () => { viewReview.m = mo.value; viewReview(); };
+}
+
+function viewSettings() {
+  const s = settings();
+  app.innerHTML = `
+  <form class="stack" id="sf">
+    <div><p class="label gold">settings</p><h1 class="display">Your rules</h1></div>
+    ${subscriptionHTML()}
+    <section class="panel stack"><div class="sec-h"><h2 class="display">Risk</h2><span class="label">used for position size</span></div>
+      <div class="grid2">
+        <label class="f">Account size ($)<input class="i mono" name="account" inputmode="decimal" value="${s.account}"></label>
+        <label class="f">Risk per trade (%)<input class="i mono" name="riskPct" inputmode="decimal" value="${s.riskPct}"></label>
+        <label class="f">$ value per point, 1 unit<input class="i mono" name="valuePer" inputmode="decimal" value="${s.valuePer}"></label>
+      </div></section>
+    <section class="panel stack"><div class="sec-h"><h2 class="display">Risk check questions</h2><span class="label">four, before you click</span></div>
+      ${s.checks.map((q, i) => `<label class="f">Question ${i + 1}<input class="i" name="c${i}" value="${esc(q)}"></label>`).join('')}
+    </section>
+    <section class="panel stack"><div class="sec-h"><h2 class="display">Your data</h2></div>
+      <p class="muted" style="margin:0">Everything is stored only in this browser on this device. Export a backup before clearing your browser or switching phones.</p>
+      <div class="row">
+        <button type="button" class="btn" id="exj">Export backup (.json)</button>
+        <button type="button" class="btn" id="exc">Export spreadsheet (.csv)</button>
+        <label class="btn" style="cursor:pointer">Import backup<input type="file" accept="application/json,.json" id="imp" class="sr"></label>
+      </div>
+      <div class="row"><button type="button" class="btn danger" id="clr">Erase all trades</button></div>
+    </section>
+    <p class="foot">Blueprint Trades Journal app. Education and record-keeping only, not financial advice. Trading involves substantial risk of loss. <a href="./#disclaimer" style="color:inherit">Trading Disclaimer</a> · <a href="./#privacy" style="color:inherit">Privacy</a> · <a href="./" style="color:inherit">Store</a></p>
+  </form>`;
+  savebar.innerHTML = `<div class="save"><div class="in"><button class="btn primary" form="sf" type="submit">Save settings</button></div></div>`;
+  $('#sf').onsubmit = (e) => {
+    e.preventDefault(); const fd = new FormData(e.target);
+    db.settings = { account: num(fd.get('account')) || 0, riskPct: num(fd.get('riskPct')) || 0, valuePer: num(fd.get('valuePer')) || 1,
+      checks: [0, 1, 2, 3].map((i) => String(fd.get('c' + i) || '').trim() || DEFAULT_CHECKS[i]) };
+    if (persist()) toast('Settings saved');
+  };
+  const dl = (name, type, text) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
+  $('#exj').onclick = () => { db.settings = { ...db.settings, lastBackup: today() }; persist(); dl(`blueprint-journal-${today()}.json`, 'application/json', JSON.stringify(db, null, 2)); };
+  $('#exc').onclick = () => {
+    const cols = ['date', 'symbol', 'side', 'kind', 'timeframe', 'catalyst', 'opened', 'closed', 'entry', 'stop', 'target', 'exit', 'size', 'pnl', 'held', 'levels', 'psy0', 'psy1', 'psy2', 'lesson'];
+    const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const rows = db.trades.map((t) => [...cols.map((c) => q(t[c])), q(resultR(t) == null ? '' : resultR(t).toFixed(2)), q(scoreTotal(t) ?? ''), ...t.scores.map((v) => q(v ?? '')), q(t.checks.filter(Boolean).length)].join(','));
+    dl(`blueprint-journal-${today()}.csv`, 'text/csv', [cols.concat(['R', 'score', ...SCORES.map((x) => x.toLowerCase().replace(/ /g, '_')), 'riskChecks']).join(','), ...rows].join('\n'));
+  };
+  $('#imp').onchange = async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    try { const d = JSON.parse(await file.text()); if (!Array.isArray(d.trades)) throw 0;
+      const have = new Set(db.trades.map((t) => t.id)); const add = d.trades.filter((t) => t && t.id && !have.has(t.id)).map(norm);
+      db.trades.push(...add); if (d.settings && !Object.keys(db.settings).length) db.settings = d.settings; persist(); toast(`Imported ${add.length} trade${add.length === 1 ? '' : 's'}`);
+    } catch (err) { toast('That file is not a journal backup'); }
+    e.target.value = '';
+  };
+  const es = $('#endsub'); if (es) es.onclick = () => { setAccess(null); toast('Test subscription ended'); route(); };
+  let armed = false; const clr = $('#clr');
+  clr.onclick = () => { if (!armed) { armed = true; clr.textContent = 'Tap again to erase everything'; setTimeout(() => { armed = false; clr.textContent = 'Erase all trades'; }, 3000); return; }
+    db.trades = []; persist(); toast('All trades erased'); armed = false; clr.textContent = 'Erase all trades'; };
+}
+
+function viewPaywall() {
+  const live = !!PLAN.subscribeUrl && !PLAN.testMode;
+  app.innerHTML = `
+    <div class="plan">
+      <div><p class="label gold">the digital edition</p><h1 class="display">Your journal,<br>every trade.</h1>
+      <p class="muted" style="margin:.75rem 0 0">The Blueprint Trades journal as an app. Plan before the open, log what really happened, and let the monthly review do the math.</p></div>
+      <div class="panel stack">
+        <div class="price"><b>${priceText()}</b><span class="muted">per ${PLAN.period}</span></div>
+        <ul class="feat">
+          <li>The Trade Analysis page for every trade</li>
+          <li>Position size from your account and risk %</li>
+          <li>Market-maker risk check and a score out of 30</li>
+          <li>Monthly review: win rate, R curve, lessons</li>
+          <li>Works offline and installs to your home screen</li>
+        </ul>
+        ${live
+          ? `<a class="btn primary" href="${esc(PLAN.subscribeUrl)}">Subscribe for ${priceText()}/${PLAN.period}</a>`
+          : `<button class="btn primary" id="sub">Start test subscription</button>
+             <p class="muted" style="margin:0;font-size:14px">Test mode: subscriptions aren't open yet. This unlocks the app on this device only, and no card is charged.</p>`}
+        <p class="muted" style="margin:0;font-size:14px">${priceText()} billed today, then every month. Renews automatically until you cancel. Cancel anytime in Settings; you keep access until the end of the month you've paid for. See the <a href="./#terms">Terms</a> and <a href="./#privacy">Privacy Policy</a>.</p>
+        <p class="muted" style="margin:0;font-size:14px">Already a member on another device? Email support with the subject "Billing" and the email you subscribed with, and we'll restore your access.</p>
+      </div>
+      <p class="foot">Your entries are stored only on your device. Not financial advice.</p>
+    </div>`;
+  savebar.innerHTML = '';
+  const s = $('#sub'); if (s) s.onclick = () => { setAccess({ status: 'test', since: today() }); toast('Test subscription started'); location.hash = '#/'; route(); };
+}
+
+function subscriptionHTML() {
+  const a = getAccess() || {};
+  return `<section class="panel stack" aria-labelledby="subh">
+    <h2 id="subh" class="label">subscription</h2>
+    <p style="margin:0"><b>${a.status === 'test' ? 'Test subscription' : 'Active'}</b> <span class="muted">· ${priceText()}/${PLAN.period} · since ${esc(a.since || '')}</span></p>
+    <div class="row">${PLAN.manageUrl ? `<a class="btn" href="${esc(PLAN.manageUrl)}">Manage or cancel</a>` : ''}
+    ${a.status === 'test' ? '<button type="button" class="btn" id="endsub">End test subscription</button>' : ''}</div>
+  </section>`;
+}
+
+function route() {
+  const access = getAccess();
+  document.body.classList.toggle('locked', !access);
+  $('#testbar').hidden = !(PLAN.testMode && access && access.status === 'test');
+  if (!access) { viewPaywall(); window.scrollTo(0, 0); return; }
+  const h = location.hash.replace(/^#/, '') || '/';
+  document.querySelectorAll('nav.tabs a').forEach((a) => a.removeAttribute('aria-current'));
+  const mark = (p) => { const a = document.querySelector(`nav.tabs a[href="#${p}"]`); if (a) a.setAttribute('aria-current', 'page'); };
+  if (h === '/new') { mark('/new'); viewTrade(null); }
+  else if (h.startsWith('/trade/')) { viewTrade(h.slice(7)); }
+  else if (h === '/review') { mark('/review'); viewReview(); }
+  else if (h === '/settings') { mark('/settings'); viewSettings(); }
+  else { mark('/'); viewList(); }
+  window.scrollTo(0, 0);
+}
+addEventListener('hashchange', route);
+route();
+})();
+</script>
+</body>
+</html>
