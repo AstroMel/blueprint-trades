@@ -1,3 +1,4 @@
-import { coverNight, coverPrinted } from "./images";
+import { coverFront } from "./images";
 
-export const coverFor = (colorway?: string) => (colorway === "night" ? coverNight : coverPrinted);
+// One edition: the printed Bull & Bear journal, shown with the owner's own cover picture.
+export const coverFor = (_colorway?: string) => coverFront;

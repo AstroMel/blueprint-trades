@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Menu, ShoppingBag, Check, ArrowRight, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, TAPE, VIDEOS } from "./data";
-import { heroDark, heroLight, logo, logoInk, spread, backPrinted } from "./images";
+import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, VIDEOS } from "./data";
+import { photoBox, photoHand, coverFront, coverBack } from "./images";
 import { coverFor } from "./covers";
 import { money, useCart, totals } from "./cart";
 
@@ -15,22 +15,6 @@ const NAV = [
 ] as const;
 
 const DEFAULT_COVER = COLORWAYS[0].id;
-
-export function Ticker() {
-  const items = [...TAPE, ...TAPE];
-  return (
-    <div className="overflow-hidden border-b border-db-line bg-db-ink text-db-mid" aria-label="The channel's rules">
-      <div className="marquee flex w-max gap-8 py-2 font-mono text-[12px] uppercase tracking-[0.14em]">
-        {items.map((t, i) => (
-          <span key={i} className="flex items-center gap-8 whitespace-nowrap">
-            {t}
-            <span className="h-1.5 w-1.5 bg-db-ember" aria-hidden />
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 const THEME_KEY = "db-theme";
 
@@ -80,8 +64,9 @@ function ThemeToggle() {
 function Logo({ className }: { className: string }) {
   return (
     <>
-      <img src={logo} alt="Blueprint Trades" className={`only-dark w-auto ${className}`} />
-      <img src={logoInk} alt="Blueprint Trades" className={`only-light w-auto ${className}`} />
+      <span className={`display inline-flex items-center whitespace-nowrap leading-none ${className}`} aria-label="Blueprint Trades">
+        Blueprint<span className="accent ml-[0.25em]">Trades</span>
+      </span>
     </>
   );
 }
@@ -93,7 +78,7 @@ export function Nav() {
     <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-db-line bg-db-mid/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <a href="#top" className="flex items-center" aria-label="Blueprint Trades home">
-          <Logo className="h-5 sm:h-6" />
+          <Logo className="text-2xl sm:text-[28px]" />
         </a>
         <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
           {NAV.map(([l, h]) => (
@@ -137,14 +122,61 @@ export function Nav() {
   );
 }
 
-function Note({ label, value, tone, className }: { label: string; value: string; tone: string; className: string }) {
+const PHOTOS = [
+  { src: photoHand, alt: "The printed Bull and Bear trading journal held in a hand, with more copies stacked behind it" },
+  { src: photoBox, alt: "A printed copy of the journal resting on its shipping box" },
+  { src: coverFront, alt: "Front cover: TRADING JOURNAL in gold above a bull and a bear, with Master yourself, to master the market" },
+  { src: coverBack, alt: "Back cover with the Blueprint letter" },
+];
+
+function Gallery() {
+  const [i, setI] = useState(0);
   return (
-    <div className={`floaty absolute rounded-sm border border-db-line bg-db-raised/95 px-4 py-3 shadow-db ${className}`}>
-      <div className="label text-[10px] text-db-muted">{label}</div>
-      <div className={`hand text-xl sm:text-2xl ${tone}`}>{value}</div>
+    <div className="flex flex-col gap-3">
+      <div className="overflow-hidden rounded-sm border border-db-line bg-db-deep">
+        <img src={PHOTOS[i].src} alt={PHOTOS[i].alt} className="aspect-[4/5] w-full object-cover" />
+      </div>
+      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Journal photos">
+        {PHOTOS.map((p, k) => (
+          <button
+            key={k}
+            onClick={() => setI(k)}
+            aria-pressed={i === k}
+            aria-label={`Show photo ${k + 1}: ${p.alt}`}
+            className={`overflow-hidden rounded-sm border-2 transition ${i === k ? "border-db-sun" : "border-db-line hover:border-db-muted"}`}
+          >
+            <img src={p.src} alt="" className="aspect-square w-full object-cover" />
+          </button>
+        ))}
+      </div>
+      <p className="text-center text-xs text-db-muted">Photos of the printed journal.</p>
     </div>
   );
 }
+
+const SPREAD = [
+  {
+    title: "The Plan",
+    when: "before the open",
+    rows: [
+      ["1", "Key levels used", "Higher-timeframe level, zone, prior day low"],
+      ["2", "The trade I want", "Entry, stop, target, size, R"],
+      ["3", "Market-maker risk check", "Four questions before you click"],
+      ["4", "Emotion before", "Calm 1 to wired 5"],
+    ],
+  },
+  {
+    title: "The Reality",
+    when: "after the close",
+    rows: [
+      ["5", "Redraw the move and the result", "R, P/L, time held"],
+      ["6", "Plan adherence", "Rules followed, out of four"],
+      ["7", "Emotion after", "Calm 1 to wired 5"],
+      ["8", "Lesson learned", "One line, every trade"],
+      ["9", "What would I tell my past self?", "The note you read next week"],
+    ],
+  },
+] as const;
 
 export function Hero() {
   const { dispatch } = useCart();
@@ -184,11 +216,7 @@ export function Hero() {
           </dl>
         </div>
         <div className="relative mx-auto w-full max-w-[600px]">
-          <img src={heroDark} alt="The journal in both covers: the printed Bull and Bear cover and the Night Session navy and gold cover" className="only-dark w-full rounded-sm border border-db-line" />
-          <img src={heroLight} alt="The journal in both covers: the printed Bull and Bear cover and the Night Session navy and gold cover" className="only-light w-full rounded-sm border border-db-line" />
-          <Note label="rules followed" value="3 / 4" tone="text-db-ember" className="left-2 top-4 sm:-left-6" />
-          <Note label="emotion before" value="2 · calm" tone="text-db-ink" className="bottom-8 right-2 sm:-right-4" />
-          <p className="mt-3 text-center text-xs text-db-muted">Handwriting shows a sample page, not results.</p>
+          <Gallery />
         </div>
       </div>
     </section>
@@ -219,7 +247,7 @@ export function Letter() {
             <p className="hand text-3xl text-db-ember">- Blueprint</p>
           </div>
         </div>
-        <img src={backPrinted} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
+        <img src={coverBack} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
       </div>
     </section>
   );
@@ -236,8 +264,26 @@ export function Inside() {
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-db-muted">
           The left page is written while you're calm. The right page is written after the close, whatever happened. Most P&L trackers stop at the number; this one asks how you got there.
         </p>
-        <div className="mt-10 overflow-hidden rounded-sm border border-db-line">
-          <img src={spread} alt="Open journal: The Plan page with key levels, the trade, a market-maker risk check and an emotion score; The Reality page with the redrawn chart, result, plan adherence, lesson learned and a note to your past self" className="w-full" loading="lazy" />
+        <div className="mt-10 grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line md:grid-cols-2">
+          {SPREAD.map((pg) => (
+            <div key={pg.title} className="bg-db-raised p-6 sm:p-8">
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="display text-4xl">{pg.title}</h3>
+                <span className="label text-db-ember">{pg.when}</span>
+              </div>
+              <ol className="mt-6 flex flex-col">
+                {pg.rows.map(([n, t, d]) => (
+                  <li key={n} className="grid grid-cols-[2rem_1fr] gap-3 border-t border-db-line py-3">
+                    <span className="font-mono text-sm text-db-muted">{n}</span>
+                    <span>
+                      <span className="font-semibold">{t}</span>
+                      <span className="block text-sm text-db-muted">{d}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
         </div>
         <div className="mt-10 grid gap-px overflow-hidden rounded-sm border border-db-line bg-db-line sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
@@ -388,7 +434,7 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
           </li>
         ))}
       </ul>
-      {p.hasColorway && (
+      {p.hasColorway && COLORWAYS.length > 1 && (
         <fieldset className="mt-6">
           <legend className="label mb-2 text-db-muted">
             cover · {cw?.name}
@@ -420,7 +466,7 @@ export function Shop() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="label text-db-ember">shop</p>
         <h2 className="display mt-3 text-5xl sm:text-6xl">
-          Pick a <span className="accent">cover</span>. Same pages inside.
+          One journal. <span className="accent">Three ways in.</span>
         </h2>
         <p className="mt-4 text-db-muted">Free standard shipping over {money(CONFIG.freeShippingOver)}.</p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -488,7 +534,7 @@ export function Footer() {
     <footer className="border-t-2 border-db-ink pb-28 pt-16 md:pb-12">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-2">
         <div>
-          <Logo className="h-8" />
+          <Logo className="text-4xl" />
           <p className="mt-4 max-w-sm text-db-muted">An environment to speak about the reality of trading.</p>
           <a href={CONFIG.channelUrl} target="_blank" rel="noreferrer" className="label mt-4 inline-flex items-center gap-1 text-db-ember hover:underline">
             @Blueprint_Trades on YouTube <ArrowUpRight className="h-3.5 w-3.5" />

@@ -12,13 +12,14 @@ export const CONFIG = {
   apiBase: "https://api.your-domain.com",
   freeShippingOver: 75,
   testMode: true,
+  // Optional free Finnhub key (finnhub.io) for live SPY / QQQ / DIA quotes in the top bar. Empty = session status only.
+  finnhubKey: "",
 };
 
 export type Colorway = { id: string; name: string; note: string; swatch: string };
 
-// Two editions of the same journal: the Night Session cover (default), and the printed Bull & Bear cover kept as an alternate .
+// One edition: the printed Bull & Bear journal. The colorway field stays so a second cover can be added later.
 export const COLORWAYS: Colorway[] = [
-  { id: "night", name: "Night Session", note: "the channel's cover", swatch: "linear-gradient(135deg,#0f1330 0 62%,#d4a640 62% 66%,#0f1330 66%)" },
   { id: "printed", name: "Bull & Bear", note: "the printed cover", swatch: "linear-gradient(135deg,#1c2a6b,#4a1f5c 55%,#8a2a3a)" },
 ];
 
@@ -118,8 +119,8 @@ export const FAQ = [
     a: "No. It's a notebook for following your own plan. No signals, no calls. Trading involves risk of loss.",
   },
   {
-    q: "What's the difference between the two covers?",
-    a: "Only the cover. Bull & Bear is the original printed design; Night Session matches the channel. The pages inside are the same.",
+    q: "Are the photos the real journal?",
+    a: "Yes. Every picture on this page is the printed Bull & Bear journal itself: the front, the back with the letter, and copies fresh out of the box.",
   },
   {
     q: "Why paper when there are apps?",

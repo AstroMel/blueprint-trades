@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { CartProvider, useCart } from "./cart";
-import { Ticker, Nav, Hero, Letter, Inside, Channel, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
+import { Nav, Hero, Letter, Inside, Channel, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
 import { CartSheet, Checkout } from "./checkout";
+import { LiveTicker } from "./ticker";
 
 function Store() {
   const { dispatch } = useCart();
   const [checkout, setCheckout] = useState(false);
   return (
     <>
-      <Ticker />
+      <LiveTicker />
       <Nav />
       <main>
         <Hero />
