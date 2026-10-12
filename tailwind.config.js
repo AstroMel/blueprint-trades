@@ -8,13 +8,13 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        display: ["Young Serif", "Georgia", "serif"],
+        display: ["Anton", "Impact", "sans-serif"],
         sans: ['"Instrument Sans"', "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       colors: {
         db: Object.fromEntries(
-          ["deep", "mid", "raised", "petal", "line", "ink", "muted", "sun", "onsun", "ember", "glow", "bull", "bear", "chrome"].map(
+          ["deep", "mid", "raised", "petal", "line", "ink", "muted", "sun", "onsun", "ember", "grid", "bull", "bear", "chrome"].map(
             (k) => [k, `rgb(var(--db-${k}) / <alpha-value>)`],
           ),
         ),

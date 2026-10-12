@@ -3,51 +3,48 @@
 @tailwind utilities;
 
 @layer base {
-  /* Ledgerline theme. Light on bare :root; dark follows the device
-     unless the viewer picks a theme, which sets data-theme on <html>. */
+  /* Blueprint Trades theme (Field Notes, from the channel kit): drafting paper, graphite, red pencil.
+     Light on bare :root; dark ("night desk") follows the device unless the viewer picks a theme. */
   :root {
-    --db-deep: 241 234 216; --db-mid: 250 246 234; --db-raised: 255 255 255; --db-petal: 243 236 218;
-    --db-line: 222 210 182; --db-ink: 18 38 30; --db-muted: 84 100 90; --db-sun: 18 38 30;
-    --db-onsun: 241 234 216; --db-ember: 150 52 44; --db-glow: 226 192 120; --db-bull: 46 120 84;
-    --db-bear: 150 52 44; --db-chrome: 150 140 115;
-    --db-accent-a: #7a2a22; --db-accent-b: #96342c; --db-accent-c: #a85a30;
-    --db-shadow: 0 10px 30px rgba(60, 50, 20, 0.14);
+    --db-deep: 228 220 198; --db-mid: 236 229 210; --db-raised: 245 240 227; --db-petal: 231 223 202;
+    --db-line: 201 190 162; --db-ink: 30 29 26; --db-muted: 98 92 80; --db-sun: 184 54 31;
+    --db-onsun: 245 240 227; --db-ember: 196 58 37; --db-grid: 221 211 186; --db-bull: 30 29 26;
+    --db-bear: 184 54 31; --db-chrome: 122 115 101;
+    --db-shadow: 0 10px 30px rgba(60, 50, 20, 0.16);
     color-scheme: light;
-    --background: 44 50% 94%; --foreground: 154 36% 11%; --card: 0 0% 100%; --card-foreground: 154 36% 11%;
-    --popover: 0 0% 100%; --popover-foreground: 154 36% 11%; --primary: 154 36% 11%; --primary-foreground: 44 50% 90%;
-    --secondary: 44 45% 90%; --secondary-foreground: 154 36% 11%; --muted: 44 45% 90%; --muted-foreground: 140 9% 36%;
-    --accent: 44 45% 90%; --accent-foreground: 154 36% 11%; --destructive: 5 55% 38%; --destructive-foreground: 0 0% 100%;
-    --border: 42 40% 79%; --input: 42 40% 79%; --ring: 5 55% 38%; --radius: 1rem;
+    --background: 44 43% 87%; --foreground: 45 7% 11%; --card: 44 50% 92%; --card-foreground: 45 7% 11%;
+    --popover: 44 50% 92%; --popover-foreground: 45 7% 11%; --primary: 10 71% 42%; --primary-foreground: 44 50% 92%;
+    --secondary: 44 38% 85%; --secondary-foreground: 45 7% 11%; --muted: 44 38% 85%; --muted-foreground: 42 10% 35%;
+    --accent: 44 38% 85%; --accent-foreground: 45 7% 11%; --destructive: 10 71% 42%; --destructive-foreground: 44 50% 92%;
+    --border: 43 30% 71%; --input: 43 30% 71%; --ring: 10 71% 42%; --radius: 0.375rem;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --db-deep: 11 24 19; --db-mid: 18 38 30; --db-raised: 26 51 40; --db-petal: 32 62 49;
-      --db-line: 44 74 60; --db-ink: 241 234 216; --db-muted: 150 170 155; --db-sun: 226 192 120;
-      --db-onsun: 18 38 30; --db-ember: 224 122 106; --db-glow: 226 192 120; --db-bull: 127 200 160;
-      --db-bear: 224 122 106; --db-chrome: 110 130 118;
-      --db-accent-a: #f0d79a; --db-accent-b: #deba70; --db-accent-c: #c19a4b;
-      --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      --db-deep: 22 21 19; --db-mid: 30 29 26; --db-raised: 40 38 34; --db-petal: 50 47 42;
+      --db-line: 66 62 55; --db-ink: 236 229 210; --db-muted: 168 160 142; --db-sun: 236 104 80;
+      --db-onsun: 22 21 19; --db-ember: 236 104 80; --db-grid: 44 42 38; --db-bull: 236 229 210;
+      --db-bear: 236 104 80; --db-chrome: 122 115 101;
+      --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       color-scheme: dark;
-      --background: 154 36% 11%; --foreground: 44 50% 90%; --card: 153 32% 15%; --card-foreground: 44 50% 90%;
-      --popover: 153 32% 15%; --popover-foreground: 44 50% 90%; --primary: 40 62% 68%; --primary-foreground: 154 36% 11%;
-      --secondary: 152 32% 18%; --secondary-foreground: 44 50% 90%;
-      --muted: 152 32% 18%; --muted-foreground: 137 11% 63%; --accent: 152 32% 18%; --accent-foreground: 44 50% 90%;
-      --destructive: 7 65% 65%; --destructive-foreground: 154 36% 11%; --border: 151 25% 23%; --input: 151 25% 23%; --ring: 40 62% 68%;
+      --background: 45 7% 11%; --foreground: 44 43% 87%; --card: 40 8% 15%; --card-foreground: 44 43% 87%;
+      --popover: 40 8% 15%; --popover-foreground: 44 43% 87%; --primary: 9 81% 62%; --primary-foreground: 45 7% 8%;
+      --secondary: 40 9% 18%; --secondary-foreground: 44 43% 87%;
+      --muted: 40 9% 18%; --muted-foreground: 43 12% 61%; --accent: 40 9% 18%; --accent-foreground: 44 43% 87%;
+      --destructive: 9 81% 62%; --destructive-foreground: 45 7% 8%; --border: 40 9% 24%; --input: 40 9% 24%; --ring: 9 81% 62%;
     }
   }
   :root[data-theme="dark"] {
-      --db-deep: 11 24 19; --db-mid: 18 38 30; --db-raised: 26 51 40; --db-petal: 32 62 49;
-      --db-line: 44 74 60; --db-ink: 241 234 216; --db-muted: 150 170 155; --db-sun: 226 192 120;
-      --db-onsun: 18 38 30; --db-ember: 224 122 106; --db-glow: 226 192 120; --db-bull: 127 200 160;
-      --db-bear: 224 122 106; --db-chrome: 110 130 118;
-      --db-accent-a: #f0d79a; --db-accent-b: #deba70; --db-accent-c: #c19a4b;
-      --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      --db-deep: 22 21 19; --db-mid: 30 29 26; --db-raised: 40 38 34; --db-petal: 50 47 42;
+      --db-line: 66 62 55; --db-ink: 236 229 210; --db-muted: 168 160 142; --db-sun: 236 104 80;
+      --db-onsun: 22 21 19; --db-ember: 236 104 80; --db-grid: 44 42 38; --db-bull: 236 229 210;
+      --db-bear: 236 104 80; --db-chrome: 122 115 101;
+      --db-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       color-scheme: dark;
-      --background: 154 36% 11%; --foreground: 44 50% 90%; --card: 153 32% 15%; --card-foreground: 44 50% 90%;
-      --popover: 153 32% 15%; --popover-foreground: 44 50% 90%; --primary: 40 62% 68%; --primary-foreground: 154 36% 11%;
-      --secondary: 152 32% 18%; --secondary-foreground: 44 50% 90%;
-      --muted: 152 32% 18%; --muted-foreground: 137 11% 63%; --accent: 152 32% 18%; --accent-foreground: 44 50% 90%;
-      --destructive: 7 65% 65%; --destructive-foreground: 154 36% 11%; --border: 151 25% 23%; --input: 151 25% 23%; --ring: 40 62% 68%;
+      --background: 45 7% 11%; --foreground: 44 43% 87%; --card: 40 8% 15%; --card-foreground: 44 43% 87%;
+      --popover: 40 8% 15%; --popover-foreground: 44 43% 87%; --primary: 9 81% 62%; --primary-foreground: 45 7% 8%;
+      --secondary: 40 9% 18%; --secondary-foreground: 44 43% 87%;
+      --muted: 40 9% 18%; --muted-foreground: 43 12% 61%; --accent: 40 9% 18%; --accent-foreground: 44 43% 87%;
+      --destructive: 9 81% 62%; --destructive-foreground: 45 7% 8%; --border: 40 9% 24%; --input: 40 9% 24%; --ring: 9 81% 62%;
   }
   * { @apply border-border; }
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -60,15 +57,15 @@
 }
 
 @layer components {
-  .display { font-family: "Young Serif", Georgia, serif; font-weight: 400; letter-spacing: -0.01em; text-wrap: balance; }
-  .accent { color: var(--db-accent-b); background: linear-gradient(180deg, var(--db-accent-a) 0%, var(--db-accent-b) 60%, var(--db-accent-c) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .label { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
-  .dotgrid { background-image: radial-gradient(rgb(var(--db-line)) 1.2px, transparent 1.2px); background-size: 22px 22px; }
-  .glow { background: radial-gradient(55% 55% at 68% 70%, rgba(193,154,75,0.22), transparent 70%); }
-  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-full bg-db-sun px-6 py-3 font-semibold text-db-onsun transition hover:brightness-110 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-db-sun disabled:opacity-50; min-height: 48px; }
-  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-full border border-db-line px-6 py-3 font-semibold text-db-ink transition hover:border-db-sun hover:text-db-sun; min-height: 48px; }
-  .panel { @apply rounded-2xl border border-db-line bg-db-raised; }
-  .field { @apply w-full rounded-xl border border-db-line bg-db-mid px-4 py-3 text-base text-db-ink placeholder:text-db-muted/60 outline-none focus:border-db-sun; min-height: 48px; }
+  .display { font-family: "Anton", Impact, "Arial Narrow", sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.005em; line-height: 0.95; text-wrap: balance; }
+  .accent { color: rgb(var(--db-ember)); }
+  .hand { font-family: "Nothing You Could Do", "Segoe Print", cursive; text-transform: none; letter-spacing: 0; }
+  .label { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+  .gridpaper { background-image: linear-gradient(rgb(var(--db-grid)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--db-grid)) 1px, transparent 1px); background-size: 28px 28px; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-md bg-db-sun px-6 py-3 font-semibold text-db-onsun transition hover:brightness-110 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-db-sun disabled:opacity-50; min-height: 48px; }
+  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-md border-2 border-db-ink px-6 py-3 font-semibold text-db-ink transition hover:border-db-sun hover:text-db-sun; min-height: 48px; }
+  .panel { @apply rounded-md border border-db-line bg-db-raised; }
+  .field { @apply w-full rounded-md border border-db-line bg-db-mid px-4 py-3 text-base text-db-ink placeholder:text-db-muted/60 outline-none focus:border-db-sun; min-height: 48px; }
 }
 
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }

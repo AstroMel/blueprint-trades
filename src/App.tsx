@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CartProvider, useCart } from "./cart";
-import { Ticker, Nav, Hero, Inside, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
+import { Ticker, Nav, Hero, Letter, Inside, Channel, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
 import { CartSheet, Checkout } from "./checkout";
 
 function Store() {
@@ -12,7 +12,9 @@ function Store() {
       <Nav />
       <main>
         <Hero />
+        <Letter />
         <Inside />
+        <Channel />
         <RiskCalc />
         <Shop />
         <Voice />

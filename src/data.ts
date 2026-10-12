@@ -1,7 +1,8 @@
 // Store configuration. Everything marked PLACEHOLDER is swapped at launch.
 export const CONFIG = {
-  brand: "ledgerline",
-  // PLACEHOLDER: the custom domain is not chosen yet. Set it here and in DNS (see plan, phase 4).
+  brand: "blueprint-trades",
+  channelUrl: "https://www.youtube.com/@Blueprint_Trades",
+  // PLACEHOLDER: the custom domain is not chosen yet. Set it here and in DNS (see DEPLOY.md).
   domain: "your-domain.com",
   supportEmail: "hello@your-domain.com",
   currency: "USD",
@@ -13,12 +14,12 @@ export const CONFIG = {
   testMode: true,
 };
 
-export type Colorway = { id: string; name: string; swatch: string; ring: string };
+export type Colorway = { id: string; name: string; note: string; swatch: string };
 
+// Two editions of the same journal: the printed Bull & Bear cover, and the Field Notes cover in the channel's kit.
 export const COLORWAYS: Colorway[] = [
-  { id: "predawn", name: "Forest", swatch: "#12261e", ring: "#c19a4b" },
-  { id: "ember", name: "Oxblood", swatch: "#96342c", ring: "#f1ead8" },
-  { id: "bone", name: "Cream", swatch: "#f1ead8", ring: "#c19a4b" },
+  { id: "printed", name: "Bull & Bear", note: "the printed cover", swatch: "linear-gradient(135deg,#1c2a6b,#4a1f5c 55%,#8a2a3a)" },
+  { id: "fieldnotes", name: "Field Notes", note: "drafting-paper cover", swatch: "repeating-linear-gradient(0deg,#ece5d2 0 6px,#c9bea2 6px 7px)" },
 ];
 
 export type Product = {
@@ -32,83 +33,104 @@ export type Product = {
   hasColorway: boolean;
 };
 
-// PLACEHOLDER pricing until the owner confirms unit cost and margin.
+// PLACEHOLDER pricing and page counts until the owner confirms the print spec, unit cost and margin.
 export const PRODUCTS: Product[] = [
   {
     id: "journal",
     name: "The Trading Journal",
-    tagline: "365 sessions, one honest record.",
+    tagline: "Plan it. Take it. Write down what really happened.",
     price: 49,
-    includes: ["A5 vegan-leather hardcover", "240 lay-flat pages, 120gsm", "Two ribbons + elastic band"],
+    includes: ["A5, gold wire-o, opens flat", "Plan + Reality spread for every trade", "Monthly process review pages"],
     hasColorway: true,
   },
   {
     id: "bundle",
-    name: "The Desk Bundle",
-    tagline: "Journal, risk ruler and the pen.",
+    name: "Journal + Desk Kit",
+    tagline: "The journal, the ruler and the red pencil.",
     price: 79,
     compareAt: 92,
     badge: "Most picked",
-    includes: ["The Trading Journal", "Acrylic risk-to-reward ruler", "Brass-clip gel pen, 0.5mm", "Sticker sheet: candles + tally marks"],
+    includes: ["The Trading Journal", "Clear R-multiple ruler for marking levels", "Red and graphite drafting pencils", "Key-level sticky flags"],
     hasColorway: true,
   },
   {
     id: "refill",
     name: "Refill Pages",
-    tagline: "Another 180 sessions, same format.",
+    tagline: "More Plan + Reality spreads, same format.",
     price: 24,
-    includes: ["180 trade-log + recap pages", "Monthly P&L calendars", "Fits the journal's insert sleeve"],
+    includes: ["90 Plan + Reality spreads", "3 monthly process reviews", "Hole-punched for the wire-o"],
     hasColorway: false,
   },
 ];
 
-export const TICKER = [
-  ["NQ1!", "+0.84%"],
-  ["ES1!", "+0.41%"],
-  ["EURUSD", "−0.12%"],
-  ["XAUUSD", "+0.67%"],
-  ["BTCUSD", "+1.92%"],
-  ["GBPJPY", "−0.38%"],
-  ["CL1!", "+0.22%"],
-  ["SPY", "+0.35%"],
+// The tape: the channel's rules, not prices. Nothing here is a market quote.
+export const TAPE = [
+  "Red days included",
+  "No signals",
+  "Key levels first",
+  "Wait for the retest",
+  "Size it before you click",
+  "Good trade, bad result is still a good trade",
+  "Only you can save yourself",
+  "Process over outcome",
 ] as const;
 
+// Every journal field maps to something the channel teaches.
 export const FEATURES = [
-  { k: "01", title: "Trade log", body: "Pair, side, entry, stop, target, R and how you felt. Every trade, even the ugly ones." },
-  { k: "02", title: "Session recap", body: "A dot-grid chart box to redraw the move and mark where you got in." },
-  { k: "03", title: "Pre-market ritual", body: "Risk set, news checked, A+ setups only. Tick it before you click." },
-  { k: "04", title: "Monthly P&L calendar", body: "Green days, red days, all of them. Patterns show up by week three." },
-  { k: "05", title: "Psychology check-in", body: "Rate focus, patience and FOMO 1 to 5. Your mood is a market variable." },
-  { k: "06", title: "Quarterly review", body: "Best setup, worst habit, one rule to add. The page that compounds." },
+  { k: "01", title: "Key levels used", body: "Write the higher-timeframe level, the zone and why it matters before you look for an entry." },
+  { k: "02", title: "Market-maker risk check", body: "Is the level obvious to everyone? Did price just sweep a high? Four ticks before you become the liquidity." },
+  { k: "03", title: "Emotion score", body: "Rate yourself calm to wired, before and after. Your state is a market variable." },
+  { k: "04", title: "Plan adherence", body: "Entry, stop, size, exit: did you do what the plan said? Score the rules, not the P&L." },
+  { k: "05", title: "Lesson learned", body: "One line, every trade. Losing days get the most ink." },
+  { k: "06", title: "What would I tell my past self?", body: "The question that turns a bad week into tuition you only pay once." },
 ];
 
+// Monthly review page: process metrics sit next to the money. Sample figures, not results.
+export const REVIEW = [
+  ["Rule adherence", "38 of 44 rules followed", "86%"],
+  ["Calm entries (1–2)", "average result", "+0.9R"],
+  ["Wired entries (4–5)", "average result", "−0.7R"],
+  ["Trades taken at a marked level", "share of all trades", "71%"],
+] as const;
+
+export const VIDEOS = [
+  { title: "I Followed Trading Influencers and It Nearly Destroyed Me", page: "What would I tell my past self?", tag: "Reality check" },
+  { title: "How to find Key levels in trading for Beginners", page: "Key levels used", tag: "The plan" },
+  { title: "Don't Fall for This Market Maker Setup", page: "Market-maker risk check", tag: "Avoid the trap" },
+] as const;
+
+// PLACEHOLDER: final print spec comes from the printer quote.
 export const SPECS = [
   ["Format", "A5, 148 × 210 mm"],
-  ["Pages", "240, 120gsm ivory, lay-flat binding"],
-  ["Cover", "Vegan leather, brass foil mark, debossed ledger ruling"],
-  ["Extras", "2 ribbons, elastic band, back pocket, risk table inside cover"],
+  ["Binding", "Gold wire-o, opens flat and folds back"],
+  ["Inside", "Plan + Reality spread per trade, monthly reviews, risk table inside the cover"],
+  ["Paper", "Graph-ruled, takes pencil and gel pen"],
   ["Dated?", "Undated. Start any Monday."],
 ] as const;
 
 export const FAQ = [
   {
+    q: "Will this make me profitable?",
+    a: "No one can promise that, and we won't. It will show you what you actually do, which is where getting better starts.",
+  },
+  {
     q: "Is this financial advice?",
-    a: "No. It's a notebook that helps you follow your own plan. Trading involves risk of loss.",
+    a: "No. It's a notebook for following your own plan. No signals, no calls. Trading involves risk of loss.",
+  },
+  {
+    q: "What's the difference between the two covers?",
+    a: "Only the cover. Bull & Bear is the original printed design; Field Notes matches the channel. The pages inside are the same.",
+  },
+  {
+    q: "Why paper when there are apps?",
+    a: "Writing a trade by hand slows you down at exactly the moment you'd chase or revenge-trade. That's the feature.",
   },
   {
     q: "When does it ship?",
     a: "Orders ship within 2 business days. Standard delivery is 3 to 6 business days in the US; express is 1 to 2.",
   },
   {
-    q: "Do you ship internationally?",
-    a: "Yes, to most countries. Duties and taxes are calculated at checkout.",
-  },
-  {
-    q: "What if I don't love it?",
+    q: "What if it's not for me?",
     a: "Return it unused within 30 days for a full refund.",
-  },
-  {
-    q: "Why paper when there are apps?",
-    a: "Writing a trade by hand slows you down at exactly the moment you'd revenge-trade. That's the feature.",
   },
 ];
