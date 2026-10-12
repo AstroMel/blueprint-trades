@@ -72,7 +72,8 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
     renderer.toneMappingExposure = 1.05;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.VSMShadowMap;
-    renderer.domElement.style.touchAction = "pan-y";
+    // The canvas fills the box absolutely, so its pixel size can never push the box (and the page) taller.
+    Object.assign(renderer.domElement.style, { position: "absolute", inset: "0", width: "100%", height: "100%", display: "block", touchAction: "pan-y" });
     el.prepend(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -185,9 +186,13 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
     canvas.addEventListener("pointerup", up);
     canvas.addEventListener("pointercancel", up);
 
+    let lastW = 0, lastH = 0;
     const resize = () => {
       const r = el.getBoundingClientRect();
-      renderer.setSize(r.width, r.height, false);
+      const w = Math.round(r.width), h = Math.round(r.height);
+      if (!w || !h || (w === lastW && h === lastH)) return;
+      lastW = w; lastH = h;
+      renderer.setSize(w, h, false);
       camera.aspect = r.width / Math.max(1, r.height);
       camera.updateProjectionMatrix();
     };
@@ -232,7 +237,7 @@ export function Book3D({ pages }: { pages: readonly Page[] }) {
     <div className="flex flex-col gap-3">
       <div
         ref={host}
-        className={`relative aspect-[4/5] w-full cursor-grab select-none active:cursor-grabbing transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
+        className={`relative aspect-[4/5] w-full overflow-hidden cursor-grab select-none active:cursor-grabbing transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
         role="img"
         aria-label={
           view === "open"
