@@ -19,7 +19,7 @@ export const CONFIG = {
   // The Journal App is a subscription. PLACEHOLDER: set the same Stripe Payment Link and portal link in public/app.html (PLAN).
   appPrice: 7.99,
   // PLACEHOLDER: the owner's separate member app (built with Grok Build). Empty = hidden. Set once the address is confirmed.
-  memberAppUrl: "",
+  memberAppUrl: "https://blueprinttrades.grok.me/",
   // Optional free Finnhub key (finnhub.io) for live SPY / QQQ / DIA quotes in the top bar. Empty = session status only.
   // Finnhub keys used from a browser are visible to anyone; this is a free, quote-only key. Rotate it at finnhub.io if abused.
   finnhubKey: "db66ht1r01qmd5li5480db66ht1r01qmd5li548g",
