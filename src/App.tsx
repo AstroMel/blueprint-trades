@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CartProvider, useCart } from "./cart";
-import { Nav, TrustStrip, ScrollAids, Backdrop, Hero, Letter, Inside, Channel, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
+import { Nav, TrustStrip, ScrollAids, Backdrop, Hero, Photos, Letter, Inside, Channel, RiskCalc, Shop, Voice, Faq, Footer, MobileBuyBar } from "./sections";
 import { CartSheet, Checkout } from "./checkout";
 import { LiveTicker } from "./ticker";
 import { LegalDialog } from "./legal";
@@ -17,6 +17,7 @@ function Store() {
       <main>
         <Hero />
         <TrustStrip />
+        <Photos />
         <Letter />
         <Inside />
         <Channel />

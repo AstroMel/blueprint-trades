@@ -99,38 +99,51 @@ export function LiveTicker() {
   const stale = lastOk !== null && Date.now() - lastOk > POLL_MS * 4;
   const sources = [...new Set(Object.values(quotes).filter(Boolean).map((q) => q!.source))].join(" + ");
 
+  const items = (copy: number) =>
+    SYMBOLS.map((s) => {
+      const q = quotes[s.id];
+      const status = s.kind === "crypto" ? "24/7" : usOpen ? "open" : "closed";
+      const up = q ? q.changePct >= 0 : null;
+      return (
+        <span key={`${copy}-${s.id}`} className="flex flex-none items-baseline gap-2 border-l border-db-line px-5">
+          <b className="font-bold">{s.label}</b>
+          {q ? (
+            <>
+              <span>{fmt(q.price)}</span>
+              <span className={up ? "text-db-bull" : "text-db-bear"}>
+                {up ? "▲" : "▼"} {Math.abs(q.changePct).toFixed(2)}%
+              </span>
+            </>
+          ) : (
+            <span className="text-db-muted">{s.kind === "stock" && !CONFIG.finnhubKey ? "no feed" : "—"}</span>
+          )}
+          <span className={`text-[10px] uppercase tracking-[0.12em] ${status === "closed" ? "text-db-muted" : "text-db-ink/80"}`}>{status}</span>
+        </span>
+      );
+    });
+
   return (
     <div className="border-b border-db-line bg-db-deep text-db-ink" role="region" aria-label="Market quotes">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 overflow-x-auto px-4 py-2 font-mono text-[12px] tabular-nums sm:px-6">
-        <span className="flex flex-none items-center gap-2 uppercase tracking-[0.12em] text-db-muted">
-          <span
-            className={`h-2 w-2 ${offline ? "bg-db-muted" : stale ? "bg-db-sun" : "bg-db-sun animate-pulse"}`}
-            aria-hidden
-          />
-          {!tried ? "connecting" : offline ? "feed offline · no prices shown" : stale ? `delayed · ${clock(lastOk!)}` : `live · ${clock(lastOk!)}`}
+      <div className="flex items-stretch font-mono text-[12px] tabular-nums">
+        <span className="relative z-10 flex flex-none items-center gap-2 border-r border-db-line bg-db-deep px-4 py-2 uppercase tracking-[0.12em] text-db-muted sm:px-6">
+          <span className={`h-2 w-2 ${offline ? "bg-db-muted" : stale ? "bg-db-sun" : "bg-db-sun animate-pulse"}`} aria-hidden />
+          <span className="hidden sm:inline">
+            {!tried ? "connecting" : offline ? "feed offline · no prices shown" : stale ? `delayed · ${clock(lastOk!)}` : `live · ${clock(lastOk!)}`}
+          </span>
+          <span className="sm:hidden">{!tried ? "…" : offline ? "offline" : stale ? "delayed" : "live"}</span>
         </span>
-        {SYMBOLS.map((s) => {
-          const q = quotes[s.id];
-          const status = s.kind === "crypto" ? "24/7" : usOpen ? "open" : "closed";
-          const up = q ? q.changePct >= 0 : null;
-          return (
-            <span key={s.id} className="flex flex-none items-baseline gap-2 border-l border-db-line pl-4">
-              <b className="font-bold">{s.label}</b>
-              {q ? (
-                <>
-                  <span>{fmt(q.price)}</span>
-                  <span className={up ? "text-db-bull" : "text-db-bear"}>
-                    {up ? "▲" : "▼"} {Math.abs(q.changePct).toFixed(2)}%
-                  </span>
-                </>
-              ) : (
-                <span className="text-db-muted">{s.kind === "stock" && !CONFIG.finnhubKey ? "no feed" : "—"}</span>
-              )}
-              <span className={`text-[10px] uppercase tracking-[0.12em] ${status === "closed" ? "text-db-muted" : "text-db-ink/80"}`}>{status}</span>
-            </span>
-          );
-        })}
-        {sources && <span className="flex-none border-l border-db-line pl-4 text-[10px] uppercase tracking-[0.12em] text-db-muted">{sources} · crypto 24h change</span>}
+        <div className="group relative min-w-0 flex-1 overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%-24px),transparent)]">
+          <div className="ticker-track flex w-max group-hover:[animation-play-state:paused]">
+            {[0, 1].map((copy) => (
+              <div key={copy} className="flex flex-none" aria-hidden={copy === 1 || undefined}>
+                {items(copy)}
+                {sources && (
+                  <span className="flex-none border-l border-db-line px-5 text-[10px] uppercase tracking-[0.12em] text-db-muted">{sources} · crypto 24h change</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -3,13 +3,15 @@ import { Menu, ShoppingBag, Check, ArrowRight, ArrowLeft, ArrowUp, ArrowUpRight,
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CONFIG, COLORWAYS, FAQ, FEATURES, PRODUCTS, REVIEW, SPECS, VIDEOS } from "./data";
-import { photoBox, photoHand, coverFront, coverBack, vecHand, vecBox, vecFront, vecBack } from "./images";
+import { photoBox, photoHand, coverFront, coverBack } from "./images";
+import { Book3D } from "./book3d";
 import { coverFor } from "./covers";
 import { LegalLinks } from "./legal";
 import { money, useCart, totals } from "./cart";
 
 const NAV = [
   ["Journal", "#shop"],
+  ["Photos", "#photos"],
   ["Inside", "#inside"],
   ["Channel", "#channel"],
   ["FAQ", "#faq"],
@@ -125,15 +127,14 @@ export function Nav() {
 }
 
 const PHOTOS = [
-  { photo: photoHand, vec: vecHand, alt: "The printed Bull and Bear trading journal held in a hand, with more copies stacked behind it" },
-  { photo: photoBox, vec: vecBox, alt: "A printed copy of the journal resting on its shipping box" },
-  { photo: coverFront, vec: vecFront, alt: "Front cover: TRADING JOURNAL in gold above a bull and a bear, with Master yourself, to master the market" },
-  { photo: coverBack, vec: vecBack, alt: "Back cover with the Blueprint letter" },
+  { photo: photoHand, alt: "The printed Bull and Bear trading journal held in a hand, with more copies stacked behind it", cap: "In hand, with the first print run behind it" },
+  { photo: photoBox, alt: "A printed copy of the journal resting on its shipping box", cap: "Fresh out of the shipping box" },
+  { photo: coverFront, alt: "Front cover: TRADING JOURNAL in gold above a bull and a bear, with Master yourself, to master the market", cap: "The front cover" },
+  { photo: coverBack, alt: "Back cover with the Blueprint letter", cap: "The back cover and the Blueprint letter" },
 ];
 
 function Gallery() {
   const [i, setI] = useState(0);
-  const [vector, setVector] = useState(true);
   const n = PHOTOS.length;
   const go = (d: number) => setI((k) => (k + d + n) % n);
   const cur = PHOTOS[i];
@@ -150,15 +151,8 @@ function Gallery() {
           if (e.key === "ArrowLeft") go(-1);
         }}
       >
-        <img src={vector ? cur.vec : cur.photo} alt={cur.alt + (vector ? " (vector art traced from the photo)" : "")} className="aspect-[4/5] w-full object-cover" />
-        <div className="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
-          <div className="flex rounded-sm border border-db-line bg-db-mid/60 p-1 backdrop-blur-md" role="group" aria-label="Picture style">
-            {([["Vector", true], ["Photo", false]] as const).map(([l, v]) => (
-              <button key={l} onClick={() => setVector(v)} aria-pressed={vector === v} className={`label min-h-[32px] rounded-sm px-3 text-[11px] transition ${vector === v ? "bg-db-sun text-db-onsun" : "text-db-ink hover:text-db-sun"}`}>
-                {l}
-              </button>
-            ))}
-          </div>
+        <img src={cur.photo} alt={cur.alt} className="aspect-[4/5] w-full object-cover" />
+        <div className="absolute inset-x-3 top-3 flex items-center justify-end gap-2">
           <span className="label rounded-sm border border-db-line bg-db-mid/60 px-2 py-1.5 text-[11px] text-db-ink backdrop-blur-md tabular-nums">{i + 1} / {n}</span>
         </div>
         {([["Previous picture", -1, "left-3", ArrowLeft], ["Next picture", 1, "right-3", ArrowRight]] as const).map(([l, d, pos, Icon]) => (
@@ -176,11 +170,11 @@ function Gallery() {
             aria-label={`Show picture ${k + 1}: ${p.alt}`}
             className={`overflow-hidden rounded-sm border-2 transition ${i === k ? "border-db-sun" : "border-db-line opacity-70 hover:opacity-100"}`}
           >
-            <img src={vector ? p.vec : p.photo} alt="" className="aspect-square w-full object-cover" />
+            <img src={p.photo} alt="" className="aspect-square w-full object-cover" loading="lazy" />
           </button>
         ))}
       </div>
-      <p className="text-center text-xs text-db-muted">{vector ? "Vector art traced from your journal photos. Switch to Photo for the originals." : "Photos of the printed journal."}</p>
+      <p className="text-center text-sm text-db-muted" aria-live="polite">{cur.cap}</p>
     </div>
   );
 }
@@ -237,11 +231,30 @@ export function ScrollAids() {
   );
 }
 
+export function Photos() {
+  return (
+    <section id="photos" className="border-t border-db-line py-20">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-[1fr_1.2fr] md:items-center">
+        <div className="min-w-0">
+          <p className="label text-db-ember">real photos</p>
+          <h2 className="display mt-3 text-5xl sm:text-6xl">The real thing, unfiltered.</h2>
+          <p className="mt-5 max-w-md text-lg leading-relaxed text-db-muted">
+            No renders here. These are photos of the printed Bull &amp; Bear journal from the first run: A5, gold wire-o, opens flat.
+          </p>
+        </div>
+        <div className="mx-auto w-full max-w-[520px]">
+          <Gallery />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function Backdrop() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <img src={vecFront} alt="" className="h-full w-full scale-110 object-cover opacity-[0.16] blur-[2px]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[rgb(var(--db-mid)/0.55)] to-[rgb(var(--db-mid)/0.85)]" />
+      <div className="absolute -right-[20%] -top-[10%] h-[70vh] w-[70vh] rounded-full bg-db-sun/[0.07] blur-3xl" />
+      <div className="absolute -left-[15%] top-[40%] h-[60vh] w-[60vh] rounded-full bg-db-bull/[0.06] blur-3xl" />
     </div>
   );
 }
@@ -322,7 +335,7 @@ export function Hero() {
           </dl>
         </div>
         <div className="relative mx-auto w-full max-w-[600px]">
-          <Gallery />
+          <Book3D pages={SPREAD} />
         </div>
       </div>
     </section>
@@ -330,13 +343,13 @@ export function Hero() {
 }
 
 const LETTER = [
-  "I won't promise you profitability, no one can. But I will promise you this: if you commit to this journal, you will become a better trader.",
+  "I won\u2019t promise you profitability. No one can. But I will promise you this: if you commit to this journal, you will become a better trader.",
   "And that changes everything.",
-  "Real success in this industry comes down to one thing, your ability to execute your own ideas with confidence and discipline. That's freedom. That's power.",
-  "Respect the journey and always remember this is a marathon, not some rich quick shortcut. Every step you take, every lesson you learn, moves you forward.",
-  "Repetition and time in the market, that's where growth lives. Monitoring your habits and adjusting accordingly, that's where mastery and real strategies are built.",
+  "Real success in this industry comes down to one thing: your ability to execute your own ideas with confidence and discipline. That\u2019s freedom. That\u2019s power.",
+  "Respect the journey, and always remember this is a marathon, not a get-rich-quick shortcut. Every step you take and every lesson you learn moves you forward.",
+  "Repetition and time in the market: that\u2019s where growth lives. Monitoring your habits and adjusting accordingly: that\u2019s where mastery and real strategies are built.",
   "Stay patient. Stay disciplined. Keep showing up.",
-  "Do that, and you won't just improve, you'll transform.",
+  "Do that, and you won\u2019t just improve. You\u2019ll transform.",
 ];
 
 export function Letter() {
@@ -353,7 +366,7 @@ export function Letter() {
             <p className="hand text-3xl text-db-ember">- Blueprint</p>
           </div>
         </div>
-        <img src={vecBack} alt="The back cover of the printed journal with this letter, as vector art traced from the photo" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
+        <img src={coverBack} alt="The back cover of the printed journal with this letter" className="mx-auto w-full max-w-sm rounded-sm shadow-db" loading="lazy" />
       </div>
     </section>
   );
