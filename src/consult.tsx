@@ -135,7 +135,7 @@ export function Consult() {
                         key={m}
                         aria-pressed={on}
                         onClick={() => setMarkets((xs) => (on ? xs.filter((x) => x !== m) : [...xs, m]))}
-                        className={`label min-h-[40px] rounded-sm border px-3 text-[11px] transition ${on ? "border-db-sun bg-db-sun text-db-onsun" : "border-db-line text-db-ink hover:border-db-sun"}`}
+                        className={`label min-h-[40px] rounded-sm border px-3 text-[11px] transition active:scale-[0.96] ${on ? "border-db-sun bg-db-sun text-db-onsun" : "border-db-line text-db-ink hover:border-db-sun"}`}
                       >
                         {m}
                       </button>

@@ -109,8 +109,8 @@ export function LiveTicker() {
           <b className="font-bold">{s.label}</b>
           {q ? (
             <>
-              <span>{fmt(q.price)}</span>
-              <span className={up ? "text-db-bull" : "text-db-bear"}>
+              <span className="tabular-nums">{fmt(q.price)}</span>
+              <span className={`tabular-nums ${up ? "text-db-bull" : "text-db-bear"}`}>
                 {up ? "▲" : "▼"} {Math.abs(q.changePct).toFixed(2)}%
               </span>
             </>

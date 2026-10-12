@@ -246,7 +246,7 @@ export function Book3D({ initial = "front", compact = false, shape = "tall" }: {
   }, [ok]);
 
   if (!ok) {
-    return <img src={coverFront} alt="Front cover of the printed Bull and Bear trading journal" className="mx-auto aspect-[4/5] w-full max-w-md object-contain" />;
+    return <img src={coverFront} alt="Front cover of the printed Bull and Bear trading journal" className="edge mx-auto aspect-[4/5] w-full max-w-md object-contain" />;
   }
   return (
     <div className="flex flex-col gap-3">
@@ -276,7 +276,7 @@ export function Book3D({ initial = "front", compact = false, shape = "tall" }: {
               key={v}
               onClick={() => setView(v)}
               aria-pressed={view === v}
-              className={`label min-h-[40px] rounded-sm px-3 text-[11px] sm:px-4 transition ${view === v ? "bg-db-sun text-db-onsun" : "text-db-ink hover:text-db-sun"}`}
+              className={`label min-h-[40px] rounded-sm px-3 text-[11px] sm:px-4 transition active:scale-[0.96] ${view === v ? "bg-db-sun text-db-onsun" : "text-db-ink hover:text-db-sun"}`}
             >
               {v === "open" ? "Inside" : v === "spin" ? "360" : v}
             </button>

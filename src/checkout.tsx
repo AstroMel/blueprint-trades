@@ -18,7 +18,7 @@ export function CartSheet({ onCheckout }: { onCheckout: () => void }) {
           {t.count > 0 && (
             <div className="mt-3">
               <div className="h-1.5 overflow-hidden rounded-full bg-db-mid">
-                <div className="h-full rounded-full bg-db-bull transition-all" style={{ width: `${Math.min(100, (t.subtotal / CONFIG.freeShippingOver) * 100)}%` }} />
+                <div className="h-full rounded-full bg-db-bull transition-[width] duration-300 ease-out" style={{ width: `${Math.min(100, (t.subtotal / CONFIG.freeShippingOver) * 100)}%` }} />
               </div>
               <p className="mt-2 text-sm text-db-muted">
                 {toFree > 0 ? `${money(toFree)} away from free shipping` : "Free standard shipping unlocked"}

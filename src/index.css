@@ -27,7 +27,10 @@
     --background: 223 73% 9%; --foreground: 220 100% 95%; --card: 222 71% 13%; --card-foreground: 220 100% 95%; --popover: 222 71% 13%; --popover-foreground: 220 100% 95%; --primary: 21 100% 55%; --primary-foreground: 223 73% 9%; --secondary: 223 68% 18%; --secondary-foreground: 220 100% 95%; --muted: 223 68% 18%; --muted-foreground: 222 39% 67%; --accent: 223 68% 18%; --accent-foreground: 220 100% 95%; --destructive: 356 87% 60%; --destructive-foreground: 222 71% 13%; --border: 223 65% 33%; --input: 223 65% 33%; --ring: 21 100% 55%;
   }
   * { @apply border-border; }
-  html { scroll-behavior: smooth; scroll-padding-top: 112px; -webkit-text-size-adjust: 100%; }
+  html { scroll-behavior: smooth; scroll-padding-top: 112px; -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p, li, dd, figcaption { text-wrap: pretty; }
+  .font-mono, .mono, .label, .hand { font-variant-numeric: tabular-nums; }
   body {
     @apply bg-db-mid text-db-ink font-sans antialiased;
     background-color: rgb(var(--db-mid));
@@ -46,8 +49,11 @@
   /* Drafting grid: fine cobalt lines every 28px, a heavier major line every fifth. */
   .gridpaper { background-image: linear-gradient(rgb(var(--db-major)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--db-major)) 1px, transparent 1px), linear-gradient(rgb(var(--db-grid)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--db-grid)) 1px, transparent 1px); background-size: 140px 140px, 140px 140px, 28px 28px, 28px 28px; }
   .glow { text-shadow: 0 0 18px rgb(var(--db-sun) / 0.45); }
-  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-sm bg-db-sun px-6 py-3 font-semibold text-db-onsun transition hover:brightness-110 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-db-sun disabled:opacity-50; min-height: 48px; }
-  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-sm border-2 border-db-ink px-6 py-3 font-semibold text-db-ink transition hover:border-db-sun hover:text-db-sun; min-height: 48px; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-sm bg-db-sun px-6 py-3 font-semibold text-db-onsun hover:brightness-110 active:scale-[0.96] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-db-sun disabled:opacity-50; min-height: 48px; }
+  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-sm border-2 border-db-ink px-6 py-3 font-semibold text-db-ink hover:border-db-sun hover:text-db-sun active:scale-[0.96] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-db-sun; min-height: 48px; }
+  .btn-primary, .btn-ghost { transition-property: color, background-color, border-color, filter, transform; transition-duration: 150ms; transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+  /* Rectangular photos only: a 1px inset edge. Transparent product renders are left alone, an outline would box them. */
+  .edge { outline: 1px solid rgb(var(--db-ink) / 0.12); outline-offset: -1px; }
   .panel { @apply rounded-sm border border-db-line bg-db-raised; }
   .field { @apply w-full rounded-sm border border-db-line bg-db-mid px-4 py-3 text-base text-db-ink placeholder:text-db-muted/60 outline-none focus:border-db-sun; min-height: 48px; }
 }
@@ -58,6 +64,15 @@
 @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .floaty { animation: floaty 6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .marquee, .floaty { animation: none; } .ticker-track { animation-duration: 90s; } html { scroll-behavior: auto; } }
+/* Hero entrance: split into chunks and stagger by 100ms (opacity + rise + light blur), once. Skipped for reduced motion. */
+@keyframes enter { from { opacity: 0; transform: translateY(12px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .enter { animation: enter 400ms cubic-bezier(0.22, 1, 0.36, 1) backwards; animation-delay: calc(var(--i, 0) * 100ms); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+  [data-state] { animation-duration: 0.01ms !important; }
+}
 
 .only-dark { display: none; }
 @media (prefers-color-scheme: dark) {

@@ -158,7 +158,7 @@ export function TradeSheet() {
                           aria-checked={s[i] === v}
                           aria-label={`${r}: ${v}`}
                           onClick={() => setS((xs) => xs.map((x, j) => (j === i ? v : x)))}
-                          className={`h-8 w-8 rounded-sm border font-mono text-[13px] transition sm:h-8 sm:w-9 ${s[i] === v ? "border-db-sun bg-db-sun text-db-onsun" : "border-db-line bg-db-mid/60 text-db-muted hover:border-db-sun hover:text-db-ink"}`}
+                          className={`relative h-9 w-9 rounded-sm border font-mono text-[13px] transition after:absolute after:-inset-[3px] after:content-[''] active:scale-[0.96] ${s[i] === v ? "border-db-sun bg-db-sun text-db-onsun" : "border-db-line bg-db-mid/60 text-db-muted hover:border-db-sun hover:text-db-ink"}`}
                         >
                           {v}
                         </button>

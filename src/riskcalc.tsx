@@ -122,7 +122,7 @@ export function RiskCalc() {
                     type="button"
                     aria-pressed={side === d}
                     onClick={() => setSide(d)}
-                    className={`label min-h-[48px] flex-1 rounded-sm border px-4 text-[11px] transition ${side === d ? "border-db-sun bg-db-sun text-db-onsun" : "border-db-line text-db-ink hover:border-db-sun"}`}
+                    className={`label min-h-[48px] flex-1 rounded-sm border px-4 text-[11px] transition active:scale-[0.96] ${side === d ? "border-db-sun bg-db-sun text-db-onsun" : "border-db-line text-db-ink hover:border-db-sun"}`}
                   >
                     {d}
                   </button>

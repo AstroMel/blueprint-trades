@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Menu, ShoppingBag, Check, BookOpen, ArrowRight, ArrowUp, ArrowUpRight, Play, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,6 +11,9 @@ import { TradeSheet } from "./tradesheet";
 import { coverFor } from "./covers";
 import { LegalLinks } from "./legal";
 import { money, useCart, totals } from "./cart";
+
+/** Hero entrance order: sets the --i index the .enter class staggers by. */
+const stag = (i: number) => ({ "--i": i }) as CSSProperties;
 
 const NAV = [
   ["Journal", "#shop"],
@@ -209,7 +212,7 @@ export function Photos() {
           {VIEWS.map((v) => (
             <li key={v.label} className="flex min-w-0 flex-col items-center gap-3 sm:gap-4">
               <div className="flex aspect-[4/5] w-full max-w-[320px] items-end justify-center">
-                <img src={v.src} alt={v.alt} className={`w-auto object-contain transition duration-500 hover:-translate-y-1 ${v.label === "Flat" ? "max-h-[86%]" : v.label === "Inside" ? "max-h-[70%]" : "max-h-full"}`} loading="lazy" />
+                <img src={v.src} alt={v.alt} className={`w-auto object-contain transition-transform duration-300 ease-out hover:-translate-y-1 ${v.label === "Flat" ? "max-h-[86%]" : v.label === "Inside" ? "max-h-[70%]" : "max-h-full"}`} loading="lazy" />
               </div>
               <div className="w-full max-w-[320px] border-t border-db-line pt-3 text-center">
                 <p className="label text-[10px] text-db-ink sm:text-xs">{v.label}</p>
@@ -253,16 +256,16 @@ export function Hero() {
       <div className="gridpaper pointer-events-none absolute inset-0 opacity-70 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]" />
       <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:px-6 md:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-16 max-md:gap-6 max-md:pt-4">
         <div>
-          <p className="label mb-6 inline-flex items-center gap-2 border border-db-ink bg-db-raised px-3 py-1.5 text-db-ink">
+          <p className="enter label mb-6 inline-flex items-center gap-2 border border-db-ink bg-db-raised px-3 py-1.5 text-db-ink" style={stag(0)}>
             <Play className="h-3 w-3 fill-db-ember text-db-ember" aria-hidden /> from the Blueprint Trades channel
           </p>
-          <h1 className="display text-[64px] sm:text-[88px] lg:text-[104px]">
+          <h1 className="enter display text-[64px] sm:text-[88px] lg:text-[104px]" style={stag(1)}>
             <span className="outline-text">Master yourself.</span> <span className="accent">Master the market.</span>
           </h1>
-          <p className="mt-6 max-w-md text-lg leading-relaxed text-db-muted">
+          <p className="enter mt-6 max-w-md text-lg leading-relaxed text-db-muted" style={stag(2)}>
             The paper trading journal for traders who are done following influencers. One page per trade. Scored out of 30.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="enter mt-8 flex flex-col gap-3 sm:flex-row" style={stag(3)}>
             <button className="btn-primary" onClick={() => dispatch({ type: "add", productId: "journal", colorway: DEFAULT_COVER })}>
               Add the journal · {money(PRODUCTS[0].price)}
             </button>
@@ -270,7 +273,7 @@ export function Hero() {
               See inside <ArrowRight className="h-4 w-4" />
             </a>
           </div>
-          <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t-2 border-db-ink pt-5">
+          <dl className="enter mt-10 grid max-w-md grid-cols-3 gap-4 border-t-2 border-db-ink pt-5" style={stag(4)}>
             {[
               ["Record", "every trade"],
               ["Score", "six categories"],
@@ -381,8 +384,8 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
       <Dialog>
         <DialogTrigger asChild>
           <button className="group relative mt-5 flex items-end justify-center gap-4 border border-dashed border-db-major/60 bg-db-mid/40 px-4 pb-6 pt-4 transition hover:border-db-sun" aria-label={`Open the ${p.name} in 3D and look inside`}>
-            <img src={coverFor(color)} alt="" className="h-28 w-auto transition group-hover:-translate-y-1" />
-            <img src={productOpen} alt="" className="h-24 w-auto min-w-0 object-contain transition group-hover:-translate-y-1" />
+            <img src={coverFor(color)} alt="" className="h-28 w-auto transition-transform duration-300 ease-out group-hover:-translate-y-1" />
+            <img src={productOpen} alt="" className="h-24 w-auto min-w-0 object-contain transition-transform duration-300 ease-out group-hover:-translate-y-1" />
             <span className="label absolute -bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap bg-db-sun px-2 py-1 text-[10px] text-db-onsun">
               <BookOpen className="h-3 w-3" aria-hidden /> open in 3D · 360
             </span>
