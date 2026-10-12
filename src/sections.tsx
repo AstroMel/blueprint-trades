@@ -302,7 +302,7 @@ export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
       <div className="gridpaper pointer-events-none absolute inset-0 opacity-70 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]" />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:px-6 md:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-16">
+      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:px-6 md:grid-cols-[1fr_1.05fr] md:pb-24 md:pt-16 max-md:gap-6 max-md:pt-4">
         <div>
           <p className="label mb-6 inline-flex items-center gap-2 border border-db-ink bg-db-raised px-3 py-1.5 text-db-ink">
             <Play className="h-3 w-3 fill-db-ember text-db-ember" aria-hidden /> from the Blueprint Trades channel
@@ -334,7 +334,7 @@ export function Hero() {
             ))}
           </dl>
         </div>
-        <div className="relative mx-auto w-full max-w-[600px]">
+        <div className="relative order-first mx-auto w-full max-w-[300px] sm:max-w-[420px] md:order-none md:max-w-[600px]">
           <Book3D pages={SPREAD} />
         </div>
       </div>
