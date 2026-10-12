@@ -63,6 +63,8 @@ input.i:focus,select.i:focus,textarea.i:focus{border-color:rgb(var(--sun))}
 .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .scale button{min-height:44px;border:1px solid rgb(var(--line));background:rgb(var(--mid));border-radius:2px;cursor:pointer;font-family:"JetBrains Mono",monospace}
 .scale button[aria-pressed="true"]{background:rgb(var(--sun));border-color:rgb(var(--sun));color:rgb(var(--onsun))}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;align-items:center;font-size:15px}
+@media (max-width:480px){.srow{grid-template-columns:1fr;gap:6px}}
 .calc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:rgb(var(--line));border:1px solid rgb(var(--line))}
 .calc div{background:rgb(var(--mid));padding:12px}
 .calc b{display:block;font:500 20px "JetBrains Mono",monospace;margin-top:4px}
@@ -127,22 +129,39 @@ const PLAN = { price: 7.99, period: 'month', subscribeUrl: '', manageUrl: '', te
 const ACCESS = 'bt-app-access';
 function getAccess() { try { return JSON.parse(localStorage.getItem(ACCESS)) || null; } catch (e) { return null; } }
 function setAccess(a) { try { a ? localStorage.setItem(ACCESS, JSON.stringify(a)) : localStorage.removeItem(ACCESS); } catch (e) {} }
-if (/[?&]subscribed=1/.test(location.search) && PLAN.subscribeUrl) {
-  setAccess({ status: 'active', since: today() });
-  history.replaceState(null, '', location.pathname + '#/');
-}
 const priceText = () => '$' + PLAN.price.toFixed(2);
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const num = (v) => { const n = parseFloat(String(v).replace(/[^0-9.\-]/g, '')); return Number.isFinite(n) ? n : null; };
 const fmt = (n, d = 2) => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const sign = (n, d = 2) => n == null ? '—' : (n > 0 ? '+' : n < 0 ? '−' : '') + fmt(Math.abs(n), d);
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+if (/[?&]subscribed=1/.test(location.search) && PLAN.subscribeUrl) {
+  setAccess({ status: 'active', since: today() });
+  history.replaceState(null, '', location.pathname + '#/');
+}
+
+// ---------- the Trade Analysis page ----------
+const SCORES = ['Setup quality', 'Entry timing', 'Exit timing', 'Risk management', 'Discipline', 'Emotional control'];
+const GRADES = [[26, 'A', 'Excellent'], [20, 'B', 'Good'], [14, 'C', 'Average'], [0, '–', 'Needs improvement']];
+const gradeOf = (n) => GRADES.find((g) => n >= g[0]);
+const PSY = ['Did I follow my trading plan?', 'Did emotions influence decisions?', 'Did I respect stop-loss / risk rules?'];
+const noScores = () => [null, null, null, null, null, null];
+const scored = (t) => Array.isArray(t.scores) && t.scores.length === 6 && t.scores.every((v) => Number.isFinite(v));
+const scoreTotal = (t) => (scored(t) ? t.scores.reduce((a, b) => a + b, 0) : null);
+const blank = () => ({ id: uid(), date: today(), symbol: '', side: 'long', kind: '', timeframe: '', catalyst: '', levels: '', entry: '', stop: '', target: '', size: '',
+  checks: [false, false, false, false], opened: '', closed: '', exit: '', rOverride: '', pnl: '', held: '', scores: noScores(), psy0: '', psy1: '', psy2: '', lesson: '' });
+// Older entries and imported files may be missing fields; fill them so nothing downstream throws.
+const norm = (t) => ({ ...blank(), ...t, id: (t && t.id) || uid(),
+  checks: [0, 1, 2, 3].map((i) => !!(t.checks && t.checks[i])),
+  scores: Array.isArray(t.scores) && t.scores.length === 6 ? t.scores.map((v) => (Number.isFinite(v) ? v : null)) : noScores() });
+const mins = (a, b) => { if (!a || !b) return null; const [h1, m1] = a.split(':').map(Number), [h2, m2] = b.split(':').map(Number); const d = h2 * 60 + m2 - (h1 * 60 + m1); return d < 0 ? d + 1440 : d; };
+const dur = (d) => (d == null ? '' : d < 60 ? d + 'm' : Math.floor(d / 60) + 'h ' + (d % 60) + 'm');
 
 // ---------- storage (stays on this device) ----------
 function load() {
-  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.trades)) return { settings: {}, ...d }; } catch (e) {}
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.trades)) return { settings: {}, ...d, trades: d.trades.filter(Boolean).map(norm) }; } catch (e) {}
   return { trades: [], settings: {} };
 }
 let db = load();
@@ -218,7 +237,7 @@ function viewList() {
         const r = resultR(t), c = isClosed(t);
         return `<li><a class="trade" href="#/trade/${t.id}">
           <span class="mono muted" style="font-size:13px">${esc(t.date)}</span>
-          <span style="min-width:0"><b>${esc(t.symbol || 'Untitled')}</b> <span class="muted">${t.side === 'short' ? 'short' : 'long'}</span>
+          <span style="min-width:0"><b>${esc(t.symbol || 'Untitled')}</b> <span class="muted">${t.side === 'short' ? 'short' : 'long'}</span>${scoreTotal(t) != null ? ` <span class="muted mono" style="font-size:12px">· ${scoreTotal(t)}/30</span>` : ''}
           <span style="display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" class="muted">${esc(t.lesson || t.levels || '')}</span></span>
           <span style="text-align:right">${c ? `<b class="mono ${r >= 0 ? 'up' : 'down'}">${r == null ? '—' : sign(r) + 'R'}</b>` : '<span class="pill open">open</span>'}</span>
         </a></li>`; }).join('')}</ul>`
@@ -228,17 +247,15 @@ function viewList() {
   savebar.innerHTML = '';
 }
 
-function scaleHTML(name, val, label) {
-  return `<fieldset style="border:0;padding:0;margin:0" class="stack"><legend class="label" style="margin-bottom:8px">${label} · calm 1 to wired 5</legend>
-    <div class="scale" data-scale="${name}">${[1, 2, 3, 4, 5].map((n) => `<button type="button" aria-pressed="${val == n}" data-v="${n}">${n}</button>`).join('')}</div></fieldset>`;
+function scoreRows(t) {
+  return SCORES.map((label, i) => `<div class="srow"><span>${label}</span><div class="scale" data-score="${i}" role="group" aria-label="${label}">${[1, 2, 3, 4, 5].map((n) => `<button type="button" aria-pressed="${t.scores[i] === n}" data-v="${n}" aria-label="${label} ${n}">${n}</button>`).join('')}</div></div>`).join('');
 }
 
 function viewTrade(id) {
   const s = settings();
   const existing = id ? db.trades.find((t) => t.id === id) : null;
   if (id && !existing) { location.hash = '#/'; return; }
-  const t = existing ? { ...existing } : { id: uid(), date: today(), symbol: '', side: 'long', levels: '', entry: '', stop: '', target: '', size: '', checks: [false, false, false, false], emoBefore: null,
-    exit: '', rOverride: '', pnl: '', held: '', rules: [false, false, false, false], emoAfter: null, lesson: '', pastSelf: '' };
+  const t = existing ? { ...existing, scores: [...existing.scores] } : blank();
   const f = (k, label, attrs = '') => `<label class="f">${label}<input class="i mono" name="${k}" value="${esc(t[k])}" ${attrs}></label>`;
   app.innerHTML = `
   <form class="stack" id="tf" novalidate>
@@ -247,12 +264,18 @@ function viewTrade(id) {
       <div class="sec-h"><h2 class="display" id="p-h">The Plan</h2><span class="label">before the open</span></div>
       <div class="grid4">
         <label class="f">Date<input class="i mono" type="date" name="date" value="${esc(t.date)}"></label>
-        ${f('symbol', 'Symbol', 'placeholder="ES, NQ, AAPL…" autocapitalize="characters"')}
+        ${f('symbol', 'Ticker symbol', 'placeholder="ES, NQ, AAPL…" autocapitalize="characters"')}
         <label class="f">Side<select class="i" name="side"><option value="long" ${t.side !== 'short' ? 'selected' : ''}>Long</option><option value="short" ${t.side === 'short' ? 'selected' : ''}>Short</option></select></label>
-        ${f('size', 'Size (units)', 'inputmode="decimal"')}
+        <label class="f">Call / put<select class="i" name="kind"><option value="" ${!t.kind ? 'selected' : ''}>Not options</option><option value="call" ${t.kind === 'call' ? 'selected' : ''}>Call</option><option value="put" ${t.kind === 'put' ? 'selected' : ''}>Put</option></select></label>
       </div>
-      <label class="f"><span><span class="num">1</span> Key levels used</span><textarea class="i" name="levels" placeholder="Higher-timeframe level, zone, prior day low…">${esc(t.levels)}</textarea></label>
-      <div class="stack"><span class="f"><span><span class="num">2</span> The trade I want</span></span>
+      <div class="grid4">
+        ${f('size', 'Size (units)', 'inputmode="decimal"')}
+        ${f('timeframe', 'Timeframe', 'placeholder="5m, 1h…"')}
+        <label class="f">Time opened<input class="i mono" type="time" name="opened" value="${esc(t.opened)}"></label>
+      </div>
+      <label class="f"><span><span class="num">1</span> Trade catalyst</span><input class="i" name="catalyst" value="${esc(t.catalyst)}" placeholder="Why this trade? Write it before you click"></label>
+      <label class="f"><span><span class="num">2</span> Key levels used</span><textarea class="i" name="levels" placeholder="Higher-timeframe level, zone, prior day low…">${esc(t.levels)}</textarea></label>
+      <div class="stack"><span class="f"><span><span class="num">3</span> The trade I want</span></span>
         <div class="grid4">${f('entry', 'Entry', 'inputmode="decimal"')}${f('stop', 'Stop', 'inputmode="decimal"')}${f('target', 'Target', 'inputmode="decimal"')}
         <div class="f">Planned R<div class="i mono" id="pr" style="display:flex;align-items:center">—</div></div></div>
         <div class="calc" aria-label="Position size from your risk settings">
@@ -261,24 +284,32 @@ function viewTrade(id) {
           <div><span class="label">size that fits</span><b class="gold" id="sz">—</b></div>
         </div>
       </div>
-      <fieldset class="stack" style="border:0;padding:0;margin:0"><legend><span class="num">3</span> <span style="color:rgb(var(--muted));font-size:14px">Market-maker risk check</span></legend>
+      <fieldset class="stack" style="border:0;padding:0;margin:0"><legend><span class="num">4</span> <span style="color:rgb(var(--muted));font-size:14px">Market-maker risk check</span></legend>
         ${s.checks.map((q, i) => `<label class="check"><input type="checkbox" data-check="${i}" ${t.checks[i] ? 'checked' : ''}><span>${esc(q)}</span></label>`).join('')}
       </fieldset>
-      ${scaleHTML('emoBefore', t.emoBefore, '4 · Emotion before')}
     </section>
     <section class="panel stack" aria-labelledby="r-h">
-      <div class="sec-h"><h2 class="display" id="r-h">The Reality</h2><span class="label">after the close</span></div>
+      <div class="sec-h"><h2 class="display" id="r-h">The Result</h2><span class="label">after the close</span></div>
       <div class="grid4">${f('exit', 'Exit price', 'inputmode="decimal"')}
         <div class="f">Result R<div class="i mono" id="rr" style="display:flex;align-items:center">—</div></div>
-        ${f('pnl', 'P/L ($)', 'inputmode="decimal"')}${f('held', 'Time held', 'placeholder="e.g. 35m"')}</div>
+        ${f('pnl', 'Profit / loss ($)', 'inputmode="decimal"')}
+        <label class="f">Time closed<input class="i mono" type="time" name="closed" value="${esc(t.closed)}"></label></div>
+      <div class="grid4">${f('held', 'Trade duration', 'placeholder="e.g. 35m"')}</div>
       <details><summary class="label" style="cursor:pointer">Override R manually</summary><div style="margin-top:8px;max-width:220px">${f('rOverride', 'R', 'inputmode="decimal"')}</div></details>
-      <fieldset class="stack" style="border:0;padding:0;margin:0"><legend><span class="num">6</span> <span style="color:rgb(var(--muted));font-size:14px">Plan adherence · did you do what the plan said?</span></legend>
-        <div class="grid4">${RULES.map((r, i) => `<label class="check"><input type="checkbox" data-rule="${i}" ${t.rules[i] ? 'checked' : ''}><span>${r}</span></label>`).join('')}</div>
-        <span class="label" id="adh"></span>
+    </section>
+    <section class="panel stack" aria-labelledby="a-h">
+      <div class="sec-h"><h2 class="display" id="a-h">Trade analysis</h2><span class="label">score it honestly</span></div>
+      <div class="stack"><span class="f"><span><span class="num">5</span> Scoring system · 1 poor to 5 excellent</span></span>
+        ${scoreRows(t)}
+        <div class="calc" style="grid-template-columns:repeat(2,minmax(0,1fr))" aria-live="polite">
+          <div><span class="label">total score</span><b id="tot">—</b></div>
+          <div><span class="label">grade</span><b class="gold" id="grd">—</b></div>
+        </div>
+      </div>
+      <fieldset class="stack" style="border:0;padding:0;margin:0"><legend><span class="num">6</span> <span style="color:rgb(var(--muted));font-size:14px">Psychology and discipline check</span></legend>
+        ${PSY.map((q, i) => `<label class="f">${q}<input class="i" name="psy${i}" value="${esc(t['psy' + i])}"></label>`).join('')}
+        <label class="f">What can be improved next trade?<input class="i" name="lesson" value="${esc(t.lesson)}" placeholder="One line, every trade"></label>
       </fieldset>
-      ${scaleHTML('emoAfter', t.emoAfter, '7 · Emotion after')}
-      <label class="f"><span><span class="num">8</span> Lesson learned</span><input class="i" name="lesson" value="${esc(t.lesson)}" placeholder="One line, every trade"></label>
-      <label class="f"><span><span class="num">9</span> What would I tell my past self?</span><textarea class="i" name="pastSelf" placeholder="The note you read next week">${esc(t.pastSelf)}</textarea></label>
     </section>
     ${existing ? '<div class="row"><button type="button" class="btn danger" id="del">Delete trade</button></div>' : ''}
   </form>`;
@@ -288,7 +319,6 @@ function viewTrade(id) {
     const fd = new FormData(form);
     for (const [k, v] of fd.entries()) t[k] = v;
     t.checks = [0, 1, 2, 3].map((i) => !!form.querySelector(`[data-check="${i}"]`).checked);
-    t.rules = [0, 1, 2, 3].map((i) => !!form.querySelector(`[data-rule="${i}"]`).checked);
   };
   const update = () => {
     read();
@@ -300,16 +330,21 @@ function viewTrade(id) {
     $('#sd').textContent = dist ? fmt(dist, dist < 1 ? 4 : 2) : '—';
     const exact = dist ? riskUsd / (dist * (s.valuePer || 1)) : null;
     $('#sz').textContent = exact == null ? '—' : Math.floor(exact) >= 1 ? `${Math.floor(exact)} whole · ${fmt(exact, 2)} exact` : `${fmt(exact, 2)} · under 1 whole unit`;
-    $('#adh').textContent = `Rules followed: ${t.rules.filter(Boolean).length} of 4`;
+    const tt = scoreTotal(t), g = tt == null ? null : gradeOf(tt);
+    $('#tot').textContent = tt == null ? '—' : tt + ' / 30';
+    $('#grd').textContent = g ? g[1] + ' · ' + g[2] : 'score all six';
+    form.elements.held.placeholder = dur(mins(t.opened, t.closed)) || 'e.g. 35m';
   };
   form.addEventListener('input', update);
-  form.querySelectorAll('[data-scale]').forEach((g) => g.addEventListener('click', (e) => {
+  form.querySelectorAll('[data-score]').forEach((g) => g.addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
-    const name = g.dataset.scale, v = Number(b.dataset.v); t[name] = t[name] === v ? null : v;
-    g.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(Number(x.dataset.v) === t[name])));
+    const i = Number(g.dataset.score), v = Number(b.dataset.v); t.scores[i] = t.scores[i] === v ? null : v;
+    g.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(Number(x.dataset.v) === t.scores[i])));
+    update();
   }));
   form.addEventListener('submit', (e) => {
     e.preventDefault(); read();
+    if (!String(t.held).trim()) t.held = dur(mins(t.opened, t.closed));
     const i = db.trades.findIndex((x) => x.id === t.id);
     if (i >= 0) db.trades[i] = t; else db.trades.push(t);
     if (persist()) { toast('Trade saved'); location.hash = '#/'; }
@@ -331,8 +366,7 @@ function viewReview() {
   const ts = db.trades.filter((t) => (t.date || '').startsWith(cur)).sort((a, b) => (a.date + a.id).localeCompare(b.date + b.id));
   const closed = ts.filter(isClosed), rs = closed.map(resultR).filter((r) => r != null);
   const wins = rs.filter((r) => r > 0).length, total = rs.reduce((a, b) => a + b, 0);
-  const adh = closed.length ? closed.reduce((a, t) => a + t.rules.filter(Boolean).length, 0) / closed.length : null;
-  const avg = (k) => { const v = ts.map((t) => t[k]).filter((x) => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const sc = ts.filter(scored), avgScore = sc.length ? sc.reduce((a, t) => a + scoreTotal(t), 0) / sc.length : null;
   const checkRate = ts.length ? ts.reduce((a, t) => a + t.checks.filter(Boolean).length, 0) / (ts.length * 4) : null;
   // cumulative R chart
   let cum = 0; const pts = closed.map((t) => { const r = resultR(t); cum += r ?? 0; return cum; });
@@ -353,7 +387,7 @@ function viewReview() {
       <div><span class="label">win rate</span><b>${rs.length ? Math.round((wins / rs.length) * 100) + '%' : '—'}</b></div>
       <div><span class="label">total R</span><b class="${total >= 0 ? 'up' : 'down'}">${rs.length ? sign(total) : '—'}</b></div>
       <div><span class="label">avg R</span><b>${rs.length ? sign(total / rs.length) : '—'}</b></div>
-      <div><span class="label">rules followed</span><b>${adh == null ? '—' : fmt(adh, 1) + ' / 4'}</b></div>
+      <div><span class="label">avg score</span><b>${avgScore == null ? '—' : fmt(avgScore, 1) + ' / 30'}</b></div>
       <div><span class="label">risk checks done</span><b>${checkRate == null ? '—' : Math.round(checkRate * 100) + '%'}</b></div>
     </div>
     <section class="panel stack" aria-labelledby="c-h">
@@ -366,10 +400,11 @@ function viewReview() {
         <text x="${W - P}" y="${y(pts[pts.length - 1]) - 14}" text-anchor="end">${sign(pts[pts.length - 1])}R</text>
       </svg>` : '<p class="muted">Close a trade this month to see your curve.</p>'}
     </section>
-    <div class="grid2">
-      <div class="panel"><span class="label">emotion before · avg</span><b class="mono" style="font-size:24px;display:block">${avg('emoBefore') == null ? '—' : fmt(avg('emoBefore'), 1)}</b></div>
-      <div class="panel"><span class="label">emotion after · avg</span><b class="mono" style="font-size:24px;display:block">${avg('emoAfter') == null ? '—' : fmt(avg('emoAfter'), 1)}</b></div>
-    </div>
+    <section class="panel stack" aria-labelledby="k-h">
+      <div class="sec-h"><h2 class="display" id="k-h">Score by category</h2><span class="label">average, 1 to 5</span></div>
+      ${sc.length ? SCORES.map((label, i) => { const a = sc.reduce((x, t) => x + t.scores[i], 0) / sc.length;
+        return `<div class="srow"><span>${label}</span><div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:10px;background:rgb(var(--mid));border:1px solid rgb(var(--line))" aria-hidden="true"><div style="width:${(a / 5) * 100}%;height:100%;background:rgb(var(--sun))"></div></div><b class="mono" style="min-width:2.4em;text-align:right">${fmt(a, 1)}</b></div></div>`; }).join('') : '<p class="muted" style="margin:0">Score a trade to see where you are strongest and weakest.</p>'}
+    </section>
     <section class="panel stack" aria-labelledby="l-h">
       <div class="sec-h"><h2 class="display" id="l-h">Lessons this month</h2></div>
       ${ts.filter((t) => t.lesson).length ? `<ul class="list">${ts.filter((t) => t.lesson).map((t) => `<li><span class="mono muted" style="font-size:13px">${esc(t.date)} · ${esc(t.symbol)}</span><br>${esc(t.lesson)}</li>`).join('')}</ul>` : '<p class="muted">No lessons written yet. One line, every trade.</p>'}
@@ -415,15 +450,15 @@ function viewSettings() {
   const dl = (name, type, text) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
   $('#exj').onclick = () => { db.settings = { ...db.settings, lastBackup: today() }; persist(); dl(`blueprint-journal-${today()}.json`, 'application/json', JSON.stringify(db, null, 2)); };
   $('#exc').onclick = () => {
-    const cols = ['date', 'symbol', 'side', 'entry', 'stop', 'target', 'exit', 'size', 'pnl', 'held', 'emoBefore', 'emoAfter', 'lesson', 'pastSelf', 'levels'];
+    const cols = ['date', 'symbol', 'side', 'kind', 'timeframe', 'catalyst', 'opened', 'closed', 'entry', 'stop', 'target', 'exit', 'size', 'pnl', 'held', 'levels', 'psy0', 'psy1', 'psy2', 'lesson'];
     const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const rows = db.trades.map((t) => [...cols.map((c) => q(t[c])), q(resultR(t) == null ? '' : resultR(t).toFixed(2)), q(t.rules.filter(Boolean).length), q(t.checks.filter(Boolean).length)].join(','));
-    dl(`blueprint-journal-${today()}.csv`, 'text/csv', [cols.concat(['R', 'rulesFollowed', 'riskChecks']).join(','), ...rows].join('\n'));
+    const rows = db.trades.map((t) => [...cols.map((c) => q(t[c])), q(resultR(t) == null ? '' : resultR(t).toFixed(2)), q(scoreTotal(t) ?? ''), ...t.scores.map((v) => q(v ?? '')), q(t.checks.filter(Boolean).length)].join(','));
+    dl(`blueprint-journal-${today()}.csv`, 'text/csv', [cols.concat(['R', 'score', ...SCORES.map((x) => x.toLowerCase().replace(/ /g, '_')), 'riskChecks']).join(','), ...rows].join('\n'));
   };
   $('#imp').onchange = async (e) => {
     const file = e.target.files[0]; if (!file) return;
     try { const d = JSON.parse(await file.text()); if (!Array.isArray(d.trades)) throw 0;
-      const have = new Set(db.trades.map((t) => t.id)); const add = d.trades.filter((t) => t && t.id && !have.has(t.id));
+      const have = new Set(db.trades.map((t) => t.id)); const add = d.trades.filter((t) => t && t.id && !have.has(t.id)).map(norm);
       db.trades.push(...add); if (d.settings && !Object.keys(db.settings).length) db.settings = d.settings; persist(); toast(`Imported ${add.length} trade${add.length === 1 ? '' : 's'}`);
     } catch (err) { toast('That file is not a journal backup'); }
     e.target.value = '';
@@ -445,7 +480,7 @@ function viewPaywall() {
         <ul class="feat">
           <li>The Trade Analysis page for every trade</li>
           <li>Position size from your account and risk %</li>
-          <li>Market-maker risk check and rules-followed score</li>
+          <li>Market-maker risk check and a score out of 30</li>
           <li>Monthly review: win rate, R curve, lessons</li>
           <li>Works offline and installs to your home screen</li>
         </ul>

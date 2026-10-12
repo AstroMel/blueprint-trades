@@ -17,6 +17,9 @@ const VIEW: Record<View, [number, number, number]> = {
   spin: [0, 0.22, -2.1],
 };
 
+// Centre (x, z) of the half-open book's footprint, which the 360 view turns about.
+const SPIN_PIVOT = [-0.37, 0.65] as const;
+
 function webglOK() {
   try {
     const c = document.createElement("canvas");
@@ -26,7 +29,7 @@ function webglOK() {
   }
 }
 
-export function Book3D({ initial = "front", compact = false }: { initial?: View; compact?: boolean }) {
+export function Book3D({ initial = "front", compact = false, shape = "tall" }: { initial?: View; compact?: boolean; shape?: "tall" | "wide" }) {
   const host = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<View>(initial);
   const viewRef = useRef<View>(initial);
@@ -194,7 +197,7 @@ export function Book3D({ initial = "front", compact = false }: { initial?: View;
     ro.observe(el);
     resize();
 
-    let visible = true, raf = 0, prev = performance.now(), t = 0, spun = false, shift = 0;
+    let visible = true, raf = 0, prev = performance.now(), t = 0, spun = false, shift = 0, spinK = 0;
     const TAU = Math.PI * 2;
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(frame); });
     io.observe(el);
@@ -214,15 +217,21 @@ export function Book3D({ initial = "front", compact = false }: { initial?: View;
       }
       rotX += (target[1] - rotX) * k; hingeA += (target[2] - hingeA) * k;
       const sway = reduce || drag || viewRef.current !== "front" && viewRef.current !== "back" ? 0 : Math.sin(t * 0.6) * 0.12;
-      book.rotation.set(rotX + userX, rotY + userY + sway, 0);
+      const th = rotY + userY + sway;
+      book.rotation.set(rotX + userX, th, 0);
       hinge.rotation.y = hingeA;
       const open = -hingeA / 2.95;
       const spin = viewRef.current === "spin";
-      const d = (camera.aspect < 0.85 ? 6.6 : 5.6) + open * (spin ? 1.8 : 2.6);
+      spinK += ((spin ? 1 : 0) - spinK) * k;
+      // Spinning, the book turns about the middle of its half-open silhouette (not its spine) so it stays in frame and large.
+      const fitSpin = Math.max(1.7 / (Math.tan(THREE.MathUtils.degToRad(14)) * camera.aspect), 5.6);
+      const d0 = (camera.aspect < 0.85 ? 6.6 : 5.6) + open * 2.6;
+      const d = d0 * (1 - spinK) + fitSpin * spinK;
       // Keep a spinning book centred on its spine; an open book shifts so both pages sit in frame.
       shift += ((spin ? 0 : open * (W / 2)) - shift) * k;
-      book.position.x = shift;
-      camera.position.set(0, 0.45 + open * 1.2, d);
+      book.position.x = shift - spinK * (SPIN_PIVOT[0] * Math.cos(th) + SPIN_PIVOT[1] * Math.sin(th));
+      book.position.z = -spinK * (-SPIN_PIVOT[0] * Math.sin(th) + SPIN_PIVOT[1] * Math.cos(th));
+      camera.position.set(0, 0.45 + open * 1.2 * (1 - 0.55 * spinK), d);
       camera.lookAt(0, -0.08, 0);
       renderer.render(scene, camera);
       if (visible) raf = requestAnimationFrame(frame);
@@ -243,7 +252,7 @@ export function Book3D({ initial = "front", compact = false }: { initial?: View;
     <div className="flex flex-col gap-3">
       <div
         ref={host}
-        className={`relative aspect-[4/5] w-full overflow-hidden cursor-grab select-none active:cursor-grabbing transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
+        className={`relative ${shape === "wide" ? "aspect-[5/4]" : "aspect-[4/5]"} w-full overflow-hidden cursor-grab select-none active:cursor-grabbing transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
         role="img"
         aria-label={
           view === "open"

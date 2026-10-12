@@ -4,9 +4,10 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CONFIG, COLORWAYS, FAQ, PRODUCTS, SPECS, SUPPORT, VIDEOS } from "./data";
-import { productFront, productBack, productFlat, productOpen, insidePageWebp } from "./images";
+import { productFront, productBack, productFlat, productOpen } from "./images";
 import { AppCard } from "./consult";
 import { Book3D } from "./book3d";
+import { TradeSheet } from "./tradesheet";
 import { coverFor } from "./covers";
 import { LegalLinks } from "./legal";
 import { money, useCart, totals } from "./cart";
@@ -15,6 +16,7 @@ const NAV = [
   ["Journal", "#shop"],
   ["Views", "#photos"],
   ["Inside", "#inside"],
+  ["Calculator", "#risk"],
   ["App", "#app"],
   ["Inner Room", "#consult"],
   ["FAQ", "#faq"],
@@ -82,12 +84,12 @@ export function Nav() {
   const active = useActiveSection(NAV.map(([, h]) => h.slice(1)));
   const { count } = totals(state.lines);
   return (
-    <header className="border-b border-db-line bg-db-mid/60 backdrop-blur-xl">
+    <header className="border-b border-db-line bg-db-mid/95 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <a href="#top" className="flex items-center" aria-label="Blueprint Trades home">
           <Logo className="text-2xl sm:text-[28px]" />
         </a>
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
           {NAV.map(([l, h]) => (
             <a key={h} href={h} aria-current={active === h.slice(1) ? "true" : undefined} className={`label border-b-2 py-1 transition hover:text-db-ink ${active === h.slice(1) ? "border-db-sun text-db-ink" : "border-transparent text-db-muted"}`}>
               {l}
@@ -109,7 +111,7 @@ export function Nav() {
             )}
           </button>
           <Sheet>
-            <SheetTrigger className="flex h-11 w-11 items-center justify-center rounded-sm border border-db-line md:hidden" aria-label="Open menu">
+            <SheetTrigger className="flex h-11 w-11 items-center justify-center rounded-sm border border-db-line lg:hidden" aria-label="Open menu">
               <Menu className="h-5 w-5" />
             </SheetTrigger>
             <SheetContent side="right" className="w-[82vw] max-w-xs border-db-line bg-db-raised/60 backdrop-blur-md">
@@ -173,7 +175,7 @@ export function ScrollAids() {
       <a
         href="#top"
         aria-label="Back to top"
-        className={`fixed bottom-24 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-sm border border-db-line bg-db-raised/70 text-db-ink shadow-db backdrop-blur-md transition hover:border-db-sun md:bottom-6 ${p > 0.12 ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        className={`fixed bottom-24 right-4 z-40 flex max-md:hidden h-11 w-11 items-center justify-center rounded-sm border border-db-line bg-db-raised/70 text-db-ink shadow-db backdrop-blur-md transition hover:border-db-sun md:bottom-6 ${p > 0.12 ? "opacity-100" : "pointer-events-none opacity-0"}`}
       >
         <ArrowUp className="h-5 w-5" />
       </a>
@@ -192,7 +194,7 @@ export function Photos() {
   return (
     <section id="photos" className="border-t border-db-line py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid gap-8 md:grid-cols-[1fr_1.6fr] md:items-end">
+        <div className="grid gap-8 md:grid-cols-[1fr_1fr] md:items-center">
           <div className="min-w-0">
             <p className="label text-db-ember">the journal</p>
             <h2 className="display mt-3 text-5xl sm:text-6xl">Every angle.</h2>
@@ -200,7 +202,7 @@ export function Photos() {
           </div>
           <div className="min-w-0">
             <p className="label mb-2 text-center text-[10px] text-db-muted">360 · drag to turn · tap to open</p>
-            <Book3D initial="spin" compact />
+            <Book3D initial="spin" compact shape="wide" />
           </div>
         </div>
         <ul className="mt-14 grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-4 sm:gap-6">
@@ -319,92 +321,17 @@ export function Letter() {
   );
 }
 
-const PAGE_PARTS = [
-  ["Trade details", "Ticker, catalyst, call or put, timeframe, times, entry, exit, P/L."],
-  ["Scoring system", "Six categories, 1 to 5 each. Total out of 30."],
-  ["Psychology check", "Four questions. Plan, emotions, risk, next time."],
-  ["Chart", "Sketch the candles at entry and exit."],
-] as const;
-
-const SCORE_ROWS = ["Setup quality", "Entry timing", "Exit timing", "Risk management", "Discipline", "Emotional control"] as const;
-
-// The page's own grading key: 26–30 A, 20–25 B, 14–19 C, below 14 needs improvement.
-function grade(t: number) {
-  return t >= 26 ? ["A", "Excellent"] : t >= 20 ? ["B", "Good"] : t >= 14 ? ["C", "Average"] : ["–", "Needs improvement"];
-}
-
-function Scorer() {
-  const [s, setS] = useState<number[]>([4, 3, 3, 4, 5, 3]);
-  const total = s.reduce((a, b) => a + b, 0);
-  const [g, word] = grade(total);
-  return (
-    <div className="panel p-5 sm:p-6">
-      <div className="flex items-baseline justify-between gap-4">
-        <p className="label text-db-muted">try the scoring</p>
-        <p className="font-mono text-sm text-db-muted">tap 1–5</p>
-      </div>
-      <ul className="mt-4 flex flex-col gap-2">
-        {SCORE_ROWS.map((r, i) => (
-          <li key={r} className="flex items-center justify-between gap-3">
-            <span className="min-w-0 text-sm">{r}</span>
-            <span className="flex flex-none gap-1" role="radiogroup" aria-label={r}>
-              {[1, 2, 3, 4, 5].map((v) => (
-                <button
-                  key={v}
-                  role="radio"
-                  aria-checked={s[i] === v}
-                  aria-label={`${r} ${v}`}
-                  onClick={() => setS((xs) => xs.map((x, j) => (j === i ? v : x)))}
-                  className={`h-9 w-9 rounded-sm border font-mono text-sm transition ${s[i] === v ? "border-db-sun bg-db-sun text-db-onsun" : v < s[i] ? "border-db-line bg-db-petal text-db-ink" : "border-db-line text-db-muted hover:border-db-sun"}`}
-                >
-                  {v}
-                </button>
-              ))}
-            </span>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-5 flex items-end justify-between border-t border-db-line pt-4" aria-live="polite">
-        <div>
-          <p className="label text-[10px] text-db-muted">total score</p>
-          <p className="font-mono text-3xl">{total}<span className="text-lg text-db-muted"> / 30</span></p>
-        </div>
-        <div className="text-right">
-          <p className="display text-5xl text-db-ember">{g}</p>
-          <p className="text-sm text-db-muted">{word}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function Inside() {
   return (
-    <section id="inside" className="border-t border-db-line py-20">
+    <section id="inside" className="gridpaper border-t border-db-line py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="label text-db-ember">inside the journal</p>
         <h2 className="display mt-3 max-w-3xl text-5xl sm:text-6xl">
           One page per trade. <span className="accent">Scored out of 30.</span>
         </h2>
-        <div className="mt-10 grid gap-10 md:grid-cols-[1fr_1fr] md:items-start">
-          <figure className="relative mx-auto w-full max-w-md">
-            <img src={insidePageWebp} alt="A real Trade Analysis page from the journal: trade details, a six-category scoring table, a psychology and discipline check, and a chart box" className="w-full rounded-sm border border-db-line shadow-db" loading="lazy" />
-            <figcaption className="label mt-3 text-[10px] text-db-muted">the trade analysis page, as printed</figcaption>
-          </figure>
-          <div className="flex min-w-0 flex-col gap-8">
-            <ol className="flex flex-col">
-              {PAGE_PARTS.map(([t, d], i) => (
-                <li key={t} className="grid grid-cols-[2.5rem_1fr] gap-3 border-t border-db-line py-4">
-                  <span className="font-mono text-sm text-db-ember">{String(i + 1).padStart(2, "0")}</span>
-                  <span>
-                    <span className="font-semibold">{t}</span>
-                    <span className="block text-sm text-db-muted">{d}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <Scorer />
-          </div>
+        <p className="mt-5 max-w-xl text-lg leading-relaxed text-db-muted">Tap a part to see how to fill it in. Tap a score to try it.</p>
+        <div className="mt-10">
+          <TradeSheet />
         </div>
       </div>
     </section>
@@ -416,7 +343,7 @@ export function Channel() {
     <section id="channel" className="gridpaper border-t border-db-line py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="label text-db-ember">watch, then write</p>
-        <h2 className="display mt-3 max-w-3xl text-5xl sm:text-6xl">Every page comes from a video.</h2>
+        <h2 className="display mt-3 max-w-3xl text-5xl sm:text-6xl">Watch it. Write it down.</h2>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-db-muted">The same lessons, on paper, at your desk.</p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {VIDEOS.map((v) => (
@@ -426,7 +353,7 @@ export function Channel() {
               </span>
               <h3 className="mt-3 flex-1 text-lg font-semibold leading-snug">{v.title}</h3>
               <p className="mt-5 border-t border-db-line pt-3 text-sm text-db-muted">
-                In the journal: <span className="hand text-lg text-db-ink">{v.page}</span>
+                Pairs with: <span className="hand text-lg text-db-ink">{v.page}</span>
               </p>
             </a>
           ))}
@@ -465,7 +392,7 @@ function ProductCard({ p }: { p: (typeof PRODUCTS)[number] }) {
           <p className="label text-[10px] text-db-ember">model · {p.name}</p>
           <DialogTitle className="display text-3xl text-db-ink">Look <span className="accent">inside</span>.</DialogTitle>
           <DialogDescription className="text-sm text-db-muted">Tap the journal to open or close it. Drag to turn, or press 360.</DialogDescription>
-          <Book3D initial="open" compact />
+          <Book3D initial="open" compact shape="wide" />
         </DialogContent>
       </Dialog>
       <div className="mt-5 flex items-baseline gap-2">

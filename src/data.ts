@@ -3,7 +3,7 @@ export const CONFIG = {
   brand: "blueprint-trades",
   channelUrl: "https://www.youtube.com/@Blueprint_Trades",
   // PLACEHOLDER: the custom domain is not chosen yet. Set it here and in DNS (see DEPLOY.md).
-  domain: "your-domain.com",
+  domain: "blueprinttrades.com",
   supportEmail: "hello@your-domain.com",
   currency: "USD",
   // PLACEHOLDER: Stripe publishable key (pk_live_… / pk_test_…). The secret key lives only on the server.
@@ -93,7 +93,7 @@ export const SPECS = [
   ["Format", "A5, 148 × 210 mm"],
   ["Binding", "Gold wire-o, opens flat and folds back"],
   ["Inside", "One Trade Analysis page per trade: details, score out of 30, psychology check, chart box"],
-  ["Paper", "Graph-ruled, takes pencil and gel pen"],
+  ["Writing", "Filled in by hand, in pen or pencil"],
   ["Dated?", "Undated. Start any Monday."],
 ] as const;
 

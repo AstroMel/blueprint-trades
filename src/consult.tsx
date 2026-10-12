@@ -182,7 +182,7 @@ export function Consult() {
 const APP_FEATURES = [
   "The Trade Analysis page for every trade",
   "Position size from your account and risk %",
-  "Market-maker risk check and plan adherence",
+  "Market-maker risk check and a score out of 30",
   "Monthly review: win rate, R curve, lessons",
   "Works offline and installs to your home screen",
   "Entries stay on your device, with backup export",
