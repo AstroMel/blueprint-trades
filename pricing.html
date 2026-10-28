@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blueprint Trades — Pricing</title>
+<meta name="description" content="One-time Blueprint Journal or a direct consultation. Process over results.">
+<style>
+:root { --bg:#0a0e1a; --card:#111827; --line:#1f2937; --ink:#e5e7eb; --muted:#9ca3af; --accent:#3b82f6; --accent-hover:#2563eb; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, sans-serif; line-height:1.5; }
+.wrap { max-width: 820px; margin: 0 auto; padding: 48px 20px 80px; }
+h1 { font-size: 2.25rem; margin: 0 0 8px; font-weight: 600; }
+.lede { color: var(--muted); margin: 0 0 40px; font-size: 1.05rem; }
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 28px 24px; }
+.card h2 { margin: 0 0 4px; font-size: 1.35rem; }
+.price { font-size: 2.75rem; font-weight: 600; margin: 12px 0; color: #fff; }
+.price span { font-size: 1rem; color: var(--muted); font-weight: 400; }
+.card p { color: var(--muted); margin: 0 0 24px; }
+.btn { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; }
+.btn:hover { background: var(--accent-hover); }
+.note { margin-top: 48px; padding: 20px; background: #0f172a; border: 1px solid var(--line); border-radius: 8px; font-size: 0.9rem; color: var(--muted); }
+.note strong { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Blueprint Trades</h1>
+  <p class="lede">Process over results. Honest review. No hype.</p>
+
+  <div class="cards">
+    <!-- ===================== JOURNAL ===================== -->
+    <!-- Replace the href below with your Stripe Payment Link for the one-time Journal -->
+    <div class="card">
+      <h2>Journal</h2>
+      <div class="price">$79 <span>one-time</span></div>
+      <p>Lifetime access. Log trades, track process adherence, review psychology, and build your own edge.</p>
+      <a class="btn" href="YOUR_JOURNAL_STRIPE_PAYMENT_LINK" target="_blank" rel="noopener">Get the Journal</a>
+    </div>
+
+    <!-- ===================== CONSULTATION ===================== -->
+    <!-- Replace the href below with your Stripe Payment Link for the Consultation -->
+    <div class="card">
+      <h2>Consultation</h2>
+      <div class="price">$250 <span>one session</span></div>
+      <p>Direct review of your process, key levels, and decision-making. No signals. No hand-holding.</p>
+      <a class="btn" href="YOUR_CONSULTATION_STRIPE_PAYMENT_LINK" target="_blank" rel="noopener">Book Consultation</a>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>How to activate payments (2 minutes):</strong><br>
+    1. In Stripe Dashboard create two Products (Journal = one-time, Consultation = one-time).<br>
+    2. Create a Payment Link for each and copy the URL.<br>
+    3. Replace the two placeholder links in this file (search for YOUR_JOURNAL and YOUR_CONSULTATION).<br>
+    4. Commit and push. Done.
+  </div>
+</div>
+</body>
+</html>
